@@ -3,20 +3,14 @@
 namespace App\Livewire\Nota;
 
 use App\Models\Nota;
-use App\Models\DetailNota;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 
 class Create extends Component
 {
-    public $no_nota,$pembeli,$tanggal,$subtotal,$diskon_persen,$diskon_rupiah,$total_harga,$total_coly,$jt_tempo;
+    public $no_nota,$pembeli,$tanggal,$subtotal=0,$diskon_persen=0,$diskon_rupiah=0,$total_harga=0,$total_coly=0,$jt_tempo;
     public $details = [];
     public $title = 'Tambah Nota';
-
-    public function mount()
-    {
-        $this->resetForm();
-    }
 
     public $formDetail = [
         'nama_barang' => '',
@@ -25,17 +19,23 @@ class Create extends Component
         'qty_isi' => 0,
         'nama_isi' => '',
         'harga' => 0,
-        'diskon' => [],
+        'diskon' => 0, 
         'jumlah' => 0,
         'total' => 0,
     ];
-    public $diskonPersen = 0;
-    public $diskonRupiah = 0;
+
+    public function mount()
+    {
+        $this->resetForm();
+        // otomatis generate nomor baru
+        $this->no_nota = Nota::generateNextNoNota();
+        $this->tanggal = now()->toDateString();
+        $this->jt_tempo = now()->addMonths(2)->toDateString();
+    }
 
     public function resetForm()
     {
         $this->reset([
-            'no_nota',
             'pembeli',
             'tanggal',
             'subtotal',
@@ -48,12 +48,31 @@ class Create extends Component
         ]);
     }
 
+    public function updatedFormDetail($value, $key)
+    {
+        // hitung otomatis jumlah & total saat input berubah
+        if (in_array($key, ['coly','qty_isi','harga','diskon'])) {
+            $coly = (int) $this->formDetail['coly'];
+            $qty  = (int) $this->formDetail['qty_isi'];
+            $harga = (int) $this->formDetail['harga'];
+            $diskon = (int) ($this->formDetail['diskon'] ?? 0);
+
+            $jumlah = $coly * $qty;
+            $total  = ($harga * $jumlah) - $diskon;
+
+            $this->formDetail['jumlah'] = $jumlah;
+            $this->formDetail['total']  = $total;
+        }
+    }
+
     public function addDetail()
     {
-        $this->formDetail['jumlah'] = $this->formDetail['coly'] * $this->formDetail['qty_isi'];
-        $this->formDetail['total'] = $this->formDetail['harga'] * $this->formDetail['jumlah'];
+        if (empty($this->formDetail['diskon'])) {
+            $this->formDetail['diskon'] = 0;
+        }
 
-        $this->barang[] = $this->formDetail;
+        $this->details[] = $this->formDetail;
+
         $this->formDetail = [
             'nama_barang' => '',
             'coly' => 0,
@@ -61,7 +80,7 @@ class Create extends Component
             'qty_isi' => 0,
             'nama_isi' => '',
             'harga' => 0,
-            'diskon' => [],
+            'diskon' => 0,
             'jumlah' => 0,
             'total' => 0,
         ];
@@ -78,6 +97,7 @@ class Create extends Component
         $this->validate([
             'no_nota' => 'required|unique:nota,no_nota',
             'pembeli' => 'required',
+            'alamat' => 'required',
             'tanggal' => 'required|date',
         ]);
 
@@ -85,10 +105,11 @@ class Create extends Component
             $nota = Nota::create([
                 'no_nota' => $this->no_nota,
                 'pembeli' => $this->pembeli,
+                'alamat' => $this->alamat,
                 'tanggal' => $this->tanggal,
                 'subtotal' => $this->subtotal,
-                'diskon_persen' => $this->diskon_persen,
-                'diskon_rupiah' => $this->diskon_rupiah,
+                'diskon_persen' => $this->diskon_persen ?? 0,
+                'diskon_rupiah' => $this->diskon_rupiah ?? 0,
                 'total_harga' => $this->total_harga,
                 'total_coly' => $this->total_coly,
                 'jt_tempo' => $this->jt_tempo,
@@ -105,16 +126,25 @@ class Create extends Component
 
     public function getSubtotalProperty()
     {
-        return collect($this->barang)->sum('total');
+        return collect($this->details)->sum('total');
     }
 
     public function getTotalHargaProperty()
     {
-        return $this->subtotal - $this->diskonRupiah;
+        return $this->subtotal - ($this->diskon_rupiah ?? 0);
+    }
+
+    public function getTotalColyProperty()
+    {
+        return collect($this->details)->sum('coly');
     }
 
     public function render()
     {
+        $this->subtotal = $this->getSubtotalProperty();
+        $this->total_harga = $this->getTotalHargaProperty();
+        $this->total_coly = $this->getTotalColyProperty();
+
         return view('livewire.nota.create');
     }
 }

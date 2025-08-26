@@ -31,4 +31,27 @@ class Nota extends Model
     {
         return $this->hasMany(DetailNota::class, 'nota_id', 'id');
     }
+
+    public static function generateNextNoNota()
+    {
+        // Ambil bulan dan tahun sekarang → format YYMM
+        $prefix = date('ym'); // contoh: 2508 (Agustus 2025)
+
+        // Cari nota terakhir di bulan & tahun ini
+        $lastNota = self::where('no_nota', 'like', "MJ/$prefix/%")
+            ->latest('id')
+            ->first();
+
+        if (!$lastNota) {
+            $nextNumber = 1;
+        } else {
+            // Ambil bagian nomor urut setelah prefix
+            $lastNumber = (int) substr($lastNota->no_nota, -3);
+            $nextNumber = $lastNumber + 1;
+        }
+
+        // Format: MJ/YYMM/XXX
+        return "MJ/{$prefix}/" . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+    }
+
 }

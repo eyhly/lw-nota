@@ -123,5 +123,21 @@
 
     </section>
 
+    @include('livewire.nota.delete')
+
+      <!-- close delete modal -->
+    @script
+    <script>
+        $wire.on('closeDeleteModal', () => {
+            $('#deleteModal').modal('hide');
+            Swal.fire({
+              title: "Berhasil!",
+              text: "Kamu Berhasil Menghapus Data!",
+              icon: "success"
+            });
+        });
+    </script>
+    @endscript
+
   </div>
 </div>

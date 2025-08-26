@@ -26,6 +26,20 @@ class Index extends Component
             ->orderBy('tanggal', 'desc')->paginate($this->paginate),
         );
         return view('livewire.nota.index', $data);
-    }       
+    }   
+    
+    public function confirm($id){
+        $nota = Nota::findOrFail($id);
+
+        $this->pembeli = $nota->pembeli;
+        $this->tanggal = $nota->tanggal;
+        $this->nota_id = $nota->id;
+    }
+
+    public function destroy($id){
+        $nota = Nota::findOrFail($id);
+        $nota->delete();
+        $this->dispatch('closeDeleteModal'); 
+    }
         
 }

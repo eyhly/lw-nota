@@ -14,7 +14,7 @@ class Index extends Component
     public $paginate='10';
     public $search='';    
 
-    public $no_surat, $tanggal, $pembeli, $kendaraan, $no_kendaraan, $total_coly, $status;
+    public $no_surat, $tanggal, $pembeli, $kendaraan, $no_kendaraan, $total_coly, $status, $suratjalan_id;
    
     public function render()
     {
@@ -25,6 +25,20 @@ class Index extends Component
             ->orderBy('status', 'desc')->paginate($this->paginate),
         );
         return view('livewire.suratjalan.index', $data);
-    }      
+    }     
+    
+    public function confirm($id){
+        $suratjalan = SuratJalan::findOrFail($id);
+
+        $this->pembeli = $suratjalan->pembeli;
+        $this->tanggal = $suratjalan->tanggal;
+        $this->suratjalan_id = $suratjalan->id;
+    }
+
+    public function destroy($id){
+        $suratjalan = SuratJalan::findOrFail($id);
+        $suratjalan->delete();
+        $this->dispatch('closeDeleteModal'); 
+    }
         
 }

@@ -19,13 +19,12 @@
         </div>
       </div>
     </section>
-    <h1 class="text-center mb-4">Faktur</h1>
 
     <div class="row mb-4">
         <div class="col-md-6">
             <div class="mb-2">
                 <label>No Nota</label>
-                <input type="text" class="form-control" wire:model="no_nota" readonly>
+                <input type="text" id="no_nota" wire:model="no_nota" readonly class="form-control">
             </div>
             <div class="mb-2">
                 <label>Tanggal</label>
@@ -71,7 +70,7 @@
                     <td>{{ $item['qty_isi'] }} {{ $item['nama_isi'] }}</td>
                     <td>{{ $item['jumlah'] }}</td>
                     <td class="text-end">{{ number_format($item['harga'], 0, ',', '.') }}</td>
-                    <td>{{ implode(',', $item['diskon'] ?? []) }}</td>
+                    <td>{{ $item['diskon']}}</td>
                     <td class="text-end">{{ number_format($item['total'], 0, ',', '.') }}</td>
                     <td class="text-center">
                         <button wire:click="removeDetail({{ $i }})" class="btn btn-sm btn-danger">Hapus</button>
@@ -98,11 +97,8 @@
                     {{ $formDetail['coly'] * $formDetail['qty_isi'] }}
                 </td>
                 <td><input type="number" class="form-control" wire:model="formDetail.harga"></td>
-                <td>
-                    @foreach ($formDetail['diskon'] as $j => $d)
-                        <input type="number" class="form-control mb-1" wire:model="formDetail.diskon.{{ $j }}">
-                    @endforeach
-                    <button class="btn btn-sm btn-outline-secondary" wire:click.prevent="$set('formDetail.diskon', [...$formDetail['diskon'], 0])">+</button>
+                <td>                    
+                    <input type="number" class="form-control mb-1" wire:model="formDetail.diskon">
                 </td>
                 <td class="text-end">
                     {{ number_format(($formDetail['harga'] * $formDetail['coly'] * $formDetail['qty_isi']) ?? 0, 0, ',', '.') }}
@@ -114,12 +110,12 @@
         </tbody>
         <tfoot>
             <tr>
-                <th colspan="7" class="text-end">Subtotal</th>
-                <th class="text-end">{{ number_format($this->subtotal, 0, ',', '.') }}</th>
+                <th colspan="7" class="text-right">Subtotal</th>
+                <th class="text-right">{{ number_format($this->subtotal, 0, ',', '.') }}</th>
                 <th></th>
             </tr>
             <tr>
-                <th colspan="7" class="text-end">Diskon</th>
+                <th colspan="7" class="text-right">Diskon</th>
                 <th>
                     <div class="d-flex">
                         <input type="number" class="form-control me-1" wire:model="diskonPersen"> %
@@ -129,15 +125,15 @@
                 <th></th>
             </tr>
             <tr>
-                <th colspan="7" class="text-end">Total Harga</th>
-                <th class="text-end fw-bold">{{ number_format($this->totalHarga, 0, ',', '.') }}</th>
+                <th colspan="7" class="text-right">Total Harga</th>
+                <th class="text-right fw-bold">{{ number_format($this->totalHarga, 0, ',', '.') }}</th>
                 <th></th>
             </tr>
         </tfoot>
     </table>
 
-    <div class="text-end">
-        <button class="btn btn-success">Simpan Nota</button>
+    <div class="text-right">
+        <button wire:click="store" class="btn btn-success">Simpan Nota</button>
     </div>
 </div>
 </div>

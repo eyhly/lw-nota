@@ -19,42 +19,86 @@
         </div>
       </div>
     </section>
-    <div class="container">
-    <form wire:submit.prevent="store">
-        <div class="mb-3">
-            <label>Coly</label>
-            <input type="number" class="form-control" wire:model="coly">
-            @error('coly') <span class="text-danger">{{ $message }}</span>@enderror
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="mb-2">
+                <label>No Surat Jalan</label>
+                <input type="text" id="no_surat" wire:model="no_surat" readonly class="form-control">
+            </div>
+            <div class="mb-2">
+                <label>Tanggal</label>
+                <input type="date" class="form-control" wire:model="tanggal">
+            </div>
+            <div class="mb-2">
+                <label>Kendaraan</label>
+                <input type="text" class="form-control" wire:model="kendaraan">
+            </div>
         </div>
-
-        <div class="mb-3">
-            <label>Isi</label>
-            <input type="number" class="form-control" wire:model="isi">
-            @error('isi') <span class="text-danger">{{ $message }}</span>@enderror
+        <div class="col-md-6">
+            <div class="mb-2">
+                <label>Pembeli</label>
+                <input type="text" class="form-control" wire:model="pembeli">
+            </div>
+            <div class="mb-2">
+                <label>Alamat</label>
+                <textarea class="form-control" wire:model="alamat"></textarea>
+            </div>
+            <div class="mb-2">
+                <label>No Kendaraan</label>
+                <input class="form-control" wire:model="no_kendaraan"></input>
+            </div>
         </div>
+    </div>
 
-        <div class="mb-3">
-            <label>Nama Barang</label>
-            <input type="text" class="form-control" wire:model="nama_barang">
-            @error('nama_barang') <span class="text-danger">{{ $message }}</span>@enderror
-        </div>
+    <table class="table table-bordered table-sm align-middle">
+        <thead class="table-secondary text-center">
+            <tr>
+                <th>No</th>
+                <th>Coly</th>
+                <th>Isi</th>
+                <th>Nama Barang</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($detailsj as $i => $item)
+                <tr>
+                    <td class="text-center">{{ $i + 1 }}</td>
+                    <td>{{ $item['coly'] }}</td>
+                    <td>{{ $item['isi'] }}</td>
+                    <td>{{ $item['nama_barang'] }}</td>
+                    <td class="text-center">
+                        <button wire:click="removeDetail({{ $i }})" class="btn btn-sm btn-danger">Hapus</button>
+                    </td>
+                </tr>
+            @endforeach
 
-        <div class="mb-3">
-            <label>Total Coly</label>
-            <input type="number" class="form-control" wire:model="total_coly">
-            @error('total_coly') <span class="text-danger">{{ $message }}</span>@enderror
-        </div>
+            <tr>
+                <td class="text-center">{{ count($detailsj) + 1 }}</td>
+                <td>
+                  <input type="number" class="form-control me-1" wire:model="formDetail.coly">
+                </td>
+                <td>
+                  <input type="text" class="form-control me-1" wire:model="formDetail.isi">
+                </td>
+                <td><input type="text" class="form-control" wire:model="formDetail.nama_barang"></td>
+                <td class="text-center">
+                    <button wire:click="addDetail" class="btn btn-sm btn-primary">Tambah</button>
+                </td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="3" class="text-right">Total Coly</th>
+                <th class="text-right">{{ ($this->total_coly) }}</th>
+                <th></th>
+            </tr>
+        </tfoot>
+    </table>
 
-        <div class="mb-3">
-            <label>Status</label>
-            <input type="text" class="form-control" wire:model="status">
-            @error('status') <span class="text-danger">{{ $message }}</span>@enderror
-        </div>
-
-        <button type="submit" class="btn btn-success">Simpan</button>
-        <a href="{{ route('suratjalan.index') }}" class="btn btn-secondary">Kembali</a>
-    </form>
-</div>
-
+    <div class="text-right">
+        <button wire:click="store" class="btn btn-success">Simpan Surat</button>
+    </div>
 </div>
 </div>
