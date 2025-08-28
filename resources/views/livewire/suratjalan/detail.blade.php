@@ -26,58 +26,86 @@
     </section>
 
         <div class="card-body">
-            <div class="row justify-content-between mb-3">
-                <div class="col-md-8">
-                    <div class="mb-2">
-                        <strong>No Surat:</strong> {{ $suratjalan->no_surat }}
-                    </div>                    
-                    <div class="mb-2">
-                        <strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($suratjalan->tanggal)->format('d M Y') }}
+            <form wire:submit.prevent="updateSurat">
+                <div class="row justify-content-between mb-3">
+                    <div class="col-md-7">
+                        <div class="col-md-6 mb-2">
+                            <label>No Surat</label>
+                            <input type="text" wire:model="no_surat" class="form-control" readonly>
+                        </div>                   
+                        <div class="col-md-6 mb-2">
+                            <label>Tanggal</label>
+                            <input type="date" wire:model="tanggal" class="form-control">
+                        </div>
                     </div>
-                </div>
 
-                <div class="col-md-4">
-                    <div class="mb-2">
-                        <strong>Pembeli:</strong> {{ $suratjalan->pembeli }}
+                    <div class="col-md-5">
+                        <div class="mb-2 col-md-8">
+                            <label>Pembeli</label>
+                            <input type="text" wire:model="pembeli" class="form-control">
+                        </div>
                     </div>
                 </div>
-            </div>
+            
              
             <table class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Coly</th>
-                        <th>Isi </th>
-                        <th>Nama Barang</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($suratjalan->detailsj as $index => $detail)
-                        <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <td>{{ $detail->coly }}</td>
-                            <td>{{ $detail->isi }}</td>
-                            <td>{{ $detail->nama_barang }}</td>
-                        </tr>                        
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>Coly</th>
+            <th>Isi</th>
+            <th>Nama Barang</th>
+            <th>Aksi</th>
+        </tr>
+    </thead>
+    <tbody>
+        @forelse ($suratjalan->detailsj as $index => $detail)
+            <tr>
+                <td>{{ $index + 1 }}</td>
 
-                    @empty
-                        <tr>
-                            <td colspan="10" class="text-center">Tidak ada detail barang</td>
-                        </tr>
-                    @endforelse
+                {{-- Kalau sedang edit --}}
+                @if($editIndex === $index)
+                    <td>
+                        <input type="number" wire:model="editData.coly" class="form-control">
+                    </td>
+                    <td>
+                        <input type="text" wire:model="editData.isi" class="form-control">
+                    </td>
+                    <td>
+                        <input type="text" wire:model="editData.nama_barang" class="form-control">
+                    </td>
+                    <td>
+                        <button wire:click="saveEdit" class="btn btn-success btn-sm">Simpan</button>
+                        <button wire:click="cancelEdit" class="btn btn-secondary btn-sm">Batal</button>
+                    </td>
+                @else
+                    <td>{{ $detail->coly }}</td>
+                    <td>{{ $detail->isi }}</td>
+                    <td>{{ $detail->nama_barang }}</td>
+                    <td>
+                        <button wire:click="startEdit({{ $index }}, {{ $detail->id }})" class="btn btn-primary btn-sm">Edit</button>
+                        <button wire:click="deleteDetail({{ $detail->id }})" class="btn btn-danger btn-sm">Hapus</button>
+                    </td>
+                @endif
+            </tr>
+        @empty
+            <tr>
+                <td colspan="5" class="text-center">Tidak ada detail barang</td>
+            </tr>
+        @endforelse
 
-                    @if($suratjalan->detailsj->count() > 0)
-                        <tr>
-                            <td class="text-right" colspan="3"><strong>Total Coly:</strong></td>
-                            <td><strong>{{ number_format($suratjalan->total_coly) }}</strong></td>
-                        </tr>
-                    @endif
-                    
-                </tbody>
-            </table>
+        @if($suratjalan->detailsj->count() > 0)
+            <tr>
+                <td class="text-right" colspan="4"><strong>Total Coly :</strong></td>
+                <td colspan="2"><strong>{{ $this->totalColy }}</strong></td>
+            </tr>
+        @endif
+    </tbody>
+</table>
+            <button type="submit" class="btn btn-primary">Simpan Surat</button>
 
-            <a href="{{ route('suratjalan.index') }}" class="btn btn-secondary mt-3">Kembali</a>
+            <a href="{{ route('suratjalan.index') }}" class="btn btn-secondary">Kembali</a>
+            </form>
         </div>
     </div>
 </div>

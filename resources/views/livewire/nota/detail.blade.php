@@ -26,88 +26,167 @@
     </section>
 
         <div class="card-body">
-            <div class="row justify-content-between mb-3">
-                <div class="col-md-8">
-                    <div class="mb-2">
-                        <strong>No Nota:</strong> {{ $nota->no_nota }}
-                    </div>                    
-                    <div class="mb-2">
-                        <strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($nota->tanggal)->format('d M Y') }}
-                    </div>
-                    <div class="mb-2">
-                        <strong>Jatuh Tempo:</strong> {{ \Carbon\Carbon::parse($nota->jatuh_tempo)->format('d M Y') }}
-                    </div>
-                </div>
 
-                <div class="col-md-4">
-                    <div class="mb-2">
-                        <strong>Pembeli:</strong> {{ $nota->pembeli }}
+    {{-- Form edit nota utama --}}
+    <div class="mb-4">        
+        <form wire:submit.prevent="updateNota">
+            <div class="row justify-content-between mb-3">
+                <div class="col-md-7">
+                    <div class="col-md-6 mb-2">
+                        <label>No Nota</label>
+                        <input type="text" wire:model="no_nota" class="form-control" readonly>
                     </div>
-                    <div class="mb-2">
-                        <strong>Alamat:</strong> {{ $nota->alamat }}
+                    <div class="col-md-6 mb-2">
+                        <label>Tanggal</label>
+                        <input type="date" wire:model="tanggal" class="form-control">
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label>Jatuh Tempo</label>
+                        <input type="date" wire:model="jt_tempo" class="form-control">
                     </div>
                 </div>
+                <div class="col-md-5">
+                    <div class="col-md-8 mb-2">
+                        <label>Pembeli</label>
+                        <input type="text" wire:model="pembeli" class="form-control">
+                    </div>
+                    
+                    <div class="col-md-8 mb-2">
+                        <label>Alamat</label>
+                        <textarea wire:model="alamat" class="form-control"></textarea>
+                    </div>
+                </div>
+                
             </div>
-             
-            <table class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Nama Barang</th>
-                        <th>Coly</th>
-                        <th>Qty </th>
-                        <th>Total Qty</th>
-                        <th>Harga</th>
-                        <th>Diskon</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($nota->details as $index => $detail)
+                    
+    </div>
+
+    <hr>
+
+    {{-- Tabel detail --}}
+  
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nama Barang</th>
+                <th>Coly</th>
+                <th>Qty</th>
+                <th>Total Qty</th>
+                <th>Harga</th>
+                <th>Diskon</th>
+                <th>Total</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+             @forelse ($nota->details as $index => $detail)
                         <tr>
                             <td>{{ $index + 1 }}</td>
-                            <td>{{ $detail->nama_barang }}</td>
-                            <td>{{ $detail->coly }} {{ $detail->satuan_coly }}</td>
-                            <td>{{ $detail->qty_isi }} {{ $detail->nama_isi }}</td>
-                            <td>{{ $detail->jumlah }} {{ $detail->satuan_coly }}</td>
-                            <td>Rp{{ number_format($detail->harga, 0, ',', '.') }}</td>
+
+                            {{-- Nama Isi --}}
                             <td>
-                                @if(is_array($detail->diskon))
-                                    {{ implode(', ', $detail->diskon) }}
+                                @if ($editIndex === $index)
+                                    <input type="text" class="form-control" wire:model="editData.nama_barang">
                                 @else
-                                    {{ $detail->diskon }}
+                                    {{ $detail->nama_barang }}
                                 @endif
                             </td>
-                            <td>Rp{{ number_format($detail->total, 0, ',', '.') }}</td>
-                        </tr>                                                
 
+                            {{-- Coly --}}
+                            <td>
+                                @if ($editIndex === $index)
+                                <div class="d-flex">
+                                    <input type="number" class="form-control" wire:model="editData.coly">
+                                    <input type="text" class="form-control" wire:model="editData.satuan_coly">
+                                </div>
+                                @else
+                                    {{ $detail->coly }} {{ $detail->satuan_coly }}
+                                @endif
+                            </td>
+
+                            {{-- Qty Isi --}}
+                            <td>
+                                @if ($editIndex === $index)
+                                <div class="d-flex">
+                                    <input type="number" class="form-control" wire:model="editData.qty_isi">
+                                    <input type="text" class="form-control" wire:model="editData.nama_isi">
+                                </div>
+                                    
+                                @else
+                                    {{ $detail->qty_isi }} {{ $detail->nama_isi }}
+                                @endif
+                            </td>                            
+
+                            {{-- Jumlah --}}
+                            <td>
+                                {{ $editIndex === $index ? ($editData['coly'] * $editData['qty_isi']) : $detail->jumlah . ' ' . $detail->satuan_coly }}
+                            </td>
+
+                            {{-- Harga --}}
+                            <td>
+                                @if ($editIndex === $index)
+                                    <input type="number" class="form-control" wire:model="editData.harga">
+                                @else
+                                    {{ number_format($detail->harga) }}
+                                @endif
+                            </td>
+
+                            {{-- Diskon --}}
+                            <td>
+                                @if ($editIndex === $index)
+                                    <input type="number" class="form-control" wire:model="editData.diskon">
+                                @else
+                                    {{ $detail->diskon }}%
+                                @endif
+                            </td>
+
+                            {{-- Total --}}
+                            <td>
+                                @if ($editIndex === $index)
+                                    {{ number_format(($editData['coly'] * $editData['qty_isi'] * $editData['harga']) * (1 - ($editData['diskon']/100))) }}
+                                @else
+                                    {{ number_format($detail->total) }}
+                                @endif
+                            </td>
+
+                            {{-- Aksi --}}
+                            <td>
+                                @if ($editIndex === $index)
+                                    <button wire:click="saveEdit" class="btn btn-success btn-sm">Simpan</button>
+                                    <button wire:click="cancelEdit" class="btn btn-secondary btn-sm">Batal</button>
+                                @else
+                                    <button wire:click="startEdit({{ $index }}, {{ $detail->id }})" class="btn btn-primary btn-sm">Edit</button>
+                                    <button wire:click="deleteDetail({{ $detail->id }})" class="btn btn-danger btn-sm">Hapus</button>
+                                @endif
+                            </td>
+                        </tr>
                     @empty
                         <tr>
-                            <td colspan="10" class="text-center">Tidak ada detail barang</td>
+                            <td colspan="9" class="text-center">Tidak ada detail barang</td>
                         </tr>
                     @endforelse
+                @if($nota->details->count() > 0)
+                <tr> 
+                    <td class="text-right text-bold" colSpan="8">Subtotal:</td> 
+                    <td >Rp{{ number_format($subtotal, 0, ',', '.') }}</td> 
+                </tr> 
+                <tr> 
+                    <td class="text-right text-bold" colSpan="8">Diskon:</td> 
+                    <td>{{ $diskon_persen }}% (Rp{{ number_format($diskon_rupiah, 0, ',', '.') }})</td> 
+                </tr> 
+                <tr> 
+                    <td class="text-right text-bold" colSpan="8">Total Harga:</td> 
+                    <td>Rp{{ number_format($total_harga, 0, ',', '.') }}</td> 
+                </tr>
+                @endif               
+        </tbody>
 
-                    @if($nota->details->count() >  0)
-                        <tr>
-                            <td class="text-right text-bold" colSpan="7">Subtotal:</td>
-                            <td>Rp{{ number_format($nota->subtotal, 0, ',', '.') }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-right text-bold" colSpan="7">Diskon:</td>
-                            <td>{{ $nota->diskon_persen }}% (Rp{{ number_format($nota->diskon_rupiah, 0, ',', '.') }})</td>
-                        </tr>
-                        <tr>
-                            <td class="text-right text-bold" colSpan="7">Total Harga:</td>
-                            <td>Rp{{ number_format($nota->total_harga, 0, ',', '.') }}</td>
-                        </tr>
-                    @endif
+    </table>    
+    <button type="submit" class="btn btn-primary mt-3">Simpan Nota</button>
+    </form>
+</div>
 
-                    
-                </tbody>
-            </table>
-
-            <a href="{{ route('nota.index') }}" class="btn btn-secondary mt-3">Kembali</a>
-        </div>
     </div>
 </div>
 
