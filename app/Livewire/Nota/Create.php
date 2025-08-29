@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class Create extends Component
 {
-    public $no_nota,$pembeli,$tanggal,$subtotal=0,$diskon_persen=0,$diskon_rupiah=0,$total_harga=0,$total_coly=0,$jt_tempo;
+    public $no_nota,$pembeli,$alamat,$tanggal,$subtotal=0,$diskon_persen=0,$diskon_rupiah=0,$total_harga=0,$total_coly=0,$jt_tempo;
     public $details = [];
     public $title = 'Tambah Nota';
 
@@ -24,13 +24,33 @@ class Create extends Component
         'total' => 0,
     ];
 
-    public function mount()
+    public function mount($id = null)
     {
         $this->resetForm();
         // otomatis generate nomor baru
         $this->no_nota = Nota::generateNextNoNota();
         $this->tanggal = now()->toDateString();
         $this->jt_tempo = now()->addMonths(2)->toDateString();
+
+        if ($id) {
+            $surat = \App\Models\SuratJalan::with('detailsj')->findOrFail($id);
+
+            $this->pembeli = $surat->pembeli;
+
+            foreach ($surat->detailsj as $detail) {
+                $this->details[] = [
+                    'nama_barang'  => $detail->nama_barang,
+                    'coly'         => $detail->coly,
+                    'satuan_coly'  => $detail->satuan_coly ?? '',
+                    'qty_isi'      => $detail->qty_isi ?? 1,
+                    'nama_isi'     => $detail->nama_isi ?? '',
+                    'jumlah'       => $detail->coly * ($detail->qty_isi ?? 1),
+                    'harga'        => 0,
+                    'diskon'       => 0,
+                    'total'        => 0,
+                ];
+            }
+        }
     }
 
     public function resetForm()
@@ -38,6 +58,7 @@ class Create extends Component
         $this->reset([
             'pembeli',
             'tanggal',
+            'alamat',
             'subtotal',
             'diskon_persen',
             'diskon_rupiah',

@@ -4,5 +4,5 @@
 @section('menuCreate', 'active')
 
 @section('content')
-    @livewire('nota.create')
+    @livewire('nota.create', ['id' => $id ?? null])
 @endsection

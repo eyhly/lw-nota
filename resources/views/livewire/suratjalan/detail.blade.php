@@ -44,9 +44,13 @@
                             <label>Pembeli</label>
                             <input type="text" wire:model="pembeli" class="form-control">
                         </div>
+                        <div class="mb-2 col-md-8">
+                            <a href="{{ route('nota.create.fromSurat', $suratjalan->id) }}" class="btn btn-success">
+                                <i class="fas fa-plus"></i> Buat Nota dari Surat Jalan
+                            </a>
+                        </div>
                     </div>
-                </div>
-            
+                </div>            
              
             <table class="table table-striped table-bordered">
     <thead>

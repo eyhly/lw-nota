@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Nota\Detail;
+use App\Livewire\Nota\Create;
 use App\Models\Nota;
 
 Route::get('/', function () {
@@ -11,6 +12,11 @@ Route::get('/', function () {
 //nota
 Route::view('nota/', 'nota.index')->name('nota.index');
 Route::view('create', 'nota.create')->name('nota.create');
+// Buat nota dari surat
+Route::get('/nota/create/from-surat/{id}', function ($id) {
+    return view('nota.create', ['id' => $id]);
+})->name('nota.create.fromSurat');
+
 Route::get('/nota/{id}/detail', function ($id) {return view('nota.detail', ['id' => $id]);})->name('nota.detail');
 
 // //surat jalan

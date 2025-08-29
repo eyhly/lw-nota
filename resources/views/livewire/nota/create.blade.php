@@ -65,19 +65,34 @@
             @foreach ($details as $i => $item)
                 <tr>
                     <td class="text-center">{{ $i + 1 }}</td>
-                    <td>{{ $item['nama_barang'] }}</td>
-                    <td>{{ $item['coly'] }} {{ $item['satuan_coly'] }}</td>
-                    <td>{{ $item['qty_isi'] }} {{ $item['nama_isi'] }}</td>
-                    <td>{{ $item['jumlah'] }}</td>
-                    <td class="text-end">{{ number_format($item['harga'], 0, ',', '.') }}</td>
-                    <td>{{ $item['diskon']}}</td>
-                    <td class="text-end">{{ number_format($item['total'], 0, ',', '.') }}</td>
+                    <td><input type="text" class="form-control" wire:model="details.{{ $i }}.nama_barang"></td>
+                    <td>
+                        <div class="d-flex">
+                            <input type="number" class="form-control me-1" wire:model="details.{{ $i }}.coly">
+                            <input type="text" class="form-control" wire:model="details.{{ $i }}.satuan_coly">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex">
+                            <input type="number" class="form-control me-1" wire:model="details.{{ $i }}.qty_isi">
+                            <input type="text" class="form-control" wire:model="details.{{ $i }}.nama_isi">
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        {{ $details[$i]['coly'] * $details[$i]['qty_isi'] }}
+                    </td>
+                    <td><input type="number" class="form-control" wire:model="details.{{ $i }}.harga"></td>
+                    <td><input type="number" class="form-control" wire:model="details.{{ $i }}.diskon"></td>
+                    <td class="text-end">
+                        {{ number_format(($details[$i]['harga'] * $details[$i]['coly'] * $details[$i]['qty_isi']) - ($details[$i]['diskon'] ?? 0), 0, ',', '.') }}
+                    </td>
                     <td class="text-center">
                         <button wire:click="removeDetail({{ $i }})" class="btn btn-sm btn-danger">Hapus</button>
                     </td>
                 </tr>
             @endforeach
 
+            {{-- form row baru --}}
             <tr>
                 <td class="text-center">{{ count($details) + 1 }}</td>
                 <td><input type="text" class="form-control" wire:model="formDetail.nama_barang"></td>
@@ -97,17 +112,16 @@
                     {{ $formDetail['coly'] * $formDetail['qty_isi'] }}
                 </td>
                 <td><input type="number" class="form-control" wire:model="formDetail.harga"></td>
-                <td>                    
-                    <input type="number" class="form-control mb-1" wire:model="formDetail.diskon">
-                </td>
+                <td><input type="number" class="form-control" wire:model="formDetail.diskon"></td>
                 <td class="text-end">
-                    {{ number_format(($formDetail['harga'] * $formDetail['coly'] * $formDetail['qty_isi']) ?? 0, 0, ',', '.') }}
+                    {{ number_format(($formDetail['harga'] * $formDetail['coly'] * $formDetail['qty_isi']) - ($formDetail['diskon'] ?? 0), 0, ',', '.') }}
                 </td>
                 <td class="text-center">
                     <button wire:click="addDetail" class="btn btn-sm btn-primary">Tambah</button>
                 </td>
             </tr>
         </tbody>
+
         <tfoot>
             <tr>
                 <th colspan="7" class="text-right">Subtotal</th>
@@ -133,7 +147,7 @@
     </table>
 
     <div class="text-right">
-        <button wire:click="store" class="btn btn-success">Simpan Nota</button>
+        <button type="button" wire:click="store" class="btn btn-success">Simpan Nota</button>
     </div>
 </div>
 </div>
