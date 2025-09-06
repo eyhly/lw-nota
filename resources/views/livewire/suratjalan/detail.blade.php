@@ -22,7 +22,7 @@
             </ol>
           </div>
         </div>
-      </div><!-- /.container-fluid -->
+      </div>
     </section>
 
         <div class="card-body">
@@ -45,13 +45,24 @@
                             <input type="text" wire:model="pembeli" class="form-control">
                         </div>
                         <div class="mb-2 col-md-8">
-                            <a href="{{ route('nota.create.fromSurat', $suratjalan->id) }}" class="btn btn-success">
+                            <label>Alamat</label>
+                            <input type="text" wire:model="alamat" class="form-control">
+                        </div>
+                        <div class=" d-flex mb-2 col-md-12">
+                            <a href="{{ route('nota.create.fromSurat', $suratjalan->id) }}" class="btn btn-success mr-3">
                                 <i class="fas fa-plus"></i> Buat Nota dari Surat Jalan
                             </a>
+                            <!-- <div class="d-flex justify-content-end"> -->
+                                <a href="{{ route('pdf.surat', $suratjalan->id) }}" target="_blank" class="btn btn-sm btn-warning" >
+                                    <i class="fas fa-print mr-1"></i>
+                                    Print
+                                </a>
+                            <!-- </div> -->
                         </div>
                     </div>
                 </div>            
              
+
             <table class="table table-striped table-bordered">
     <thead>
         <tr>
@@ -70,10 +81,16 @@
                 {{-- Kalau sedang edit --}}
                 @if($editIndex === $index)
                     <td>
-                        <input type="number" wire:model="editData.coly" class="form-control">
-                    </td>
+                        <div class="d-flex">
+                            <input type="number" wire:model="editData.coly" class="form-control">
+                            <input type="text" wire:model="editData.satuan_coly" class="form-control">
+                        </div>
+                    </td>                    
                     <td>
-                        <input type="text" wire:model="editData.isi" class="form-control">
+                        <div class="d-flex">
+                            <input type="number" wire:model="editData.isi" class="form-control">
+                            <input type="text" wire:model="editData.nama_isi" class="form-control">
+                        </div>
                     </td>
                     <td>
                         <input type="text" wire:model="editData.nama_barang" class="form-control">
@@ -83,8 +100,8 @@
                         <button wire:click="cancelEdit" class="btn btn-secondary btn-sm">Batal</button>
                     </td>
                 @else
-                    <td>{{ $detail->coly }}</td>
-                    <td>{{ $detail->isi }}</td>
+                    <td>{{ $detail->coly }} {{ $detail->satuan_coly }}</td>
+                    <td>{{ $detail->isi }} {{ $detail->nama_isi }}</td>
                     <td>{{ $detail->nama_barang }}</td>
                     <td>
                         <button wire:click="startEdit({{ $index }}, {{ $detail->id }})" class="btn btn-primary btn-sm">Edit</button>

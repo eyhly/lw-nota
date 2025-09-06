@@ -14,7 +14,9 @@ class DetailSuratJalan extends Model
         's_jalan_id',
         'nama_barang',
         'coly',
+        'satuan_coly',
         'isi',
+        'nama_isi',
     ];
 
     public function suratjalan()

@@ -65,8 +65,8 @@
             @foreach ($detailsj as $i => $item)
                 <tr>
                     <td class="text-center">{{ $i + 1 }}</td>
-                    <td>{{ $item['coly'] }}</td>
-                    <td>{{ $item['isi'] }}</td>
+                    <td>{{ $item['coly'] }} {{ $item['satuan_coly'] }}</td>
+                    <td>{{ $item['isi'] }} {{ $item['nama_isi'] }}</td>
                     <td>{{ $item['nama_barang'] }}</td>
                     <td class="text-center">
                         <button wire:click="removeDetail({{ $i }})" class="btn btn-sm btn-danger">Hapus</button>
@@ -77,10 +77,16 @@
             <tr>
                 <td class="text-center">{{ count($detailsj) + 1 }}</td>
                 <td>
-                  <input type="number" class="form-control me-1" wire:model="formDetail.coly">
+                    <div class="d-flex">
+                        <input type="number" class="form-control me-1" wire:model="formDetail.coly">
+                        <input type="text" class="form-control me-1" wire:model="formDetail.satuan_coly">
+                    </div>
                 </td>
                 <td>
-                  <input type="text" class="form-control me-1" wire:model="formDetail.isi">
+                    <div class="d-flex">
+                        <input type="number" class="form-control me-1" wire:model="formDetail.isi">
+                        <input type="text" class="form-control me-1" wire:model="formDetail.nama_isi">
+                    </div>
                 </td>
                 <td><input type="text" class="form-control" wire:model="formDetail.nama_barang"></td>
                 <td class="text-center">

@@ -9,13 +9,15 @@ use Illuminate\Support\Facades\DB;
 
 class Create extends Component
 {
-    public $no_surat, $pembeli, $tanggal, $kendaraan, $no_kendaraan, $coly, $isi, $nama_barang, $total_coly, $status;
+    public $no_surat, $pembeli, $alamat, $tanggal, $kendaraan, $no_kendaraan, $coly, $satuan_coly, $isi, $nama_isi, $nama_barang, $total_coly, $status;
     public $detailsj = [];
     public $title = 'Tambah Surat Jalan';
 
     public $formDetail = [
         'coly'        => 0,
-        'isi'         => '',
+        'satuan_coly' => '',
+        'isi'         => 0,
+        'nama_isi'    => '',
         'nama_barang' => '',
     ];
 
@@ -32,6 +34,7 @@ class Create extends Component
     {
         $this->reset([
             'pembeli',
+            'alamat',
             'tanggal',
             'total_coly',
             'status',
@@ -45,7 +48,9 @@ class Create extends Component
 
         $this->formDetail = [
             'coly'        => 0,
-            'isi'         => '',
+            'satuan_coly' => '',
+            'isi'         => 0,
+            'nama_isi'    => '',
             'nama_barang' => '',
         ];
     }
@@ -62,12 +67,14 @@ class Create extends Component
             'no_surat' => 'required|unique:surat_jalan,no_surat',
             'tanggal' => 'required|date',
             'pembeli' => 'required',
+            'alamat' => 'required',
         ]);
 
         DB::transaction(function() {
             $suratjalan = SuratJalan::create([
                 'no_surat' => $this->no_surat,
                 'pembeli' => $this->pembeli,
+                'alamat' => $this->alamat,
                 'tanggal' => $this->tanggal,
                 'kendaraan' => $this->kendaraan,
                 'no_kendaraan' => $this->no_kendaraan,

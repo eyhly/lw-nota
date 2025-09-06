@@ -58,6 +58,12 @@
                 </div>
                 
             </div>
+            <div class="d-flex justify-content-end">
+                <a href="{{ route('pdf.index', $nota->id) }}" target="_blank" class="btn btn-sm btn-warning" >
+                    <i class="fas fa-print mr-1"></i>
+                    Print
+                </a>
+            </div>
                     
     </div>
 

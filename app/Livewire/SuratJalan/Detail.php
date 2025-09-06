@@ -5,13 +5,14 @@ namespace App\Livewire\SuratJalan;
 use App\Models\SuratJalan;
 use App\Models\DetailSuratJalan;
 use Livewire\Component;
+use PDF;
 
 class Detail extends Component
 {
     public $suratjalan;
     public $title = 'Detail Surat Jalan';    
 
-    public $no_surat, $pembeli, $tanggal;
+    public $no_surat, $pembeli, $alamat, $tanggal;
 
     public $editIndex = null;
     public $editData = [];
@@ -22,6 +23,7 @@ class Detail extends Component
 
         $this->no_surat     = $this->suratjalan->no_surat;
         $this->pembeli     = $this->suratjalan->pembeli;
+        $this->alamat     = $this->suratjalan->alamat;
         $this->tanggal     = $this->suratjalan->tanggal;        
     }
 
@@ -30,12 +32,14 @@ class Detail extends Component
         $this->validate([
             'no_surat'     => 'required|string',
             'pembeli'     => 'required|string',
+            'alamat'     => 'required|string',
             'tanggal'     => 'required|date',                      
         ]);
 
         $this->suratjalan->update([
             'no_surat'     => $this->no_surat,
             'pembeli'     => $this->pembeli,
+            'alamat'     => $this->alamat,
             'tanggal'     => $this->tanggal,            
         ]);
 
@@ -50,7 +54,9 @@ class Detail extends Component
         $this->editData = [
             'id'          => $detail->id,
             'coly'        => $detail->coly,
+            'satuan_coly' => $detail->satuan_coly,
             'isi'         => $detail->isi,
+            'nama_isi'    => $detail->nama_isi,
             'nama_barang' => $detail->nama_barang,
         ];
     }
@@ -90,6 +96,21 @@ class Detail extends Component
     public function getTotalColyProperty()
     {
         return $this->suratjalan->detailsj->sum('coly');
+    }
+
+    
+    public function pdf($id){
+        $suratjalan = SuratJalan::with('detailsj')->findOrFail($id);
+
+        $chunks = $suratjalan->detailsj->chunk(10);
+
+        $data = array(
+            'title' => 'Detail SuratJalan',
+            'suratjalan' => $suratjalan,
+            'chunks' => $chunks
+        );
+        $pdf = Pdf::loadView('pdf.surat', $data)->setPaper('a4', 'landscape');;
+        return $pdf->stream('suratjalan.pdf');
     }
 
     public function render()

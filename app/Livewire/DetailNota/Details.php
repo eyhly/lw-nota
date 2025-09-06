@@ -6,8 +6,9 @@ use App\Models\DetailNota;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Hash;
+use PDF;
 
-class Index extends Component
+class Details extends Component
 {
     use withPagination;
     protected $paginationTheme='bootstrap';
@@ -25,6 +26,16 @@ class Index extends Component
             ->orderBy('tanggal', 'desc')->paginate($this->paginate),
         );
         return view('livewire.detailNota.index', $data);
+    }
+
+    public function pdf($id){
+        $nota = Nota::with('details')->findOrFail($id);
+        $data = array(
+            'title' => 'Detail Nota',
+            'nota' => $nota,
+        );
+        $pdf = Pdf::loadView('pdf.index', $data)->setPaper('a4', 'landscape');;
+        return $pdf->stream('nota.pdf');
     }
 
 

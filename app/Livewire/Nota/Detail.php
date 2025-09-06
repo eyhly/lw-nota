@@ -5,6 +5,7 @@ namespace App\Livewire\Nota;
 use App\Models\Nota;
 use App\Models\DetailNota;
 use Livewire\Component;
+use PDF;
 
 class Detail extends Component
 {
@@ -64,6 +65,7 @@ class Detail extends Component
             'nama_isi'    => $detail->nama_isi,
             'jumlah'      => $detail->jumlah,
             'harga'       => $detail->harga,
+            'total_harga' => $detail->total_harga,
             'diskon'      => $detail->diskon,
             'total'       => $detail->total,
         ];
@@ -112,6 +114,20 @@ class Detail extends Component
     public function getTotalColyProperty()
     {
         return $this->nota->details->sum('coly');
+    }
+
+    public function pdf($id){
+        $nota = Nota::with('details')->findOrFail($id);
+
+        $chunks = $nota->details->chunk(10);
+
+        $data = array(
+            'title' => 'Detail Nota',
+            'nota' => $nota,
+            'chunks' => $chunks
+        );
+        $pdf = Pdf::loadView('pdf.index', $data)->setPaper('a4', 'landscape');;
+        return $pdf->stream('nota.pdf');
     }
 
     public function render()
