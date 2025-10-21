@@ -84,7 +84,11 @@
                     <td><input type="number" class="form-control" wire:model="details.{{ $i }}.harga"></td>
                     <td><input type="number" class="form-control" wire:model="details.{{ $i }}.diskon"></td>
                     <td class="text-end">
-                        {{ number_format(($details[$i]['harga'] * $details[$i]['coly'] * $details[$i]['qty_isi']) - ($details[$i]['diskon'] ?? 0), 0, ',', '.') }}
+                        {{ number_format(
+                            ($details[$i]['harga'] * $details[$i]['coly'] * $details[$i]['qty_isi'])
+                            * (1 - (($details[$i]['diskon'] ?? 0) / 100)),
+                            0, ',', '.'
+                        ) }}
                     </td>
                     <td class="text-center">
                         <button wire:click="removeDetail({{ $i }})" class="btn btn-sm btn-danger">Hapus</button>
@@ -114,7 +118,11 @@
                 <td><input type="number" class="form-control" wire:model="formDetail.harga"></td>
                 <td><input type="number" class="form-control" wire:model="formDetail.diskon"></td>
                 <td class="text-end">
-                    {{ number_format(($formDetail['harga'] * $formDetail['coly'] * $formDetail['qty_isi']) - ($formDetail['diskon'] ?? 0), 0, ',', '.') }}
+                    {{ number_format(
+                        ($formDetail['harga'] * $formDetail['coly'] * $formDetail['qty_isi'])
+                        * (1 - (($formDetail['diskon'] ?? 0) / 100)),
+                        0, ',', '.'
+                    ) }}
                 </td>
                 <td class="text-center">
                     <button wire:click="addDetail" class="btn btn-sm btn-primary">Tambah</button>
@@ -132,8 +140,8 @@
                 <th colspan="7" class="text-right">Diskon</th>
                 <th>
                     <div class="d-flex">
-                        <input type="number" class="form-control me-1" wire:model="diskonPersen"> %
-                        <input type="number" class="form-control ms-2" wire:model="diskonRupiah">
+                        <input type="number" class="form-control me-1" wire:model.live="diskon_persen"> %
+                        <input type="number" class="form-control ms-2" wire:model.live="diskon_rupiah">
                     </div>
                 </th>
                 <th></th>
@@ -149,5 +157,25 @@
     <div class="text-right">
         <button type="button" wire:click="store" class="btn btn-success">Simpan Nota</button>
     </div>
+
+   @script
+        <script>
+        $wire.on('showSuccessAlert', (data) => {
+            Swal.fire({
+                title: "Berhasil!",
+                text: "Nota berhasil disimpan!",
+                icon: "success",
+                confirmButtonText: "OK"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{{ route('nota.index') }}";
+                }
+            });
+        });
+        </script>
+   @endscript
+
 </div>
 </div>
+
+

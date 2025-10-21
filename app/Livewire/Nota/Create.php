@@ -79,7 +79,7 @@ class Create extends Component
             $diskon = (int) ($this->formDetail['diskon'] ?? 0);
 
             $jumlah = $coly * $qty;
-            $total  = ($harga * $jumlah) - $diskon;
+            $total  = ($harga * $jumlah) * (1 - ($diskon / 100));
 
             $this->formDetail['jumlah'] = $jumlah;
             $this->formDetail['total']  = $total;
@@ -134,6 +134,7 @@ class Create extends Component
                 'total_harga' => $this->total_harga,
                 'total_coly' => $this->total_coly,
                 'jt_tempo' => $this->jt_tempo,
+                'status'         => 1,
             ]);
 
             foreach($this->details as $d) {
@@ -141,8 +142,10 @@ class Create extends Component
             }
         });
 
-        session()->flash('success','Nota berhasil disimpan');
-        return redirect()->route('nota.index');
+        // session()->flash('success','Nota berhasil disimpan');
+        // return redirect()->route('nota.index');
+
+        $this->dispatch('showSuccessAlert');
     }
 
     public function getSubtotalProperty()
@@ -152,7 +155,30 @@ class Create extends Component
 
     public function getTotalHargaProperty()
     {
+        if ($this->diskon_persen > 0) {
+            $this->diskon_rupiah = ($this->subtotal * $this->diskon_persen) / 100;
+            return $this->subtotal - $this->diskon_rupiah;
+        }
+
         return $this->subtotal - ($this->diskon_rupiah ?? 0);
+    }
+
+    public function updatedDiskonPersen($value)
+    {
+        if (is_numeric($value) && $this->subtotal > 0) {
+            $this->diskon_rupiah = round(($this->subtotal * ((float)$value)) / 100, 0);
+        } else {
+            $this->diskon_rupiah = 0;
+        }
+    }
+
+    public function updatedDiskonRupiah($value)
+    {
+        if (is_numeric($value) && $this->subtotal > 0) {
+            $this->diskon_persen = round(((float)$value / $this->subtotal) * 100, 2);
+        } else {
+            $this->diskon_persen = 0;
+        }
     }
 
     public function getTotalColyProperty()

@@ -189,11 +189,27 @@
         </tbody>
 
     </table>    
-    <button type="submit" class="btn btn-primary mt-3">Simpan Nota</button>
+    <button wire:click="updateNota" type="submit" class="btn btn-primary mt-3">Simpan Nota</button>
     </form>
 </div>
 
     </div>
 </div>
+@script
+<script>
+    $wire.on('notaUpdated', () => {
+        Swal.fire({
+            title: 'Berhasil!',
+            text: 'Nota berhasil diperbarui.',
+            icon: 'success',
+            confirmButtonText: 'OK'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "{{ route('nota.index') }}";
+            }
+        });
+    });
+</script>
+@endscript
 
 </div>

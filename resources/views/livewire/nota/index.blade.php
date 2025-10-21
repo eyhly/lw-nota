@@ -31,7 +31,7 @@
         <div class="card-header">
           <div class="d-flex justify-content-between">
             <div>              
-              <button wire:click="create" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#createModal">
+              <button wire:navigate href="{{ route('nota.create')}}" class="btn btn-sm btn-primary" data-toggle="modal">
               <i class="fas fa-plus mr-1"></i>  
               Tambah Data</button>
             </div>
@@ -102,9 +102,9 @@
                       <a wire:navigate href="{{ route('nota.detail', $item->id) }}" class="btn btn-sm btn-info" data-toggle="modal" data-target="#editModal">
                         <i class="fas fa-eye mr-1"></i>Detail
                       </a>
-                      <button wire:click="edit({{$item->id}})" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#editModal">
+                      <a wire:navigate href="{{ route('nota.detail', $item->id) }}" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#editModal">
                         <i class="fas fa-edit"></i>
-                      </button>
+                      </a>
 
                       <!-- delete -->
                       <button wire:click="confirm({{$item->id}})" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteModal">
@@ -134,7 +134,11 @@
               title: "Berhasil!",
               text: "Kamu Berhasil Menghapus Data!",
               icon: "success"
-            });
+            }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "{{ route('nota.index') }}";
+            }
+        });;
         });
     </script>
     @endscript

@@ -48,7 +48,7 @@ class Detail extends Component
             'jt_tempo' => $this->jt_tempo,
         ]);
 
-        session()->flash('success', 'Data nota berhasil diperbarui.');
+        $this->dispatch('notaUpdated');
     }
 
     public function startEdit($index, $detailId)
