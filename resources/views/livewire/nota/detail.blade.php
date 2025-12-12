@@ -6,7 +6,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>{{ $title }}</h1>
+            <h1><strong>{{ $title }}</strong></h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -50,6 +50,10 @@
                         <label>Pembeli</label>
                         <input type="text" wire:model="pembeli" class="form-control">
                     </div>
+                    <div class="col-md-8 mb-2">
+                        <label>Nama Toko</label>
+                        <input type="text" wire:model="nama_toko" class="form-control">
+                    </div>
                     
                     <div class="col-md-8 mb-2">
                         <label>Alamat</label>
@@ -59,9 +63,10 @@
                 
             </div>
             <div class="d-flex justify-content-end">
-                <a href="{{ route('pdf.index', $nota->id) }}" target="_blank" class="btn btn-sm btn-warning" >
-                    <i class="fas fa-print mr-1"></i>
-                    Print
+                <a href="{{ route('nota.print.update', $nota->id) }}" 
+                target="_blank" 
+                class="btn btn-sm btn-warning">
+                    <i class="fas fa-print mr-1"></i> Print
                 </a>
             </div>
                     

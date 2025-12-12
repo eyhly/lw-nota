@@ -12,7 +12,7 @@ class Detail extends Component
     public $nota;
     public $title = 'Detail Nota'; 
     
-    public $no_nota, $pembeli, $tanggal, $alamat, $jt_tempo, 
+    public $no_nota, $pembeli, $tanggal, $nama_toko, $alamat, $jt_tempo, 
            $subtotal, $total_harga, $total_coly, 
            $diskon_persen = 0, $diskon_rupiah = 0;
 
@@ -26,6 +26,7 @@ class Detail extends Component
         $this->no_nota   = $this->nota->no_nota;
         $this->pembeli   = $this->nota->pembeli;
         $this->tanggal   = $this->nota->tanggal;
+        $this->nama_toko    = $this->nota->nama_toko;
         $this->alamat    = $this->nota->alamat;
         $this->jt_tempo  = $this->nota->jt_tempo;
     }
@@ -36,6 +37,7 @@ class Detail extends Component
             'no_nota'  => 'required|string',
             'pembeli'  => 'required|string',
             'tanggal'  => 'required|date',
+            'nama_toko'   => 'required|string',
             'alamat'   => 'required|string',
             'jt_tempo' => 'required|date',
         ]);
@@ -44,6 +46,7 @@ class Detail extends Component
             'no_nota'  => $this->no_nota,
             'pembeli'  => $this->pembeli,
             'tanggal'  => $this->tanggal,
+            'nama_toko'   => $this->nama_toko,
             'alamat'   => $this->alamat,
             'jt_tempo' => $this->jt_tempo,
         ]);
@@ -138,4 +141,16 @@ class Detail extends Component
 
         return view('livewire.nota.detail')->layout('layouts.app');
     }
+
+    public function updatePrintAndRedirect($id)
+    {
+        $nota = Nota::findOrFail($id);
+
+        // update print = 1
+        $nota->update(['print' => 1]);
+
+        // redirect ke halaman PDF
+        return redirect()->route('pdf.index', $id);
+    }
+
 }

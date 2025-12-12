@@ -7,7 +7,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>{{ $title }}</h1>
+            <h1><strong>{{ $title }}</strong></h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -70,6 +70,7 @@
             <table class="table table-hover">
               <thead>
                 <tr>
+                  <th>Action</th>
                   <th>No</th>
                   <th>Pembeli</th>
                   <th>Tanggal</th>
@@ -81,6 +82,17 @@
               <tbody>
                 @foreach ($nota as $item)
                   <tr>
+                    <td class="text-left">
+                        <button                             
+                            class="btn btn-sm bg-transparent border-0 p-0"
+                        >
+                            @if($item->print == 1)
+                                <i class="far fa-check-square text-success fs-5"></i>
+                            @else
+                                <i class="far fa-square fs-5"></i>
+                            @endif
+                        </button>
+                    </td>
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $item->pembeli }}</td>
                     <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d F Y') }}</td>
@@ -91,12 +103,23 @@
                             <span class="text-danger"><i class="fas fa-times fs-5"></i></span>
                         @endif
                     </td>
-                    <td>
-                        @if($item->cek === 1)
-                            <button class="btn btn-sm"><i class="far fa-check-square text-success fs-9"></i></button>
-                        @else
-                            <button class="btn btn-sm"><i class="far fa-square fs-8"></i></button>
-                        @endif
+                    <td class="text-left">
+                        <label class="text-center switch">
+                            <input 
+                                type="checkbox" 
+                                wire:click="toggleCek({{ $item->id }})"
+                                @checked($item->cek == 1)
+                            >
+                            <span class="slider">
+                                <span class="slider-text">
+                                    @if ($item->cek)
+                                        <i class="fas fa-check fs-5"></i>
+                                    @else
+                                        <i class="text-danger fas fa-times fs-5"></i>
+                                    @endif
+                                </span>
+                            </span>
+                        </label>
                     </td>
                     <td>
                       <a wire:navigate href="{{ route('nota.detail', $item->id) }}" class="btn btn-sm btn-info" data-toggle="modal" data-target="#editModal">

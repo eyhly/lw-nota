@@ -41,5 +41,27 @@ class Index extends Component
         $nota->delete();
         $this->dispatch('closeDeleteModal'); 
     }
+
+    public function toggleCek($id)
+    {
+        $item = Nota::find($id);
+
+        if ($item) {
+            $item->cek = $item->cek == 1 ? 0 : 1;
+            $item->save();
+        }
+    }
+
+    public function markPrinted($id)
+    {
+        $nota = Nota::findOrFail($id);
+
+        // Update jadi sudah print
+        $nota->print = 1;
+        $nota->save();
+
+        // Buka halaman print
+        return redirect()->route('pdf.index', $id);
+    }
         
 }

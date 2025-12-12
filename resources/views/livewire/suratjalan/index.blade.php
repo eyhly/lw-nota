@@ -7,7 +7,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>{{ $title }}</h1>
+            <h1><strong>{{ $title }}</strong></h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -70,6 +70,7 @@
             <table class="table table-hover">
               <thead>
                 <tr>
+                  <th>Action</th>
                   <th>No</th>
                   <th>Pembeli</th>
                   <th>Tanggal</th>
@@ -80,6 +81,17 @@
               <tbody>
                 @foreach ($suratjalan as $item)
                   <tr>
+                    <td class="text-left">
+                        <button                             
+                            class="btn btn-sm bg-transparent border-0 p-0"
+                        >
+                            @if($item->print == 1)
+                                <i class="far fa-check-square text-success fs-5"></i>
+                            @else
+                                <i class="far fa-square fs-5"></i>
+                            @endif
+                        </button>
+                    </td>
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $item->pembeli }}</td>
                     <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d F Y') }}</td>

@@ -84,7 +84,7 @@
       </td>
       <td width="35%">
         Kepada Yth, <br>
-        {{ $nota->pembeli }} <br>
+        {{ $nota->pembeli }}, {{ $nota->nama_toko}}<br>
         {{ $nota->alamat }}
       </td>
     </tr>

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class Create extends Component
 {
-    public $no_nota,$pembeli,$alamat,$tanggal,$subtotal=0,$diskon_persen=0,$diskon_rupiah=0,$total_harga=0,$total_coly=0,$jt_tempo;
+    public $no_nota,$pembeli,$nama_toko,$alamat,$tanggal,$subtotal=0,$diskon_persen=0,$diskon_rupiah=0,$total_harga=0,$total_coly=0,$jt_tempo;
     public $details = [];
     public $title = 'Tambah Nota';
 
@@ -58,6 +58,7 @@ class Create extends Component
         $this->reset([
             'pembeli',
             'tanggal',
+            'nama_toko',
             'alamat',
             'subtotal',
             'diskon_persen',
@@ -118,6 +119,7 @@ class Create extends Component
         $this->validate([
             'no_nota' => 'required|unique:nota,no_nota',
             'pembeli' => 'required',
+            'nama_toko' => 'required',
             'alamat' => 'required',
             'tanggal' => 'required|date',
         ]);
@@ -126,6 +128,7 @@ class Create extends Component
             $nota = Nota::create([
                 'no_nota' => $this->no_nota,
                 'pembeli' => $this->pembeli,
+                'nama_toko' => $this->nama_toko,
                 'alamat' => $this->alamat,
                 'tanggal' => $this->tanggal,
                 'subtotal' => $this->subtotal,

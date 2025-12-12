@@ -15,6 +15,7 @@ class Nota extends Model
         'no_nota',
         'tanggal',
         'pembeli',
+        'nama_toko',
         'alamat',
         'subtotal',
         'diskon_persen',

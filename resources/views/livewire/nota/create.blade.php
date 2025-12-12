@@ -4,7 +4,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>{{ $title }}</h1>
+            <h1><strong>{{ $title }}</strong></h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -39,6 +39,10 @@
             <div class="mb-2">
                 <label>Pembeli</label>
                 <input type="text" class="form-control" wire:model="pembeli">
+            </div>
+            <div class="mb-2">
+                <label>Nama Toko</label>
+                <input type="text" class="form-control" wire:model="nama_toko">
             </div>
             <div class="mb-2">
                 <label>Alamat</label>

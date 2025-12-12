@@ -54,7 +54,7 @@
               </p>
             </a>
           </li>
-          <li class="nav-header">MENU SUPER ADMIN</li>
+          <!-- <li class="nav-header">MENU SUPER ADMIN</li>
           <li class="nav-item">
             <a wire:navigate href="{{ route('superadmin.user.index') }}" class="nav-link @yield('menuSuperadminUser')">
               <i class="nav-icon fas fa-user"></i>
@@ -78,7 +78,7 @@
                 Barang
               </p>
             </a>
-          </li>
+          </li> -->
 
         </ul>
       </nav>

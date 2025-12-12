@@ -24,6 +24,8 @@ Route::get('/nota/{id}/detail', function ($id) {return view('nota.detail', ['id'
 // Route::get('/print/{id}', function ($id) {return view('pdf.index', ['id' => $id]);})->name('pdf.index');
 Route::get('/nota/print/{id}', [Detail::class, 'pdf'])->name('pdf.index');
 Route::get('/surat/print/{id}', [DetailSurat::class, 'pdf'])->name('pdf.surat');
+Route::get('/nota/{id}/print-update', [Detail::class, 'updatePrintAndRedirect'])
+    ->name('nota.print.update');
 
 // //surat jalan
 Route::view('surat-jalan/', 'suratjalan.index')->name('suratjalan.index');
