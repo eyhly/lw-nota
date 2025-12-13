@@ -25,7 +25,7 @@
 .slider {
   position: relative;
   flex-shrink: 0;
-  width: 6em;     /* ukuran bulatan toggle */
+  width: 4.2em;     /* ukuran bulatan toggle */
   height: 1.5em;
   background-color: #ccc;
   border-radius: 1.5em;
@@ -47,7 +47,7 @@
 
 /* Geser bulatan saat checked */
 input:checked + .slider:before {
-  transform: translateX(4.5em);
+  transform: translateX(2.7em);
 }
 
 /* Background saat ON */

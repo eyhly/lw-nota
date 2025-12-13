@@ -67,15 +67,19 @@
           </div>
 
           <div class="table-responsive">
+
+          <form wire:submit.prevent="runBulkAction">
+            @csrf
+
             <table class="table table-hover">
               <thead>
                 <tr>
-                  <th>Action</th>
+                  <th><input type="checkbox" wire:click="toggleSelectAll"></th>
                   <th>No</th>
                   <th>Pembeli</th>
                   <th>Tanggal</th>
-                  <th>Print</th>
-                  <th>Checking</th>
+                  <th>Printed</th>
+                  <th>Checked</th>
                   <th><i class="fas fa-cog"></i></th>
                 </tr>
               </thead>
@@ -83,15 +87,11 @@
                 @foreach ($nota as $item)
                   <tr>
                     <td class="text-left">
-                        <button                             
-                            class="btn btn-sm bg-transparent border-0 p-0"
+                        <input
+                            type="checkbox"
+                            value="{{ $item->id }}"
+                            wire:model="selectedIds"
                         >
-                            @if($item->print == 1)
-                                <i class="far fa-check-square text-success fs-5"></i>
-                            @else
-                                <i class="far fa-square fs-5"></i>
-                            @endif
-                        </button>
                     </td>
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $item->pembeli }}</td>
@@ -139,6 +139,21 @@
               </tbody>
             </table>
             {{ $nota->links()}}
+
+            <div class="mt-2 d-flex align-items-between gap-2">
+                <select wire:model="bulkAction" class="form-control w-auto" required>
+                    <option value="">Pilih Aksi</option>
+                    <option value="delete">Delete</option>
+                    <option value="approve">Approve</option>
+                    <option value="status">Status</option>
+                    <option value="print">Print</option>
+                </select>
+                
+                <button type="submit" class="btn btn-primary">
+                    Jalankan
+                </button>
+            </div>
+        </form>
           </div>
         </div>
         <!-- /.card-body -->        

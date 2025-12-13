@@ -33,6 +33,17 @@ Route::view('surat-jalan/create', 'suratjalan.create')->name('suratjalan.create'
 Route::view('surat-jalan/{id}/edit', 'suratjalan.edit')->name('suratjalan.edit');
 Route::get('/surat-jalan/{id}/detail', function ($id) {return view('suratjalan.detail', ['id' => $id]);})->name('suratjalan.detail');
 
+//bulk action
+Route::get('/nota/print-bulk', function (\Illuminate\Http\Request $request) {
+    $ids = explode(',', $request->ids);
+    $notas = \App\Models\Nota::whereIn('id', $ids)->get();
+
+    return view('nota.print-bulk', compact('notas'));
+})->name('nota.print.bulk');
+
+Route::get('/nota/print/bulk', [Nota::class, 'printBulk'])
+    ->name('nota.print.bulk');
+
 
 Route::view('superadmin/user/', 'superadmin.user.index')->name('superadmin.user.index');
 

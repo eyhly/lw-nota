@@ -13,7 +13,9 @@ class Index extends Component
     use withPagination;
     protected $paginationTheme='bootstrap';
     public $paginate='10';
-    public $search='';    
+    public $search='';  
+    public array $selectedIds = [];
+    public string $bulkAction = '';  
 
     public $no_nota,$pembeli,$tanggal,$subtotal,$diskon_persen,$diskon_rupiah,$total_harga,$total_coly,$jt_tempo,$nota_id;
    
@@ -63,5 +65,78 @@ class Index extends Component
         // Buka halaman print
         return redirect()->route('pdf.index', $id);
     }
+
+    public function runBulkAction()
+    {
+        if (empty($this->selectedIds)) {
+            $this->dispatch('alert', [
+                'type' => 'error',
+                'message' => 'Pilih data terlebih dahulu'
+            ]);
+            return;
+        }
+
+        switch ($this->bulkAction) {
+
+            case 'delete':
+                Nota::whereIn('id', $this->selectedIds)->delete();
+                break;
+
+            case 'approve':
+                Nota::whereIn('id', $this->selectedIds)
+                    ->update(['cek' => 1]);
+                break;
+
+            case 'status':
+                Nota::whereIn('id', $this->selectedIds)
+                    ->update(['status' => 1]);
+                break;
+
+            case 'print':
+                $ids = implode(',', $this->selectedIds);
+
+                // reset supaya tidak ke-trigger ulang
+                $this->reset(['selectedIds', 'bulkAction']);
+
+                return redirect()->route('nota.print.bulk', [
+                    'ids' => $ids
+                ]);
+
+            default:
+                $this->dispatch('alert', [
+                    'type' => 'error',
+                    'message' => 'Aksi tidak valid'
+                ]);
+                return;
+        }
+
+        // reset setelah aksi
+        $this->reset(['selectedIds', 'bulkAction']);
+
+        $this->dispatch('alert', [
+            'type' => 'success',
+            'message' => 'Bulk action berhasil'
+        ]);
+    }
+
+    public function toggleSelectAll()
+    {
+        if (count($this->selectedIds) === Nota::count()) {
+            $this->selectedIds = [];
+        } else {
+            $this->selectedIds = Nota::pluck('id')->toArray();
+        }
+    }
+
+
+    public function printBulk(Request $request)
+    {
+        $ids = explode(',', $request->ids);
+        $notas = Nota::whereIn('id', $ids)->get();
+
+        return view('nota.print-bulk', compact('notas'));
+    }
+
+
         
 }

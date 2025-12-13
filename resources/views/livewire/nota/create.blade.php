@@ -52,6 +52,19 @@
     </div>
 
     <table class="table table-bordered table-sm align-middle">
+
+        <colgroup>
+            <col style="width: 40px">      <!-- No -->
+            <col style="width: 320px">     <!-- Nama Barang -->
+            <col style="width: 140px">     <!-- Coly -->
+            <col style="width: 140px">     <!-- Qty Isi -->
+            <col style="width: 90px">      <!-- Subtotal Qty -->
+            <col style="width: 140px">     <!-- Harga -->
+            <col style="width: 90px">      <!-- Diskon -->
+            <col style="width: 160px">     <!-- Total -->
+            <col style="width: 90px">      <!-- Aksi -->
+        </colgroup>
+
         <thead class="table-secondary text-center">
             <tr>
                 <th>No</th>
