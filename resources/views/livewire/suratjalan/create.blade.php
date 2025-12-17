@@ -32,26 +32,34 @@
             </div>
             <div class="mb-2">
                 <label>Kendaraan</label>
-                <input type="text" class="form-control" wire:model="kendaraan">
+                <input type="text" class="form-control" wire:model="kendaraan" placeholder="kendaraan">
             </div>
         </div>
         <div class="col-md-6">
             <div class="mb-2">
                 <label>Pembeli</label>
-                <input type="text" class="form-control" wire:model="pembeli">
+                <input type="text" class="form-control" wire:model="pembeli" placeholder="pembeli">
             </div>
             <div class="mb-2">
                 <label>Alamat</label>
-                <textarea class="form-control" wire:model="alamat"></textarea>
+                <input type="text" class="form-control" wire:model="alamat" placeholder="alamat">
             </div>
             <div class="mb-2">
                 <label>No Kendaraan</label>
-                <input class="form-control" wire:model="no_kendaraan"></input>
+                <input class="form-control" wire:model="no_kendaraan" placeholder="no kendaraan">
             </div>
         </div>
     </div>
 
     <table class="table table-bordered table-sm align-middle">
+        <colgroup>
+            <col style="width: 5%">   {{-- No --}}
+            <col style="width: 20%">  {{-- Coly --}}
+            <col style="width: 20%">  {{-- Isi --}}
+            <col style="width: 45%">  {{-- Nama Barang (LEBAR) --}}
+            <col style="width: 10%">  {{-- Aksi --}}
+        </colgroup>
+
         <thead class="table-secondary text-center">
             <tr>
                 <th>No</th>
@@ -77,27 +85,38 @@
             <tr>
                 <td class="text-center">{{ count($detailsj) + 1 }}</td>
                 <td>
-                    <div class="d-flex">
-                        <input type="number" class="form-control me-1" wire:model="formDetail.coly">
-                        <input type="text" class="form-control me-1" wire:model="formDetail.satuan_coly">
+                    <div class="d-flex gap-1">
+                        <input type="number" class="form-control form-control-sm" wire:model="formDetail.coly">
+                        <input type="text" class="form-control form-control-sm" wire:model="formDetail.satuan_coly" placeholder="coly">
                     </div>
                 </td>
+
                 <td>
-                    <div class="d-flex">
-                        <input type="number" class="form-control me-1" wire:model="formDetail.isi">
-                        <input type="text" class="form-control me-1" wire:model="formDetail.nama_isi">
+                    <div class="d-flex gap-1">
+                        <input type="number" class="form-control form-control-sm" wire:model="formDetail.isi">
+                        <input type="text" class="form-control form-control-sm" wire:model="formDetail.nama_isi" placeholder="isi">
                     </div>
                 </td>
-                <td><input type="text" class="form-control" wire:model="formDetail.nama_barang"></td>
+
+                <td>
+                    <input
+                        type="text"
+                        class="form-control form-control-sm"
+                        wire:model="formDetail.nama_barang"
+                        placeholder="nama barang"
+                    >
+                </td>
                 <td class="text-center">
                     <button wire:click="addDetail" class="btn btn-sm btn-primary">Tambah</button>
                 </td>
             </tr>
         </tbody>
         <tfoot>
-            <tr>
-                <th colspan="3" class="text-right">Total Coly</th>
-                <th class="text-right">{{ ($this->total_coly) }}</th>
+            <tr>                
+                <th colspan="2" class="text-right">
+                Total Coly:               
+                </th>
+                <th>{{ ($this->total_coly) }}</th>
                 <th></th>
             </tr>
         </tfoot>

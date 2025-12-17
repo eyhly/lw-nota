@@ -69,7 +69,9 @@ class Detail extends Component
             'jumlah'      => $detail->jumlah,
             'harga'       => $detail->harga,
             'total_harga' => $detail->total_harga,
-            'diskon'      => $detail->diskon,
+            'diskon'      => $$detail->diskon
+                                    ? explode(',', $detail->diskon)
+                                    : [],
             'total'       => $detail->total,
         ];
     }

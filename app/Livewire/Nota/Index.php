@@ -14,21 +14,50 @@ class Index extends Component
     protected $paginationTheme='bootstrap';
     public $paginate='10';
     public $search='';  
+    public bool $selectAll = false;
     public array $selectedIds = [];
-    public string $bulkAction = '';  
+    public string $bulkAction = '';
+    public $sortField = 'tanggal';
+    public $sortDirection = 'asc';
 
     public $no_nota,$pembeli,$tanggal,$subtotal,$diskon_persen,$diskon_rupiah,$total_harga,$total_coly,$jt_tempo,$nota_id;
    
     public function render()
     {
-        $data = array(
+        return view('livewire.nota.index', [
             'title' => 'List Nota',
-            'nota' => Nota::where('pembeli', 'like','%'.$this->search.'%')
-            ->orWhere('tanggal', 'like','%'.$this->search.'%')
-            ->orderBy('tanggal', 'desc')->paginate($this->paginate),
-        );
-        return view('livewire.nota.index', $data);
-    }   
+            'nota' => Nota::where(function ($q) {
+                    $q->where('pembeli', 'like', '%' . $this->search . '%')
+                    ->orWhere('status', 'like', '%' . $this->search . '%');
+                })
+                ->orderBy($this->sortField, $this->sortDirection)
+                ->paginate($this->paginate),
+        ]);
+    }
+
+    public function updatingPaginate()
+    {
+        $this->resetPage();
+        $this->reset(['selectedIds', 'selectAll']);
+    }
+
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
+
+        $this->resetPage();
+    }
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+        $this->reset(['selectedIds', 'selectAll']);
+    }
     
     public function confirm($id){
         $nota = Nota::findOrFail($id);
@@ -111,7 +140,11 @@ class Index extends Component
         }
 
         // reset setelah aksi
-        $this->reset(['selectedIds', 'bulkAction']);
+        $this->reset([
+            'selectedIds',
+            'selectAll',
+            'bulkAction',
+        ]);
 
         $this->dispatch('alert', [
             'type' => 'success',
@@ -119,15 +152,50 @@ class Index extends Component
         ]);
     }
 
+    // Method untuk toggle select all
     public function toggleSelectAll()
     {
-        if (count($this->selectedIds) === Nota::count()) {
-            $this->selectedIds = [];
+        // Ambil semua ID dari halaman saat ini
+        $currentPageIds = Nota::where(function ($q) {
+                $q->where('pembeli', 'like', '%' . $this->search . '%')
+                ->orWhere('status', 'like', '%' . $this->search . '%');
+            })
+            ->orderBy($this->sortField, $this->sortDirection)
+            ->paginate($this->paginate)
+            ->pluck('id')
+            ->toArray();
+
+        // Toggle: jika sudah ada yang terselect, hapus semua. Jika belum, select semua
+        if (count(array_intersect($currentPageIds, $this->selectedIds)) === count($currentPageIds)) {
+            // Unselect semua di halaman ini
+            $this->selectedIds = array_values(array_diff($this->selectedIds, $currentPageIds));
+            $this->selectAll = false;
         } else {
-            $this->selectedIds = Nota::pluck('id')->toArray();
+            // Select semua di halaman ini (merge dengan yang sudah ada)
+            $this->selectedIds = array_values(array_unique(array_merge($this->selectedIds, $currentPageIds)));
+            $this->selectAll = true;
         }
     }
 
+    // Update selectAll status ketika individual checkbox berubah
+    public function updatedSelectedIds()
+    {
+        $currentPageIds = SuratJalan::where(function ($q) {
+                $q->where('pembeli', 'like', '%' . $this->search . '%')
+                ->orWhere('status', 'like', '%' . $this->search . '%');
+            })
+            ->orderBy($this->sortField, $this->sortDirection)
+            ->paginate($this->paginate)
+            ->pluck('id')
+            ->toArray();
+
+        // Check apakah semua ID di halaman ini sudah dicentang
+        if (empty($currentPageIds)) {
+            $this->selectAll = false;
+        } else {
+            $this->selectAll = count(array_intersect($currentPageIds, $this->selectedIds)) === count($currentPageIds);
+        }
+    }
 
     public function printBulk(Request $request)
     {

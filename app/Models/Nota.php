@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Nota extends Model
 {
@@ -33,26 +34,27 @@ class Nota extends Model
         return $this->hasMany(DetailNota::class, 'nota_id', 'id');
     }
 
-    public static function generateNextNoNota()
+    public static function generateNextNoNota(string $tanggal)
     {
-        // Ambil bulan dan tahun sekarang → format YYMM
-        $prefix = date('ym'); // contoh: 2508 (Agustus 2025)
+        $date = Carbon::createFromFormat('Y-m-d', $tanggal);
 
-        // Cari nota terakhir di bulan & tahun ini
-        $lastNota = self::where('no_nota', 'like', "MJ/$prefix/%")
-            ->latest('id')
-            ->first();
+        $bulan = $date->format('m');
+        $tahunFull = $date->format('Y');
+        $tahun = $date->format('y');
 
-        if (!$lastNota) {
-            $nextNumber = 1;
-        } else {
-            // Ambil bagian nomor urut setelah prefix
-            $lastNumber = (int) substr($lastNota->no_nota, -3);
-            $nextNumber = $lastNumber + 1;
-        }
+        $count = self::whereMonth('tanggal', $bulan)
+            ->whereYear('tanggal', $tahunFull)
+            ->where('status', '!=', 0)
+            ->count();
 
-        // Format: MJ/YYMM/XXX
-        return "MJ/{$prefix}/" . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+        $urutan = $count + 1;
+
+        return sprintf(
+            'MJ/%s%s/%03d',
+            $tahun,
+            $bulan,
+            $urutan
+        );
     }
 
 }

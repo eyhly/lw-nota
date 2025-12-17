@@ -5,6 +5,7 @@ namespace App\Livewire\Nota;
 use App\Models\Nota;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class Create extends Component
 {
@@ -19,7 +20,7 @@ class Create extends Component
         'qty_isi' => 0,
         'nama_isi' => '',
         'harga' => 0,
-        'diskon' => 0, 
+        'diskon' => [], 
         'jumlah' => 0,
         'total' => 0,
     ];
@@ -28,9 +29,9 @@ class Create extends Component
     {
         $this->resetForm();
         // otomatis generate nomor baru
-        $this->no_nota = Nota::generateNextNoNota();
-        $this->tanggal = now()->toDateString();
-        $this->jt_tempo = now()->addMonths(2)->toDateString();
+        $this->tanggal  = Carbon::now()->toDateString();
+        $this->jt_tempo = Carbon::now()->addMonths(2)->toDateString();
+        $this->no_nota = Nota::generateNextNoNota($this->tanggal);
 
         if ($id) {
             $surat = \App\Models\SuratJalan::with('detailsj')->findOrFail($id);
@@ -46,10 +47,22 @@ class Create extends Component
                     'nama_isi'     => $detail->nama_isi ?? '',
                     'jumlah'       => $detail->coly * ($detail->qty_isi ?? 1),
                     'harga'        => 0,
-                    'diskon'       => 0,
+                    'diskon'      => $detail->diskon
+                                    ? explode(',', $detail->diskon)
+                                    : [],
                     'total'        => 0,
                 ];
             }
+        }
+    }
+
+    public function updatedTanggal($value)
+    {
+        if ($value) {
+            $this->no_nota = Nota::generateNextNoNota($value);
+
+            // opsional: update jatuh tempo ikut tanggal
+            $this->jt_tempo = Carbon::parse($value)->addMonths(2)->toDateString();
         }
     }
 
@@ -70,30 +83,16 @@ class Create extends Component
         ]);
     }
 
-    public function updatedFormDetail($value, $key)
-    {
-        // hitung otomatis jumlah & total saat input berubah
-        if (in_array($key, ['coly','qty_isi','harga','diskon'])) {
-            $coly = (int) $this->formDetail['coly'];
-            $qty  = (int) $this->formDetail['qty_isi'];
-            $harga = (int) $this->formDetail['harga'];
-            $diskon = (int) ($this->formDetail['diskon'] ?? 0);
-
-            $jumlah = $coly * $qty;
-            $total  = ($harga * $jumlah) * (1 - ($diskon / 100));
-
-            $this->formDetail['jumlah'] = $jumlah;
-            $this->formDetail['total']  = $total;
-        }
-    }
-
     public function addDetail()
     {
-        if (empty($this->formDetail['diskon'])) {
-            $this->formDetail['diskon'] = 0;
-        }
+        $this->formDetail['diskon'] = array_values(
+            array_filter((array) $this->formDetail['diskon'], 'is_numeric')
+        );
 
         $this->details[] = $this->formDetail;
+
+        $index = count($this->details) - 1;
+        $this->recalcRow($index);
 
         $this->formDetail = [
             'nama_barang' => '',
@@ -102,16 +101,45 @@ class Create extends Component
             'qty_isi' => 0,
             'nama_isi' => '',
             'harga' => 0,
-            'diskon' => 0,
+            'diskon' => [],
             'jumlah' => 0,
             'total' => 0,
         ];
     }
 
+
     public function removeDetail($index)
     {
         unset($this->details[$index]);
         $this->details = array_values($this->details);
+    }
+
+    private function recalcRow($i)
+    {
+        if (!isset($this->details[$i])) return;
+
+        $item = $this->details[$i];
+
+        $coly  = (int) ($item['coly'] ?? 0);
+        $qty   = (int) ($item['qty_isi'] ?? 0);
+        $harga = (int) ($item['harga'] ?? 0);
+
+        $diskon = array_sum(
+            array_map('intval', (array) ($item['diskon'] ?? []))
+        );
+
+        $jumlah = $coly * $qty;
+        $total  = ($harga * $jumlah) * (1 - ($diskon / 100));
+
+        $this->details[$i]['jumlah'] = $jumlah;
+        $this->details[$i]['total']  = round($total);
+    }
+
+    public function updatedDetails($value, $name)
+    {
+        if (preg_match('/details\.(\d+)\./', $name, $m)) {
+            $this->recalcRow((int) $m[1]);
+        }
     }
 
     public function store()
@@ -141,6 +169,7 @@ class Create extends Component
             ]);
 
             foreach($this->details as $d) {
+                $d['diskon'] = implode(',', $d['diskon'] ?? []);
                 $nota->details()->create($d);
             }
         });
@@ -188,6 +217,39 @@ class Create extends Component
     {
         return collect($this->details)->sum('coly');
     }
+
+    public function addDiskon($index)
+    {
+        if (!is_array($this->details[$index]['diskon'])) {
+            $this->details[$index]['diskon'] = [];
+        }
+
+        $this->details[$index]['diskon'][] = 0;
+    }
+
+    public function removeDiskon($index, $diskonIndex)
+    {
+        unset($this->details[$index]['diskon'][$diskonIndex]);
+        $this->details[$index]['diskon'] = array_values($this->details[$index]['diskon']);
+    }
+
+    // FORM BARU
+    public function addFormDiskon()
+    {
+        if (!is_array($this->formDetail['diskon'])) {
+            $this->formDetail['diskon'] = [];
+        }
+
+        $this->formDetail['diskon'][] = 0;
+    }
+
+
+    public function removeFormDiskon($index)
+    {
+        unset($this->formDetail['diskon'][$index]);
+        $this->formDetail['diskon'] = array_values($this->formDetail['diskon']);
+    }
+
 
     public function render()
     {

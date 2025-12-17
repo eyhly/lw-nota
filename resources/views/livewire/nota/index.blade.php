@@ -68,18 +68,46 @@
 
           <div class="table-responsive">
 
-          <form wire:submit.prevent="runBulkAction">
+          <form wire:submit.prevent="runBulkAction" wire:key="bulk-form-{{ count($selectedIds) }}">
             @csrf
 
             <table class="table table-hover">
               <thead>
                 <tr>
-                  <th><input type="checkbox" wire:click="toggleSelectAll"></th>
+                  <th><input type="checkbox" wire:click="toggleSelectAll" {{ $selectAll ? 'checked' : '' }} id="selectAllCheckbox"></th>
                   <th>No</th>
-                  <th>Pembeli</th>
-                  <th>Tanggal</th>
-                  <th>Printed</th>
-                  <th>Checked</th>
+                  <th wire:click="sortBy('pembeli')" style="cursor:pointer">
+                        Pembeli
+                        @if ($sortField === 'pembeli')
+                            <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                        @else
+                            <i class="fas fa-sort text-muted"></i>
+                        @endif
+                  </th>
+                  <th wire:click="sortBy('tanggal')" style="cursor:pointer">
+                        Tanggal
+                        @if ($sortField === 'tanggal')
+                            <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                        @else
+                            <i class="fas fa-sort text-muted"></i>
+                        @endif
+                  </th>
+                  <th wire:click="sortBy('print')" style="cursor:pointer">
+                        Print
+                        @if ($sortField === 'print')
+                            <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                        @else
+                            <i class="fas fa-sort text-muted"></i>
+                        @endif
+                  </th>
+                  <th wire:click="sortBy('cek')" style="cursor:pointer">
+                        Cek
+                        @if ($sortField === 'cek')
+                            <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                        @else
+                            <i class="fas fa-sort text-muted"></i>
+                        @endif
+                  </th>
                   <th><i class="fas fa-cog"></i></th>
                 </tr>
               </thead>
@@ -90,7 +118,8 @@
                         <input
                             type="checkbox"
                             value="{{ $item->id }}"
-                            wire:model="selectedIds"
+                            wire:model.live="selectedIds"
+                            @checked(in_array($item->id, $selectedIds))
                         >
                     </td>
                     <td>{{ $loop->iteration }}</td>
@@ -140,19 +169,26 @@
             </table>
             {{ $nota->links()}}
 
-            <div class="mt-2 d-flex align-items-between gap-2">
-                <select wire:model="bulkAction" class="form-control w-auto" required>
-                    <option value="">Pilih Aksi</option>
-                    <option value="delete">Delete</option>
-                    <option value="approve">Approve</option>
-                    <option value="status">Status</option>
-                    <option value="print">Print</option>
-                </select>
-                
-                <button type="submit" class="btn btn-primary">
-                    Jalankan
-                </button>
-            </div>
+            <div class="d-flex align-items-center gap-2 mt-2">
+              <span class="text-muted">
+                  With selected:
+              </span>
+
+              <select wire:model="bulkAction" class="form-control form-control-sm w-auto">
+                  <option value="">— Pilih Aksi —</option>
+                  <option value="delete">Delete</option>
+                  <option value="approve">Approve</option>
+                  <option value="status">Status</option>
+                  <option value="print">Print</option>
+              </select>
+
+              <button
+                  type="submit"
+                  class="btn btn-sm btn-primary"
+              >
+                  Go
+              </button>
+          </div>
         </form>
           </div>
         </div>
@@ -177,6 +213,19 @@
                 window.location.href = "{{ route('nota.index') }}";
             }
         });;
+        });
+
+        // Listen untuk alert event dan force uncheck select all
+        $wire.on('alert', (event) => {
+            const checkbox = document.getElementById('selectAllCheckbox');
+            if (checkbox) {
+                checkbox.checked = false;
+            }
+            
+            // Uncheck semua individual checkbox
+            document.querySelectorAll('input[type="checkbox"][wire\\:model\\.live="selectedIds"]').forEach(cb => {
+                cb.checked = false;
+            });
         });
     </script>
     @endscript

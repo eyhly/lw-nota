@@ -1,5 +1,4 @@
 <div>
-
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -25,7 +24,6 @@
 
     <!-- Main content -->
     <section class="content">
-
       <!-- Default box -->
       <div class="card">
         <div class="card-header">
@@ -67,76 +65,124 @@
           </div>
 
           <div class="table-responsive">
+            <form wire:submit.prevent="runBulkAction" wire:key="bulk-form-{{ count($selectedIds) }}">
+              @csrf
 
-          <form wire:submit.prevent="runBulkAction">
-            @csrf
-
-            <table class="table table-hover">
-              <thead>
-                <tr>
-                  <th><input type="checkbox" wire:click="toggleSelectAll"></th>
-                  <th>No</th>
-                  <th>Pembeli</th>
-                  <th>Tanggal</th>
-                  <th>Status</th>
-                  <th><i class="fas fa-cog"></i></th>
-                </tr>
-              </thead>
-              <tbody>
-                @foreach ($suratjalan as $item)
+              <table class="table table-hover">
+                <thead>
                   <tr>
-                    <td class="text-left">
-                        <input
-                            type="checkbox"
-                            value="{{ $item->id }}"
-                            wire:model="selectedIds"
-                        >
-                    </td>
-                    <td>{{ $loop->iteration }}</td>
-                    <td>{{ $item->pembeli }}</td>
-                    <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d F Y') }}</td>
-                    <td>{{ $item->status }}</td>
-                    <td>
-                      <a wire:navigate href="{{ route('suratjalan.detail', $item->id) }}" class="btn btn-sm btn-info" data-toggle="modal" data-target="#editModal">
-                        <i class="fas fa-eye mr-1"></i>Detail
-                      </a>
-                      <button wire:navigate href="{{ route('suratjalan.edit', $item->id) }}" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#editModal">
-                        <i class="fas fa-edit"></i>
-                      </button>
+                      <th>
+                          <input
+                              type="checkbox"
+                              wire:click="toggleSelectAll"
+                              {{ $selectAll ? 'checked' : '' }}
+                              id="selectAllCheckbox">
+                      </th>
 
-                      <!-- delete -->
-                      <button wire:click="confirm({{$item->id}})" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteModal">
-                        <i class="fas fa-trash"></i>
-                      </button>
-                    </td>
+                      <th>No</th>
+
+                      <th wire:click="sortBy('pembeli')" style="cursor:pointer">
+                          Pembeli
+                          @if ($sortField === 'pembeli')
+                              <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                          @else
+                              <i class="fas fa-sort text-muted"></i>
+                          @endif
+                      </th>
+
+                      <th wire:click="sortBy('tanggal')" style="cursor:pointer">
+                          Tanggal
+                          @if ($sortField === 'tanggal')
+                              <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                          @else
+                              <i class="fas fa-sort text-muted"></i>
+                          @endif
+                      </th>
+
+                      <th wire:click="sortBy('status')" style="cursor:pointer">
+                          Status
+                          @if ($sortField === 'status')
+                              <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                          @else
+                              <i class="fas fa-sort text-muted"></i>
+                          @endif
+                      </th>
+
+                      <th><i class="fas fa-cog"></i></th>
                   </tr>
-                @endforeach
-              </tbody>
-            </table>
-            {{ $suratjalan->links()}}
+                </thead>
 
-            <div class="mt-2 d-flex align-items-between gap-2">
-                <select wire:model="bulkAction" class="form-control w-auto" required>
-                    <option value="">Pilih Aksi</option>
-                    <option value="delete">Delete</option>
-                    <option value="approve">Approve</option>
-                    <option value="print">Print</option>
-                </select>
-                
-                <button type="submit" class="btn btn-primary">
-                    Jalankan
-                </button>
-            </div>
+                <tbody>
+                  @foreach ($suratjalan as $item)
+                    <tr>
+                      <td class="text-left">
+                          <input
+                              type="checkbox"
+                              value="{{ $item->id }}"
+                              wire:model.live="selectedIds"
+                              @checked(in_array($item->id, $selectedIds))>
+                      </td>
+                      <td>{{ $loop->iteration }}</td>
+                      <td>{{ $item->pembeli }}</td>
+                      <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d F Y') }}</td>
+                      <td class="text-left">
+                          <label class="text-center switch">
+                              <input 
+                                  type="checkbox" 
+                                  wire:click="toggleStatus({{ $item->id }})"
+                                  @checked($item->status === 'sudah')>
+                              <span class="slider">
+                                  <span class="slider-text">
+                                      @if ($item->status === 'sudah')
+                                          <i class="fas fa-check fs-5"></i>
+                                      @else
+                                          <i class="text-danger fas fa-times fs-5"></i>
+                                      @endif
+                                  </span>
+                              </span>
+                          </label>
+                      </td>
+                      <td>
+                        <a wire:navigate href="{{ route('suratjalan.detail', $item->id) }}" class="btn btn-sm btn-info" data-toggle="modal" data-target="#editModal">
+                          <i class="fas fa-eye mr-1"></i>Detail
+                        </a>
+                        <button wire:navigate href="{{ route('suratjalan.edit', $item->id) }}" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#editModal">
+                          <i class="fas fa-edit"></i>
+                        </button>
+
+                        <!-- delete -->
+                        <button wire:click="confirm({{$item->id}})" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteModal">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  @endforeach
+                </tbody>
+              </table>
+              {{ $suratjalan->links()}}
+
+              <div class="mt-2 d-flex align-items-between gap-2">
+                  <select wire:model="bulkAction" class="form-control w-auto" required>
+                      <option value="">Pilih Aksi</option>
+                      <option value="delete">Delete</option>
+                      <option value="approve">Approve</option>
+                      <option value="print">Print</option>
+                  </select>
+                  
+                  <button type="submit" class="btn btn-primary">
+                      Jalankan
+                  </button>
+              </div>
+            </form>
           </div>
         </div>
         <!-- /.card-body -->        
       </div>
-
     </section>
 
     @include('livewire.suratjalan.delete')
 
-      <!-- close delete modal -->
+    <!-- close delete modal -->
     @script
     <script>
         $wire.on('closeDeleteModal', () => {
@@ -147,8 +193,20 @@
               icon: "success"
             });
         });
+
+        // Listen untuk alert event dan force uncheck select all
+        $wire.on('alert', (event) => {
+            const checkbox = document.getElementById('selectAllCheckbox');
+            if (checkbox) {
+                checkbox.checked = false;
+            }
+            
+            // Uncheck semua individual checkbox
+            document.querySelectorAll('input[type="checkbox"][wire\\:model\\.live="selectedIds"]').forEach(cb => {
+                cb.checked = false;
+            });
+        });
     </script>
     @endscript
-
   </div>
 </div>

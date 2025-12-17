@@ -38,15 +38,15 @@
         <div class="col-md-6">
             <div class="mb-2">
                 <label>Pembeli</label>
-                <input type="text" class="form-control" wire:model="pembeli">
+                <input type="text" class="form-control" wire:model="pembeli" placeholder="pembeli">
             </div>
             <div class="mb-2">
                 <label>Nama Toko</label>
-                <input type="text" class="form-control" wire:model="nama_toko">
+                <input type="text" class="form-control" wire:model="nama_toko" placeholder="nama toko">
             </div>
             <div class="mb-2">
                 <label>Alamat</label>
-                <textarea class="form-control" wire:model="alamat"></textarea>
+                <input type="text" class="form-control" wire:model="alamat" placeholder="alamat"/>
             </div>
         </div>
     </div>
@@ -99,11 +99,17 @@
                         {{ $details[$i]['coly'] * $details[$i]['qty_isi'] }}
                     </td>
                     <td><input type="number" class="form-control" wire:model="details.{{ $i }}.harga"></td>
-                    <td><input type="number" class="form-control" wire:model="details.{{ $i }}.diskon"></td>
+                    <td class="text-center">
+                        {{ implode(' + ', (array) ($details[$i]['diskon'] ?? [])) }}
+                    </td>
+                    @php
+                        $rowDiskon = array_sum((array) ($details[$i]['diskon'] ?? []));
+                    @endphp
+
                     <td class="text-end">
                         {{ number_format(
                             ($details[$i]['harga'] * $details[$i]['coly'] * $details[$i]['qty_isi'])
-                            * (1 - (($details[$i]['diskon'] ?? 0) / 100)),
+                            * (1 - ($rowDiskon / 100)),
                             0, ',', '.'
                         ) }}
                     </td>
@@ -116,28 +122,50 @@
             {{-- form row baru --}}
             <tr>
                 <td class="text-center">{{ count($details) + 1 }}</td>
-                <td><input type="text" class="form-control" wire:model="formDetail.nama_barang"></td>
+                <td><input type="text" class="form-control" wire:model="formDetail.nama_barang" placeholder="nama barang"></td>
                 <td>
                     <div class="d-flex">
                         <input type="number" class="form-control me-1" wire:model="formDetail.coly">
-                        <input type="text" class="form-control" wire:model="formDetail.satuan_coly">
+                        <input type="text" class="form-control" wire:model="formDetail.satuan_coly" placeholder="coly">
                     </div>
                 </td>
                 <td>
                     <div class="d-flex">
                         <input type="number" class="form-control me-1" wire:model="formDetail.qty_isi">
-                        <input type="text" class="form-control" wire:model="formDetail.nama_isi">
+                        <input type="text" class="form-control" wire:model="formDetail.nama_isi" placeholder="qty">
                     </div>
                 </td>
                 <td class="text-center">
                     {{ $formDetail['coly'] * $formDetail['qty_isi'] }}
                 </td>
                 <td><input type="number" class="form-control" wire:model="formDetail.harga"></td>
-                <td><input type="number" class="form-control" wire:model="formDetail.diskon"></td>
+                <td>
+                    @foreach ((array) ($formDetail['diskon'] ?? []) as $d => $val)
+                        <div class="d-flex align-items-center mb-1">
+                            <input type="number"
+                                class="form-control me-1"
+                                wire:model="formDetail.diskon.{{ $d }}"
+                                placeholder="%">
+                            <i class="fas fa-times text-danger"
+                            style="cursor:pointer;"
+                            wire:click="removeFormDiskon({{ $d }})">
+                            </i>
+                        </div>
+                    @endforeach
+
+                    <button class="btn btn-sm btn-success"
+                            wire:click="addFormDiskon">
+                        + Diskon
+                    </button>
+                </td>
+                @php
+                    $formDiskon = array_sum((array) ($formDetail['diskon'] ?? []));
+                @endphp
+
                 <td class="text-end">
                     {{ number_format(
                         ($formDetail['harga'] * $formDetail['coly'] * $formDetail['qty_isi'])
-                        * (1 - (($formDetail['diskon'] ?? 0) / 100)),
+                        * (1 - ($formDiskon / 100)),
                         0, ',', '.'
                     ) }}
                 </td>
@@ -156,9 +184,26 @@
             <tr>
                 <th colspan="7" class="text-right">Diskon</th>
                 <th>
-                    <div class="d-flex">
-                        <input type="number" class="form-control me-1" wire:model.live="diskon_persen"> %
-                        <input type="number" class="form-control ms-2" wire:model.live="diskon_rupiah">
+                    <div class="d-flex align-items-center gap-1">
+
+                        <input
+                            type="number"
+                            class="form-control form-control-sm text-end"
+                            style="width: 70px"
+                            wire:model.live="diskon_persen"
+                        >
+                        <span class="text-muted small">%</span>
+
+                        <span class="mx-1 text-muted">-</span>
+
+                        <span class="text-muted small">Rp</span>
+                        <input
+                            type="number"
+                            class="form-control form-control-sm text-end"
+                            style="width: 110px"
+                            wire:model.live="diskon_rupiah"
+                        >
+
                     </div>
                 </th>
                 <th></th>

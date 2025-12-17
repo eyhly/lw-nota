@@ -64,6 +64,13 @@
              
 
             <table class="table table-striped table-bordered">
+                <colgroup>
+                    <col style="width: 5%">   {{-- No --}}
+                    <col style="width: 15%">  {{-- Coly --}}
+                    <col style="width: 15%">  {{-- Isi --}}
+                    <col style="width: 45%">  {{-- Nama Barang (LEBAR) --}}
+                    <col style="width: 20%">  {{-- Aksi --}}
+                </colgroup>
     <thead>
         <tr>
             <th>No</th>
@@ -117,8 +124,9 @@
 
         @if($suratjalan->detailsj->count() > 0)
             <tr>
-                <td class="text-right" colspan="4"><strong>Total Coly :</strong></td>
+                <td class="text-right" colspan="2"><strong>Total Coly :</strong></td>
                 <td colspan="2"><strong>{{ $this->totalColy }}</strong></td>
+                <td></td>
             </tr>
         @endif
     </tbody>

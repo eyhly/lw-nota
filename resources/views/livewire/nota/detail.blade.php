@@ -57,7 +57,7 @@
                     
                     <div class="col-md-8 mb-2">
                         <label>Alamat</label>
-                        <textarea wire:model="alamat" class="form-control"></textarea>
+                        <input type="text" wire:model="alamat" class="form-control"/>
                     </div>
                 </div>
                 

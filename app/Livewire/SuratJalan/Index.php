@@ -9,10 +9,14 @@ use Illuminate\Support\Facades\Hash;
 
 class Index extends Component
 {
-    use withPagination;
-    protected $paginationTheme='bootstrap';
-    public $paginate='10';
-    public $search='';
+    use WithPagination;
+    
+    protected $paginationTheme = 'bootstrap';
+    public $paginate = '10';
+    public $search = '';
+    public $sortField = 'tanggal';
+    public $sortDirection = 'asc';
+    public bool $selectAll = false;
     public array $selectedIds = [];
     public string $bulkAction = '';
 
@@ -20,16 +24,45 @@ class Index extends Component
    
     public function render()
     {
-        $data = array(
+        $suratjalan = SuratJalan::where(function ($q) {
+                $q->where('pembeli', 'like', '%' . $this->search . '%')
+                ->orWhere('status', 'like', '%' . $this->search . '%');
+            })
+            ->orderBy($this->sortField, $this->sortDirection)
+            ->paginate($this->paginate);
+
+        return view('livewire.suratjalan.index', [
             'title' => 'Data Surat Jalan',
-            'suratjalan' => SuratJalan::where('pembeli', 'like','%'.$this->search.'%')
-            ->orWhere('status', 'like','%'.$this->search.'%')
-            ->orderBy('status', 'desc')->paginate($this->paginate),
-        );
-        return view('livewire.suratjalan.index', $data);
-    }     
+            'suratjalan' => $suratjalan,
+        ]);
+    }
+
+    public function updatingPaginate()
+    {
+        $this->resetPage();
+        $this->reset(['selectedIds', 'selectAll']);
+    }
+
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
+
+        $this->resetPage();
+    }
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+        $this->reset(['selectedIds', 'selectAll']);
+    }
     
-    public function confirm($id){
+    public function confirm($id)
+    {
         $suratjalan = SuratJalan::findOrFail($id);
 
         $this->pembeli = $suratjalan->pembeli;
@@ -37,11 +70,22 @@ class Index extends Component
         $this->suratjalan_id = $suratjalan->id;
     }
 
-    public function destroy($id){
+    public function destroy($id)
+    {
         $suratjalan = SuratJalan::findOrFail($id);
         $suratjalan->delete();
         $this->dispatch('closeDeleteModal'); 
     }
+
+    public function toggleStatus($id)
+    {
+        $item = SuratJalan::find($id);
+
+        if ($item) {
+            $item->status = $item->status == 'sudah' ? 'belum' : 'sudah';
+            $item->save();
+        }
+    }    
 
     public function runBulkAction()
     {
@@ -54,21 +98,28 @@ class Index extends Component
         }
 
         switch ($this->bulkAction) {
-
             case 'delete':
                 SuratJalan::whereIn('id', $this->selectedIds)->delete();
+                $this->dispatch('alert', [
+                    'type' => 'success',
+                    'message' => 'Data berhasil dihapus'
+                ]);
                 break;
 
             case 'approve':
                 SuratJalan::whereIn('id', $this->selectedIds)
-                    ->update(['cek' => 1]);
+                    ->update(['status' => 'sudah']);
+                $this->dispatch('alert', [
+                    'type' => 'success',
+                    'message' => 'Status berhasil diupdate'
+                ]);
                 break;
 
             case 'print':
                 $ids = implode(',', $this->selectedIds);
-
+                
                 // reset supaya tidak ke-trigger ulang
-                $this->reset(['selectedIds', 'bulkAction']);
+                $this->reset(['selectedIds', 'selectAll', 'bulkAction']);
 
                 return redirect()->route('nota.print.bulk', [
                     'ids' => $ids
@@ -83,30 +134,51 @@ class Index extends Component
         }
 
         // reset setelah aksi
-        $this->reset(['selectedIds', 'bulkAction']);
-
-        $this->dispatch('alert', [
-            'type' => 'success',
-            'message' => 'Bulk action berhasil'
-        ]);
+        $this->reset(['selectedIds', 'selectAll', 'bulkAction']);
     }
 
+    // Method untuk toggle select all
     public function toggleSelectAll()
     {
-        if (count($this->selectedIds) === SuratJalan::count()) {
-            $this->selectedIds = [];
+        // Ambil semua ID dari halaman saat ini
+        $currentPageIds = SuratJalan::where(function ($q) {
+                $q->where('pembeli', 'like', '%' . $this->search . '%')
+                ->orWhere('status', 'like', '%' . $this->search . '%');
+            })
+            ->orderBy($this->sortField, $this->sortDirection)
+            ->paginate($this->paginate)
+            ->pluck('id')
+            ->toArray();
+
+        // Toggle: jika sudah ada yang terselect, hapus semua. Jika belum, select semua
+        if (count(array_intersect($currentPageIds, $this->selectedIds)) === count($currentPageIds)) {
+            // Unselect semua di halaman ini
+            $this->selectedIds = array_values(array_diff($this->selectedIds, $currentPageIds));
+            $this->selectAll = false;
         } else {
-            $this->selectedIds = SuratJalan::pluck('id')->toArray();
+            // Select semua di halaman ini (merge dengan yang sudah ada)
+            $this->selectedIds = array_values(array_unique(array_merge($this->selectedIds, $currentPageIds)));
+            $this->selectAll = true;
         }
     }
 
-
-    public function printBulk(Request $request)
+    // Update selectAll status ketika individual checkbox berubah
+    public function updatedSelectedIds()
     {
-        $ids = explode(',', $request->ids);
-        $notas = SuratJalan::whereIn('id', $ids)->get();
+        $currentPageIds = SuratJalan::where(function ($q) {
+                $q->where('pembeli', 'like', '%' . $this->search . '%')
+                ->orWhere('status', 'like', '%' . $this->search . '%');
+            })
+            ->orderBy($this->sortField, $this->sortDirection)
+            ->paginate($this->paginate)
+            ->pluck('id')
+            ->toArray();
 
-        return view('nota.print-bulk', compact('notas'));
+        // Check apakah semua ID di halaman ini sudah dicentang
+        if (empty($currentPageIds)) {
+            $this->selectAll = false;
+        } else {
+            $this->selectAll = count(array_intersect($currentPageIds, $this->selectedIds)) === count($currentPageIds);
+        }
     }
-        
 }
