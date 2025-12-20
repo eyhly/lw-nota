@@ -17,8 +17,8 @@ class Index extends Component
     public bool $selectAll = false;
     public array $selectedIds = [];
     public string $bulkAction = '';
-    public $sortField = 'tanggal';
-    public $sortDirection = 'asc';
+    public $sortField = null;
+    public $sortDirection = null;
 
     public $no_nota,$pembeli,$tanggal,$subtotal,$diskon_persen,$diskon_rupiah,$total_harga,$total_coly,$jt_tempo,$nota_id;
    
@@ -26,13 +26,25 @@ class Index extends Component
     {
         return view('livewire.nota.index', [
             'title' => 'List Nota',
-            'nota' => Nota::where(function ($q) {
-                    $q->where('pembeli', 'like', '%' . $this->search . '%')
-                    ->orWhere('status', 'like', '%' . $this->search . '%');
-                })
-                ->orderBy($this->sortField, $this->sortDirection)
-                ->paginate($this->paginate),
+            'nota' => $this->baseQuery()->paginate($this->paginate),
         ]);
+    }
+
+    private function baseQuery()
+    {
+        $query = Nota::where(function ($q) {
+            $q->where('pembeli', 'like', '%' . $this->search . '%')
+            ->orWhere('status', 'like', '%' . $this->search . '%');
+        });
+
+        if ($this->sortField && in_array($this->sortDirection, ['asc', 'desc'])) {
+            $query->orderBy($this->sortField, $this->sortDirection);
+        } else {
+            // DEFAULT: ID terbaru
+            $query->orderBy('id', 'desc');
+        }
+
+        return $query;
     }
 
     public function updatingPaginate()
@@ -43,9 +55,22 @@ class Index extends Component
 
     public function sortBy($field)
     {
+        // Jika klik field yang sama
         if ($this->sortField === $field) {
-            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
+
+            // ASC → DESC
+            if ($this->sortDirection === 'asc') {
+                $this->sortDirection = 'desc';
+            }
+            // DESC → RESET (kembali ke default)
+            else {
+                $this->sortField = null;
+                $this->sortDirection = null;
+            }
+
+        } 
+        // Jika klik field baru
+        else {
             $this->sortField = $field;
             $this->sortDirection = 'asc';
         }
@@ -93,8 +118,9 @@ class Index extends Component
 
         // Buka halaman print
         return redirect()->route('pdf.index', $id);
-    }
+    }    
 
+    // Method yang dipanggil setelah konfirmasi
     public function runBulkAction()
     {
         if (empty($this->selectedIds)) {
@@ -109,27 +135,31 @@ class Index extends Component
 
             case 'delete':
                 Nota::whereIn('id', $this->selectedIds)->delete();
+                $message = 'Data berhasil dihapus';
                 break;
 
             case 'approve':
                 Nota::whereIn('id', $this->selectedIds)
                     ->update(['cek' => 1]);
+                $message = 'Data berhasil di-approve';
                 break;
 
             case 'status':
                 Nota::whereIn('id', $this->selectedIds)
                     ->update(['status' => 1]);
+                $message = 'Status berhasil diupdate';
                 break;
 
             case 'print':
                 $ids = implode(',', $this->selectedIds);
+                
+                // Update print status
+                Nota::whereIn('id', $this->selectedIds)
+                    ->update(['print' => 1]);
 
-                // reset supaya tidak ke-trigger ulang
-                $this->reset(['selectedIds', 'bulkAction']);
+                $this->reset(['selectedIds', 'bulkAction', 'selectAll']);
 
-                return redirect()->route('nota.print.bulk', [
-                    'ids' => $ids
-                ]);
+                return redirect()->route('nota.print.bulk', ['ids' => $ids]);
 
             default:
                 $this->dispatch('alert', [
@@ -139,62 +169,66 @@ class Index extends Component
                 return;
         }
 
-        // reset setelah aksi
-        $this->reset([
-            'selectedIds',
-            'selectAll',
-            'bulkAction',
-        ]);
+        // Reset setelah aksi
+        $this->reset(['selectedIds', 'selectAll', 'bulkAction']);
 
         $this->dispatch('alert', [
             'type' => 'success',
-            'message' => 'Bulk action berhasil'
+            'message' => $message ?? 'Bulk action berhasil'
         ]);
     }
 
-    // Method untuk toggle select all
     public function toggleSelectAll()
     {
-        // Ambil semua ID dari halaman saat ini
-        $currentPageIds = Nota::where(function ($q) {
-                $q->where('pembeli', 'like', '%' . $this->search . '%')
-                ->orWhere('status', 'like', '%' . $this->search . '%');
-            })
-            ->orderBy($this->sortField, $this->sortDirection)
+        $currentPageIds = $this->baseQuery()
             ->paginate($this->paginate)
             ->pluck('id')
             ->toArray();
 
-        // Toggle: jika sudah ada yang terselect, hapus semua. Jika belum, select semua
         if (count(array_intersect($currentPageIds, $this->selectedIds)) === count($currentPageIds)) {
-            // Unselect semua di halaman ini
             $this->selectedIds = array_values(array_diff($this->selectedIds, $currentPageIds));
             $this->selectAll = false;
         } else {
-            // Select semua di halaman ini (merge dengan yang sudah ada)
             $this->selectedIds = array_values(array_unique(array_merge($this->selectedIds, $currentPageIds)));
             $this->selectAll = true;
         }
     }
 
-    // Update selectAll status ketika individual checkbox berubah
     public function updatedSelectedIds()
     {
-        $currentPageIds = SuratJalan::where(function ($q) {
-                $q->where('pembeli', 'like', '%' . $this->search . '%')
-                ->orWhere('status', 'like', '%' . $this->search . '%');
-            })
-            ->orderBy($this->sortField, $this->sortDirection)
+        $currentPageIds = $this->baseQuery()
             ->paginate($this->paginate)
             ->pluck('id')
             ->toArray();
 
-        // Check apakah semua ID di halaman ini sudah dicentang
         if (empty($currentPageIds)) {
             $this->selectAll = false;
         } else {
             $this->selectAll = count(array_intersect($currentPageIds, $this->selectedIds)) === count($currentPageIds);
         }
+    }
+
+    public function updatedBulkAction($value)
+    {
+        // Jika value kosong, skip
+        if (empty($value)) {
+            return;
+        }
+
+        // Validasi
+        if (empty($this->selectedIds)) {
+            $this->dispatch('alert', [
+                'type' => 'error',
+                'message' => 'Pilih data terlebih dahulu'
+            ]);
+            $this->bulkAction = ''; // Reset
+            return;
+        }
+
+        // Dispatch event untuk konfirmasi
+        $this->dispatch('confirm-bulk-action', [
+            'action' => $value
+        ]);
     }
 
     public function printBulk(Request $request)
@@ -205,6 +239,23 @@ class Index extends Component
         return view('nota.print-bulk', compact('notas'));
     }
 
+    public function confirmBulkAction()
+    {
+        if (!$this->bulkAction) return;
 
+        if (empty($this->selectedIds)) {
+            $this->dispatch('alert', [
+                'type' => 'error',
+                'message' => 'Pilih data terlebih dahulu'
+            ]);
+
+            $this->reset('bulkAction');
+            return;
+        }
+
+        $this->dispatch('confirm-bulk-action', [
+            'action' => $this->bulkAction
+        ]);
+    }
         
 }

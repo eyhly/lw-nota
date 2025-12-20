@@ -46,28 +46,69 @@
                     </div>
                 </div>
                 <div class="col-md-5">
-                    <div class="col-md-8 mb-2">
-                        <label>Pembeli</label>
-                        <input type="text" wire:model="pembeli" class="form-control">
-                    </div>
-                    <div class="col-md-8 mb-2">
-                        <label>Nama Toko</label>
-                        <input type="text" wire:model="nama_toko" class="form-control">
-                    </div>
-                    
-                    <div class="col-md-8 mb-2">
-                        <label>Alamat</label>
-                        <input type="text" wire:model="alamat" class="form-control"/>
+                    <div class="row">
+                        <div class="col-md-8 mb-2">
+                            <label>Pembeli</label>
+                            <input type="text" wire:model="pembeli" class="form-control">
+                        </div>
+                        <div class="col-md-8 mb-2">
+                            <label>Nama Toko</label>
+                            <input type="text" wire:model="nama_toko" class="form-control">
+                        </div>
+                        
+                        <div class="col-md-8 mb-2">
+                            <label>Alamat</label>
+                            <input type="text" wire:model="alamat" class="form-control"/>
+                        </div>
                     </div>
                 </div>
                 
             </div>
-            <div class="d-flex justify-content-end">
+            <div class="d-flex justify-content-end align-items-center">
                 <a href="{{ route('nota.print.update', $nota->id) }}" 
                 target="_blank" 
-                class="btn btn-sm btn-warning">
+                class="btn btn-sm btn-warning mr-4">
                     <i class="fas fa-print mr-1"></i> Print
                 </a>
+
+                    <div class="d-flex align-items-center text-center mr-4">
+                        <input
+                            type="checkbox"
+                            wire:click="toggleCek({{ $nota->id }})"
+                            wire:loading.attr="disabled"
+                            wire:target="toggleCek({{ $nota->id }})"
+                            @checked($nota->cek == 1)
+                        >
+
+                        <span class="ml-2">
+                            Cek
+                        </span>
+
+                        {{-- Loader --}}
+                        <span class="ml-2" wire:loading wire:target="toggleCek({{ $nota->id }})">
+                            <i class="fas fa-spinner fa-spin text-primary"></i>
+                        </span>
+                    </div>
+
+                    <div class="d-flex align-items-center text-center mr-4">
+                        <input
+                            type="checkbox"
+                            wire:click="togglePrint({{ $nota->id }})"
+                            wire:loading.attr="disabled"
+                            wire:target="togglePrint({{ $nota->id }})"
+                            @checked($nota->print == 1)
+                        >
+
+                        <span class="ml-2">
+                            Print
+                        </span>
+
+                        {{-- Loader --}}
+                        <span class="ml-2" wire:loading wire:target="togglePrint({{ $nota->id }})">
+                            <i class="fas fa-spinner fa-spin text-primary"></i>
+                        </span>
+                    </div>
+
             </div>
                     
     </div>
@@ -76,7 +117,20 @@
 
     {{-- Tabel detail --}}
   
-    <table class="table table-striped table-bordered">
+    <table class="table table-striped table-bordered uppercase">
+
+        <colgroup>
+            <col style="width: 40px">      <!-- No -->
+            <col style="width: 320px">     <!-- Nama Barang -->
+            <col style="width: 140px">     <!-- Coly -->
+            <col style="width: 140px">     <!-- Qty Isi -->
+            <col style="width: 90px">      <!-- Subtotal Qty -->
+            <col style="width: 130px">     <!-- Harga -->
+            <col style="width: 100px">      <!-- Diskon -->
+            <col style="width: 160px">     <!-- Total -->
+            <col style="width: 90px">      <!-- Aksi -->
+        </colgroup>
+
         <thead>
             <tr>
                 <th>No</th>
@@ -146,30 +200,85 @@
                             {{-- Diskon --}}
                             <td>
                                 @if ($editIndex === $index)
-                                    <input type="number" class="form-control" wire:model="editData.diskon">
+
+                                    @foreach ((array) ($editData['diskon'] ?? []) as $d => $val)
+                                        <div class="d-flex align-items-center mb-1">
+                                            <input type="number"
+                                                class="form-control me-1 mr-2"
+                                                wire:model="editData.diskon.{{ $d }}"
+                                                placeholder="%">
+
+                                            <i class="fas fa-times text-danger"
+                                            style="cursor:pointer"
+                                            wire:click="removeEditDiskon({{ $d }})">
+                                            </i>
+                                        </div>
+                                    @endforeach
+
+                                    <button class="btn btn-sm btn-success d-flex align-items-center"
+                                            wire:click="addEditDiskon">
+                                        <span>+</span> Diskon
+                                    </button>
+
                                 @else
-                                    {{ $detail->diskon }}%
+                                    {{ implode(' + ', (array) ($detail->diskon ? explode(',', $detail->diskon) : [])) }}
                                 @endif
                             </td>
 
                             {{-- Total --}}
                             <td>
                                 @if ($editIndex === $index)
-                                    {{ number_format(($editData['coly'] * $editData['qty_isi'] * $editData['harga']) * (1 - ($editData['diskon']/100))) }}
+                                    @php
+                                        $rowDiskon = array_sum((array) ($editData['diskon'] ?? []));
+                                    @endphp
+                                    {{ number_format($editData['total']) }}
                                 @else
                                     {{ number_format($detail->total) }}
                                 @endif
                             </td>
 
                             {{-- Aksi --}}
-                            <td>
-                                @if ($editIndex === $index)
-                                    <button wire:click="saveEdit" class="btn btn-success btn-sm">Simpan</button>
-                                    <button wire:click="cancelEdit" class="btn btn-secondary btn-sm">Batal</button>
-                                @else
-                                    <button wire:click="startEdit({{ $index }}, {{ $detail->id }})" class="btn btn-primary btn-sm">Edit</button>
-                                    <button wire:click="deleteDetail({{ $detail->id }})" class="btn btn-danger btn-sm">Hapus</button>
-                                @endif
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-2">
+                                    @if ($editIndex === $index)
+
+                                        {{-- Simpan --}}
+                                        <button type="button"
+                                                wire:click="saveEdit"
+                                                class="btn btn-success btn-sm mr-2"
+                                                title="Simpan">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+
+                                        {{-- Batal --}}
+                                        <button type="button"
+                                                wire:click="cancelEdit"
+                                                class="btn btn-secondary btn-sm"
+                                                title="Batal">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+
+                                    @else                                    
+
+                                        {{-- Edit --}}
+                                        <button type="button"
+                                                wire:click="startEdit({{ $index }}, {{ $detail->id }})"
+                                                class="btn btn-primary btn-sm mr-2"
+                                                title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+
+                                        {{-- Hapus --}}
+                                        <button type="button"
+                                                wire:click="deleteDetail({{ $detail->id }})"
+                                                class="btn btn-danger btn-sm"
+                                                title="Hapus"
+                                                onclick="return confirm('Yakin hapus data ini?')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                     @empty
@@ -179,17 +288,18 @@
                     @endforelse
                 @if($nota->details->count() > 0)
                 <tr> 
-                    <td class="text-right text-bold" colSpan="8">Subtotal:</td> 
-                    <td >Rp{{ number_format($subtotal, 0, ',', '.') }}</td> 
+                    <td class="text-right text-bold" colSpan="7">Subtotal:</td> 
+                    <td colSpan="2">Rp{{ number_format($subtotal, 0, ',', '.') }}</td> 
                 </tr> 
                 <tr> 
-                    <td class="text-right text-bold" colSpan="8">Diskon:</td> 
-                    <td>{{ $diskon_persen }}% (Rp{{ number_format($diskon_rupiah, 0, ',', '.') }})</td> 
+                    <td class="text-right text-bold" colSpan="7">Diskon:</td> 
+                    <td colSpan="2">{{ $diskon_persen }}% (Rp{{ number_format($diskon_rupiah, 0, ',', '.') }})</td> 
                 </tr> 
                 <tr> 
-                    <td class="text-right text-bold" colSpan="8">Total Harga:</td> 
-                    <td>Rp{{ number_format($total_harga, 0, ',', '.') }}</td> 
+                    <td class="text-right text-bold" colSpan="7">Total Harga:</td> 
+                    <td colSpan="2">Rp{{ number_format($total_harga, 0, ',', '.') }}</td> 
                 </tr>
+                
                 @endif               
         </tbody>
 

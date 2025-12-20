@@ -29,6 +29,9 @@ class Detail extends Component
         $this->nama_toko    = $this->nota->nama_toko;
         $this->alamat    = $this->nota->alamat;
         $this->jt_tempo  = $this->nota->jt_tempo;
+        $this->diskon_persen  = $this->nota->diskon_persen ?? 0;
+        $this->diskon_rupiah  = $this->nota->diskon_rupiah ?? 0;
+        $this->total_harga    = $this->nota->total_harga ?? 0;
     }
 
     public function updateNota()
@@ -69,23 +72,43 @@ class Detail extends Component
             'jumlah'      => $detail->jumlah,
             'harga'       => $detail->harga,
             'total_harga' => $detail->total_harga,
-            'diskon'      => $$detail->diskon
+            'diskon'      => $detail->diskon
                                     ? explode(',', $detail->diskon)
                                     : [],
             'total'       => $detail->total,
         ];
+
+        $this->recalcEditTotal();
     }
 
     public function saveEdit()
     {
-        $detail = DetailNota::find($this->editData['id']);
+       $detail = DetailNota::find($this->editData['id']);
 
-        // Hitung ulang jumlah & total sebelum update
-        $this->editData['jumlah'] = $this->editData['coly'] * $this->editData['qty_isi'];
-        $diskonPersen = floatval($this->editData['diskon']) / 100;
-        $this->editData['total'] = ($this->editData['jumlah'] * $this->editData['harga']) * (1 - $diskonPersen);
+// jumlah barang
+$this->editData['jumlah'] =
+    (int) $this->editData['coly'] * (int) $this->editData['qty_isi'];
 
-        $detail->update($this->editData);
+// total diskon persen
+$diskon = array_sum(
+    array_map('floatval', (array) ($this->editData['diskon'] ?? []))
+);
+
+// subtotal
+$subtotal = $this->editData['jumlah'] * (int) $this->editData['harga'];
+
+// total setelah diskon
+$this->editData['total'] =
+    $subtotal * (1 - ($diskon / 100));
+
+// simpan diskon ke DB
+$this->editData['diskon'] = implode(', ', array_map(
+    'strval',
+    $this->editData['diskon'] ?? []
+));
+
+$detail->update($this->editData);
+
 
         // refresh data
         $this->nota = Nota::with('details')->find($this->nota->id);
@@ -99,6 +122,59 @@ class Detail extends Component
         $this->editIndex = null;
         $this->editData = [];
     }
+
+    public function addEditDiskon()
+    {
+        if (!is_array($this->editData['diskon'])) {
+            $this->editData['diskon'] = [];
+        }
+
+        $this->editData['diskon'][] = 0;
+    }
+
+    public function removeEditDiskon($index)
+    {
+        unset($this->editData['diskon'][$index]);
+        $this->editData['diskon'] = array_values($this->editData['diskon']);
+    }
+
+    public function updatedEditData($value, $name)
+    {
+        if (
+            str_contains($name, 'coly') ||
+            str_contains($name, 'qty_isi') ||
+            str_contains($name, 'harga') ||
+            str_contains($name, 'diskon')
+        ) {
+            $this->recalcEditTotal();
+        }
+    }
+
+    private function recalcEditTotal()
+    {
+        if (empty($this->editData)) return;
+
+        $coly  = (int) ($this->editData['coly'] ?? 0);
+        $qty   = (int) ($this->editData['qty_isi'] ?? 0);
+        $harga = (int) ($this->editData['harga'] ?? 0);
+
+        $diskon = array_sum(
+            array_map('floatval', (array) ($this->editData['diskon'] ?? []))
+        );
+
+        // guard
+        $diskon = min($diskon, 100);
+
+        $jumlah = $coly * $qty;
+        $subtotal = $jumlah * $harga;
+
+        $this->editData['jumlah'] = $jumlah;
+        $this->editData['total']  = round(
+            $subtotal * (1 - ($diskon / 100))
+        );
+    }
+
+
 
     public function deleteDetail($id)
     {
@@ -138,8 +214,8 @@ class Detail extends Component
     public function render()
     {
         $this->subtotal    = $this->getSubtotalProperty();
-        $this->total_harga = $this->getTotalHargaProperty();
         $this->total_coly  = $this->getTotalColyProperty();
+        $this->total_harga = $this->getTotalHargaProperty();
 
         return view('livewire.nota.detail')->layout('layouts.app');
     }
@@ -153,6 +229,26 @@ class Detail extends Component
 
         // redirect ke halaman PDF
         return redirect()->route('pdf.index', $id);
+    }
+
+    public function toggleCek($id)
+    {
+        $item = Nota::find($id);
+
+        if ($item) {
+            $item->cek = $item->cek == 1 ? 0 : 1;
+            $item->save();
+        }
+    }
+
+    public function togglePrint($id)
+    {
+        $item = Nota::find($id);
+
+        if ($item) {
+            $item->print = $item->print == 1 ? 0 : 1;
+            $item->save();
+        }
     }
 
 }

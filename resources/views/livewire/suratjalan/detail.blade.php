@@ -124,9 +124,7 @@
 
         @if($suratjalan->detailsj->count() > 0)
             <tr>
-                <td class="text-right" colspan="2"><strong>Total Coly :</strong></td>
-                <td colspan="2"><strong>{{ $this->totalColy }}</strong></td>
-                <td></td>
+                <td class="text-left" colspan="4"><strong>Total Coly : <span class="ml-2">{{ $this->totalColy }}</span></strong></td>
             </tr>
         @endif
     </tbody>

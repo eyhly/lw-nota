@@ -143,42 +143,48 @@ class Create extends Component
     }
 
     public function store()
-    {
-        $this->validate([
-            'no_nota' => 'required|unique:nota,no_nota',
-            'pembeli' => 'required',
-            'nama_toko' => 'required',
-            'alamat' => 'required',
-            'tanggal' => 'required|date',
+{
+    $this->validate([
+        'no_nota' => 'required|unique:nota,no_nota',
+        'pembeli' => 'required',
+        'nama_toko' => 'required',
+        'alamat' => 'required',
+        'tanggal' => 'required|date',
+    ]);
+
+    // 🔥 PAKSA HITUNG ULANG (INI KUNCINYA)
+    $this->subtotal     = $this->getSubtotalProperty();
+    $this->total_coly   = $this->getTotalColyProperty();
+    $this->total_harga  = $this->getTotalHargaProperty();
+
+    DB::transaction(function () {
+        $nota = Nota::create([
+            'no_nota'        => $this->no_nota,
+            'pembeli'        => $this->pembeli,
+            'nama_toko'      => $this->nama_toko,
+            'alamat'         => $this->alamat,
+            'tanggal'        => $this->tanggal,
+
+            // ✅ SEKARANG PASTI BENAR
+            'subtotal'       => $this->subtotal,
+            'diskon_persen'  => $this->diskon_persen ?? 0,
+            'diskon_rupiah'  => $this->diskon_rupiah ?? 0,
+            'total_harga'    => $this->total_harga,
+            'total_coly'     => $this->total_coly,
+
+            'jt_tempo'       => $this->jt_tempo,
+            'status'         => 1,
         ]);
 
-        DB::transaction(function() {
-            $nota = Nota::create([
-                'no_nota' => $this->no_nota,
-                'pembeli' => $this->pembeli,
-                'nama_toko' => $this->nama_toko,
-                'alamat' => $this->alamat,
-                'tanggal' => $this->tanggal,
-                'subtotal' => $this->subtotal,
-                'diskon_persen' => $this->diskon_persen ?? 0,
-                'diskon_rupiah' => $this->diskon_rupiah ?? 0,
-                'total_harga' => $this->total_harga,
-                'total_coly' => $this->total_coly,
-                'jt_tempo' => $this->jt_tempo,
-                'status'         => 1,
-            ]);
+        foreach ($this->details as $d) {
+            $d['diskon'] = implode(', ', array_map('strval', $d['diskon'] ?? []));
+            $nota->details()->create($d);
+        }
+    });
 
-            foreach($this->details as $d) {
-                $d['diskon'] = implode(',', $d['diskon'] ?? []);
-                $nota->details()->create($d);
-            }
-        });
+    $this->dispatch('showSuccessAlert');
+}
 
-        // session()->flash('success','Nota berhasil disimpan');
-        // return redirect()->route('nota.index');
-
-        $this->dispatch('showSuccessAlert');
-    }
 
     public function getSubtotalProperty()
     {
@@ -202,6 +208,8 @@ class Create extends Component
         } else {
             $this->diskon_rupiah = 0;
         }
+
+         $this->total_harga = $this->getTotalHargaProperty();
     }
 
     public function updatedDiskonRupiah($value)
@@ -211,6 +219,8 @@ class Create extends Component
         } else {
             $this->diskon_persen = 0;
         }
+
+        $this->total_harga = $this->getTotalHargaProperty();
     }
 
     public function getTotalColyProperty()
@@ -254,8 +264,8 @@ class Create extends Component
     public function render()
     {
         $this->subtotal = $this->getSubtotalProperty();
-        $this->total_harga = $this->getTotalHargaProperty();
         $this->total_coly = $this->getTotalColyProperty();
+        $this->total_harga = $this->getTotalHargaProperty();
 
         return view('livewire.nota.create');
     }

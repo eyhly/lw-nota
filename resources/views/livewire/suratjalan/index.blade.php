@@ -29,9 +29,9 @@
         <div class="card-header">
           <div class="d-flex justify-content-between">
             <div>              
-              <button wire:click="create" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#createModal">
+              <a wire:navigate href="{{ route('suratjalan.create') }}" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#createModal">
               <i class="fas fa-plus mr-1"></i>  
-              Tambah Data</button>
+              Tambah Data</a>
             </div>
             <div class="btn-group dropleft">
               <button type="button" class="btn btn-sm btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
@@ -50,18 +50,41 @@
           </div>
         </div>
         <div class="card-body">
-          <div class="mb-3 d-flex justify-content-between">
-            <div class="col-2">
-              <select wire:model.live="paginate" class="form-control">
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-              </select>
-            </div>
-            <div class="col-6">
-              <input wire:model.live="search" type="text" placeholder="Masukkan Kata Kunci" class="form-control">
-            </div>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+              {{-- Info data --}}
+              <div class="text-muted small">
+                  Menampilkan {{ $suratjalan->count() }} dari {{ $suratjalan->total() }} data
+              </div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center mb-3">
+              {{-- Jumlah tampil --}}
+              <div class="d-flex align-items-center">
+                  <span class="text-muted mr-2">Tampilkan</span>
+                  <select wire:model.live="paginate" class="form-control form-control-sm w-auto">
+                      <option value="10">10</option>
+                      <option value="25">25</option>
+                      <option value="50">50</option>
+                  </select>
+                  <span class="text-muted ml-2">data</span>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center" style="width: 350px;">
+                    {{-- Search --}}
+              <div style="width: 200px;">
+                  <input
+                      wire:model.live="search"
+                      type="text"
+                      class="form-control form-control-sm"
+                      placeholder="Cari data..."
+                  >
+              </div>
+
+                  {{-- Pagination atas --}}
+              <div class="d-flex align-items-center mt-2">
+                  {{ $suratjalan->links('pagination::bootstrap-4') }}
+              </div>
+              </div>
           </div>
 
           <div class="table-responsive">
@@ -159,20 +182,30 @@
                   @endforeach
                 </tbody>
               </table>
-              {{ $suratjalan->links()}}
+              
+              <div class="d-flex justify-content-between align-items-center mt-3">
+              {{-- Bulk action --}}
+              <div class="d-flex align-items-center">
+                  <span class="text-muted mr-2">With selected:</span>
 
-              <div class="mt-2 d-flex align-items-between gap-2">
-                  <select wire:model="bulkAction" class="form-control w-auto" required>
-                      <option value="">Pilih Aksi</option>
+                  <select wire:model="bulkAction" class="form-control form-control-sm w-auto mr-2">
+                      <option value="">Pilih aksi</option>
                       <option value="delete">Delete</option>
                       <option value="approve">Approve</option>
+                      <option value="status">Status</option>
                       <option value="print">Print</option>
                   </select>
-                  
-                  <button type="submit" class="btn btn-primary">
-                      Jalankan
+
+                  <button type="submit" class="btn btn-sm btn-primary">
+                      Go
                   </button>
               </div>
+
+              {{-- Pagination bawah --}}
+              <div>
+                  {{ $suratjalan->links('pagination::bootstrap-4') }}
+              </div>
+          </div>
             </form>
           </div>
         </div>

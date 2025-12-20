@@ -31,9 +31,9 @@
         <div class="card-header">
           <div class="d-flex justify-content-between">
             <div>              
-              <button wire:navigate href="{{ route('nota.create')}}" class="btn btn-sm btn-primary" data-toggle="modal">
+              <a wire:navigate href="{{ route('nota.create')}}" class="btn btn-sm btn-primary" data-toggle="modal">
               <i class="fas fa-plus mr-1"></i>  
-              Tambah Data</button>
+              Tambah Data</a>
             </div>
             <div class="btn-group dropleft">
               <button type="button" class="btn btn-sm btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
@@ -52,26 +52,60 @@
           </div>
         </div>
         <div class="card-body">
-          <div class="mb-3 d-flex justify-content-between">
-            <div class="col-2">
-              <select wire:model.live="paginate" class="form-control">
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-              </select>
-            </div>
-            <div class="col-6">
-              <input wire:model.live="search" type="text" placeholder="Masukkan Kata Kunci" class="form-control">
-            </div>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+              {{-- Info data --}}
+              <div class="text-muted small">
+                  Menampilkan {{ $nota->count() }} dari {{ $nota->total() }} data
+              </div>
           </div>
 
-          <div class="table-responsive">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+              {{-- Jumlah tampil --}}
+              <div class="d-flex align-items-center">
+                  <span class="text-muted mr-2">Tampilkan</span>
+                  <select wire:model.live="paginate" class="form-control form-control-sm w-auto">
+                      <option value="10">10</option>
+                      <option value="25">25</option>
+                      <option value="50">50</option>
+                  </select>
+                  <span class="text-muted ml-2">data</span>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center" style="width: 550px;">
+                    {{-- Search --}}
+              <div style="width: 400px;">
+                  <input
+                      wire:model.live="search"
+                      type="text"
+                      class="form-control form-control-sm"
+                      placeholder="Cari data..."
+                  >
+              </div>
+
+                  {{-- Pagination atas --}}
+              <div class="d-flex align-items-center mt-2">
+                  {{ $nota->links('pagination::bootstrap-4') }}
+              </div>
+              </div>
+          </div>
+
+          <div class="table-responsive">            
 
           <form wire:submit.prevent="runBulkAction" wire:key="bulk-form-{{ count($selectedIds) }}">
             @csrf
 
             <table class="table table-hover">
+
+              <colgroup>
+                <col style="width: 40px">      <!-- Check -->
+                <col style="width: 80px">     <!-- No -->
+                <col style="width: 220px">     <!-- Pembeli -->
+                <col style="width: 220px">     <!-- Tanggal -->
+                <col style="width: 120px">      <!-- Print -->
+                <col style="width: 120px">     <!-- Check -->
+                <col style="width: 220px">      <!-- Aksi -->
+              </colgroup>
+
               <thead>
                 <tr>
                   <th><input type="checkbox" wire:click="toggleSelectAll" {{ $selectAll ? 'checked' : '' }} id="selectAllCheckbox"></th>
@@ -132,31 +166,20 @@
                             <span class="text-danger"><i class="fas fa-times fs-5"></i></span>
                         @endif
                     </td>
-                    <td class="text-left">
-                        <label class="text-center switch">
-                            <input 
-                                type="checkbox" 
-                                wire:click="toggleCek({{ $item->id }})"
-                                @checked($item->cek == 1)
-                            >
-                            <span class="slider">
-                                <span class="slider-text">
-                                    @if ($item->cek)
-                                        <i class="fas fa-check fs-5"></i>
-                                    @else
-                                        <i class="text-danger fas fa-times fs-5"></i>
-                                    @endif
-                                </span>
-                            </span>
-                        </label>
-                    </td>
+                    <td>
+                        @if($item->cek === 1)
+                            <span class="text-success"><i class="fas fa-check fs-5"></i></span>
+                        @else
+                            <span class="text-danger"><i class="fas fa-times fs-5"></i></span>
+                        @endif
+                    </td>                    
                     <td>
                       <a wire:navigate href="{{ route('nota.detail', $item->id) }}" class="btn btn-sm btn-info" data-toggle="modal" data-target="#editModal">
                         <i class="fas fa-eye mr-1"></i>Detail
                       </a>
-                      <a wire:navigate href="{{ route('nota.detail', $item->id) }}" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#editModal">
+                      <!-- <a wire:navigate href="{{ route('nota.detail', $item->id) }}" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#editModal">
                         <i class="fas fa-edit"></i>
-                      </a>
+                      </a> -->
 
                       <!-- delete -->
                       <button wire:click="confirm({{$item->id}})" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteModal">
@@ -167,27 +190,29 @@
                 @endforeach
               </tbody>
             </table>
-            {{ $nota->links()}}
+            
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              {{-- Bulk action --}}
+              <div class="d-flex align-items-center">
+                  <span class="text-muted mr-2">With selected:</span>
 
-            <div class="d-flex align-items-center gap-2 mt-2">
-              <span class="text-muted">
-                  With selected:
-              </span>
+                  <select
+                     wire:model.live="bulkAction"                      
+                      class="form-control form-control-sm w-auto mr-2"                      
+                      id="bulkActionSelect"
+                  >
+                      <option value="">Pilih aksi</option>
+                      <option value="delete">Delete</option>
+                      <option value="approve">Approve</option>
+                      <option value="status">Status</option>
+                      <option value="print">Print</option>
+                  </select>
+              </div>
 
-              <select wire:model="bulkAction" class="form-control form-control-sm w-auto">
-                  <option value="">— Pilih Aksi —</option>
-                  <option value="delete">Delete</option>
-                  <option value="approve">Approve</option>
-                  <option value="status">Status</option>
-                  <option value="print">Print</option>
-              </select>
-
-              <button
-                  type="submit"
-                  class="btn btn-sm btn-primary"
-              >
-                  Go
-              </button>
+              {{-- Pagination bawah --}}
+              <div>
+                  {{ $nota->links('pagination::bootstrap-4') }}
+              </div>
           </div>
         </form>
           </div>
@@ -202,21 +227,24 @@
       <!-- close delete modal -->
     @script
     <script>
+        // Event untuk close delete modal
         $wire.on('closeDeleteModal', () => {
             $('#deleteModal').modal('hide');
             Swal.fire({
-              title: "Berhasil!",
-              text: "Kamu Berhasil Menghapus Data!",
-              icon: "success"
+                title: "Berhasil!",
+                text: "Kamu Berhasil Menghapus Data!",
+                icon: "success"
             }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = "{{ route('nota.index') }}";
-            }
-        });;
+                if (result.isConfirmed) {
+                    window.location.href = "{{ route('nota.index') }}";
+                }
+            });
         });
 
         // Listen untuk alert event dan force uncheck select all
         $wire.on('alert', (event) => {
+             const alertData = data[0] || data;
+
             const checkbox = document.getElementById('selectAllCheckbox');
             if (checkbox) {
                 checkbox.checked = false;
@@ -225,6 +253,70 @@
             // Uncheck semua individual checkbox
             document.querySelectorAll('input[type="checkbox"][wire\\:model\\.live="selectedIds"]').forEach(cb => {
                 cb.checked = false;
+            });
+
+            // Tampilkan alert
+            Swal.fire({
+                title: event.type === 'success' ? 'Berhasil!' : 'Gagal!',
+                text: event.message,
+                icon: event.type,
+            }).then(() => {
+                if (event.type === 'success') {
+                    window.location.href = "{{ route('nota.index') }}";
+                }
+            });
+        });
+
+        // Event untuk konfirmasi bulk action
+        $wire.on('confirm-bulk-action', (data) => {
+            // Ambil action dari data (bisa berupa object atau array)
+            const action = data.action || data[0]?.action || 'aksi ini';
+            
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: `Apakah ingin melakukan aksi ${action}?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, lanjutkan',
+                cancelButtonText: 'Batal',
+                allowOutsideClick: false,
+            }).then((result) => {
+                // if (result.isConfirmed) {
+                //     // Tampilkan loader
+                //     Swal.fire({
+                //         title: 'Memproses...',
+                //         text: 'Mohon tunggu',
+                //         allowOutsideClick: false,
+                //         didOpen: () => {
+                //             Swal.showLoading();
+                //         }
+                //     });
+
+                //     // Jalankan bulk action
+                //     $wire.call('runBulkAction');
+                // } else {
+                //     // Reset action jika dibatalkan
+                //     $wire.set('bulkAction', '');
+                // }
+
+                if(!result.isConfirmed){
+                  Reset action jika dibatalkan
+                  $wire.set('bulkAction', '');
+                  return;
+                }
+
+                // Tutup modal konfirmasi
+                Swal.close();
+
+                // Tampilkan loader
+                Swal.fire({
+                    title: 'Memproses...',
+                    text: 'Mohon tunggu',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
             });
         });
     </script>

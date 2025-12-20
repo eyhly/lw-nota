@@ -14,8 +14,8 @@ class Index extends Component
     protected $paginationTheme = 'bootstrap';
     public $paginate = '10';
     public $search = '';
-    public $sortField = 'tanggal';
-    public $sortDirection = 'asc';
+    public $sortField = null;
+    public $sortDirection = null;
     public bool $selectAll = false;
     public array $selectedIds = [];
     public string $bulkAction = '';
@@ -24,16 +24,23 @@ class Index extends Component
    
     public function render()
     {
-        $suratjalan = SuratJalan::where(function ($q) {
-                $q->where('pembeli', 'like', '%' . $this->search . '%')
-                ->orWhere('status', 'like', '%' . $this->search . '%');
-            })
-            ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate($this->paginate);
+        $query = SuratJalan::where(function ($q) {
+            $q->where('pembeli', 'like', '%' . $this->search . '%')
+            ->orWhere('status', 'like', '%' . $this->search . '%');
+        });
+
+        // Jika sedang sort manual
+        if ($this->sortField && $this->sortDirection) {
+            $query->orderBy($this->sortField, $this->sortDirection);
+        } 
+        // Default: ID terbaru
+        else {
+            $query->orderBy('id', 'desc');
+        }
 
         return view('livewire.suratjalan.index', [
             'title' => 'Data Surat Jalan',
-            'suratjalan' => $suratjalan,
+            'suratjalan' => $query->paginate($this->paginate),
         ]);
     }
 
@@ -45,9 +52,22 @@ class Index extends Component
 
     public function sortBy($field)
     {
+        // Jika klik field yang sama
         if ($this->sortField === $field) {
-            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
+
+            // ASC → DESC
+            if ($this->sortDirection === 'asc') {
+                $this->sortDirection = 'desc';
+            }
+            // DESC → RESET (kembali ke default)
+            else {
+                $this->sortField = null;
+                $this->sortDirection = null;
+            }
+
+        } 
+        // Jika klik field baru
+        else {
             $this->sortField = $field;
             $this->sortDirection = 'asc';
         }
