@@ -34,27 +34,28 @@ class Nota extends Model
         return $this->hasMany(DetailNota::class, 'nota_id', 'id');
     }
 
-    public static function generateNextNoNota(string $tanggal)
+    public static function generateNextNoNota($tanggal)
     {
-        $date = Carbon::createFromFormat('Y-m-d', $tanggal);
-
-        $bulan = $date->format('m');
-        $tahunFull = $date->format('Y');
-        $tahun = $date->format('y');
-
-        $count = self::whereMonth('tanggal', $bulan)
-            ->whereYear('tanggal', $tahunFull)
-            ->where('status', '!=', 0)
-            ->count();
-
-        $urutan = $count + 1;
-
-        return sprintf(
-            'MJ/%s%s/%03d',
-            $tahun,
-            $bulan,
-            $urutan
-        );
+        $date = \Carbon\Carbon::parse($tanggal);
+        
+        // Format: MJ/YYMM/NNN
+        $yearMonth = $date->format('ym'); // 2512 untuk Des 2025
+        $prefix = 'MJ/' . $yearMonth . '/';
+        
+        // Cari nomor terakhir di bulan yang sama
+        $lastNota = self::where('no_nota', 'LIKE', $prefix . '%')
+                        ->orderByRaw('CAST(SUBSTRING(no_nota, -3) AS UNSIGNED) DESC')
+                        ->first();
+        
+        if ($lastNota) {
+            // Ambil 3 digit terakhir
+            $lastNumber = (int) substr($lastNota->no_nota, -3);
+            $newNumber = $lastNumber + 1;
+        } else {
+            $newNumber = 1;
+        }
+        
+        return $prefix . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
     }
 
 }

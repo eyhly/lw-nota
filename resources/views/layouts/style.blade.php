@@ -14,6 +14,11 @@ th{
 td{
   font-size: 1em;
 }
+
+input{
+  font-size: 1em;
+  text-transform: uppercase;
+}
 .switch {
   position: relative;
   display: inline-flex;

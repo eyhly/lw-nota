@@ -122,9 +122,9 @@
         <colgroup>
             <col style="width: 40px">      <!-- No -->
             <col style="width: 320px">     <!-- Nama Barang -->
-            <col style="width: 140px">     <!-- Coly -->
-            <col style="width: 140px">     <!-- Qty Isi -->
-            <col style="width: 90px">      <!-- Subtotal Qty -->
+            <col style="width: 100px">     <!-- Coly -->
+            <col style="width: 100px">     <!-- Qty Isi -->
+            <col style="width: 120px">      <!-- Subtotal Qty -->
             <col style="width: 130px">     <!-- Harga -->
             <col style="width: 100px">      <!-- Diskon -->
             <col style="width: 160px">     <!-- Total -->

@@ -13,6 +13,10 @@ class Create extends Component
     public $details = [];
     public $title = 'Tambah Nota';
 
+    // Untuk edit inline
+    public $editIndex = null;
+    public $editData = [];
+
     public $formDetail = [
         'nama_barang' => '',
         'coly' => 0,
@@ -28,14 +32,12 @@ class Create extends Component
     public function mount($id = null)
     {
         $this->resetForm();
-        // otomatis generate nomor baru
         $this->tanggal  = Carbon::now()->toDateString();
         $this->jt_tempo = Carbon::now()->addMonths(2)->toDateString();
         $this->no_nota = Nota::generateNextNoNota($this->tanggal);
 
         if ($id) {
             $surat = \App\Models\SuratJalan::with('detailsj')->findOrFail($id);
-
             $this->pembeli = $surat->pembeli;
 
             foreach ($surat->detailsj as $detail) {
@@ -47,9 +49,7 @@ class Create extends Component
                     'nama_isi'     => $detail->nama_isi ?? '',
                     'jumlah'       => $detail->coly * ($detail->qty_isi ?? 1),
                     'harga'        => 0,
-                    'diskon'      => $detail->diskon
-                                    ? explode(',', $detail->diskon)
-                                    : [],
+                    'diskon'       => $detail->diskon ? explode(',', $detail->diskon) : [],
                     'total'        => 0,
                 ];
             }
@@ -60,8 +60,6 @@ class Create extends Component
     {
         if ($value) {
             $this->no_nota = Nota::generateNextNoNota($value);
-
-            // opsional: update jatuh tempo ikut tanggal
             $this->jt_tempo = Carbon::parse($value)->addMonths(2)->toDateString();
         }
     }
@@ -85,6 +83,12 @@ class Create extends Component
 
     public function addDetail()
     {
+        // Validasi minimal
+        if (empty($this->formDetail['nama_barang'])) {
+            session()->flash('error', 'Nama barang harus diisi!');
+            return;
+        }
+
         $this->formDetail['diskon'] = array_values(
             array_filter((array) $this->formDetail['diskon'], 'is_numeric')
         );
@@ -94,6 +98,7 @@ class Create extends Component
         $index = count($this->details) - 1;
         $this->recalcRow($index);
 
+        // Reset form
         $this->formDetail = [
             'nama_barang' => '',
             'coly' => 0,
@@ -107,12 +112,80 @@ class Create extends Component
         ];
     }
 
-
     public function removeDetail($index)
     {
         unset($this->details[$index]);
         $this->details = array_values($this->details);
     }
+
+    // ========== EDIT METHODS ==========
+    
+    public function startEdit($index)
+    {
+        $this->editIndex = $index;
+        $this->editData = $this->details[$index];
+    }
+
+    public function saveEdit()
+    {
+        if ($this->editIndex !== null) {
+            // Clean diskon array
+            $this->editData['diskon'] = array_values(
+                array_filter((array) $this->editData['diskon'], 'is_numeric')
+            );
+
+            // Update data
+            $this->details[$this->editIndex] = $this->editData;
+
+            // Recalc
+            $this->recalcRow($this->editIndex);
+
+            // Reset edit mode
+            $this->cancelEdit();
+        }
+    }
+
+    public function cancelEdit()
+    {
+        $this->editIndex = null;
+        $this->editData = [];
+    }
+
+    public function addEditDiskon()
+    {
+        if (!is_array($this->editData['diskon'])) {
+            $this->editData['diskon'] = [];
+        }
+        $this->editData['diskon'][] = 0;
+    }
+
+    public function removeEditDiskon($index)
+    {
+        unset($this->editData['diskon'][$index]);
+        $this->editData['diskon'] = array_values($this->editData['diskon']);
+    }
+
+    public function updatedEditData($value, $name)
+    {
+        // Recalc saat edit data berubah
+        if ($this->editIndex !== null) {
+            $coly  = (int) ($this->editData['coly'] ?? 0);
+            $qty   = (int) ($this->editData['qty_isi'] ?? 0);
+            $harga = (int) ($this->editData['harga'] ?? 0);
+
+            $diskon = array_sum(
+                array_map('intval', (array) ($this->editData['diskon'] ?? []))
+            );
+
+            $jumlah = $coly * $qty;
+            $total  = ($harga * $jumlah) * (1 - ($diskon / 100));
+
+            $this->editData['jumlah'] = $jumlah;
+            $this->editData['total']  = round($total);
+        }
+    }
+
+    // ========== END EDIT METHODS ==========
 
     private function recalcRow($i)
     {
@@ -143,48 +216,49 @@ class Create extends Component
     }
 
     public function store()
-{
-    $this->validate([
-        'no_nota' => 'required|unique:nota,no_nota',
-        'pembeli' => 'required',
-        'nama_toko' => 'required',
-        'alamat' => 'required',
-        'tanggal' => 'required|date',
-    ]);
-
-    // 🔥 PAKSA HITUNG ULANG (INI KUNCINYA)
-    $this->subtotal     = $this->getSubtotalProperty();
-    $this->total_coly   = $this->getTotalColyProperty();
-    $this->total_harga  = $this->getTotalHargaProperty();
-
-    DB::transaction(function () {
-        $nota = Nota::create([
-            'no_nota'        => $this->no_nota,
-            'pembeli'        => $this->pembeli,
-            'nama_toko'      => $this->nama_toko,
-            'alamat'         => $this->alamat,
-            'tanggal'        => $this->tanggal,
-
-            // ✅ SEKARANG PASTI BENAR
-            'subtotal'       => $this->subtotal,
-            'diskon_persen'  => $this->diskon_persen ?? 0,
-            'diskon_rupiah'  => $this->diskon_rupiah ?? 0,
-            'total_harga'    => $this->total_harga,
-            'total_coly'     => $this->total_coly,
-
-            'jt_tempo'       => $this->jt_tempo,
-            'status'         => 1,
+    {
+        $this->validate([
+            'no_nota' => 'required|unique:nota,no_nota',
+            'pembeli' => 'required',
+            'nama_toko' => 'required',
+            'alamat' => 'required',
+            'tanggal' => 'required|date',
         ]);
 
-        foreach ($this->details as $d) {
-            $d['diskon'] = implode(', ', array_map('strval', $d['diskon'] ?? []));
-            $nota->details()->create($d);
+        if (empty($this->details)) {
+            session()->flash('error', 'Minimal harus ada 1 barang!');
+            return;
         }
-    });
 
-    $this->dispatch('showSuccessAlert');
-}
+        // Paksa hitung ulang
+        $this->subtotal     = $this->getSubtotalProperty();
+        $this->total_coly   = $this->getTotalColyProperty();
+        $this->total_harga  = $this->getTotalHargaProperty();
 
+        DB::transaction(function () {
+            $nota = Nota::create([
+                'no_nota'        => $this->no_nota,
+                'pembeli'        => $this->pembeli,
+                'nama_toko'      => $this->nama_toko,
+                'alamat'         => $this->alamat,
+                'tanggal'        => $this->tanggal,
+                'subtotal'       => $this->subtotal,
+                'diskon_persen'  => $this->diskon_persen ?? 0,
+                'diskon_rupiah'  => $this->diskon_rupiah ?? 0,
+                'total_harga'    => $this->total_harga,
+                'total_coly'     => $this->total_coly,
+                'jt_tempo'       => $this->jt_tempo,
+                'status'         => 1,
+            ]);
+
+            foreach ($this->details as $d) {
+                $d['diskon'] = implode(', ', array_map('strval', $d['diskon'] ?? []));
+                $nota->details()->create($d);
+            }
+        });
+
+        $this->dispatch('showSuccessAlert');
+    }
 
     public function getSubtotalProperty()
     {
@@ -209,7 +283,7 @@ class Create extends Component
             $this->diskon_rupiah = 0;
         }
 
-         $this->total_harga = $this->getTotalHargaProperty();
+        $this->total_harga = $this->getTotalHargaProperty();
     }
 
     public function updatedDiskonRupiah($value)
@@ -228,38 +302,20 @@ class Create extends Component
         return collect($this->details)->sum('coly');
     }
 
-    public function addDiskon($index)
-    {
-        if (!is_array($this->details[$index]['diskon'])) {
-            $this->details[$index]['diskon'] = [];
-        }
-
-        $this->details[$index]['diskon'][] = 0;
-    }
-
-    public function removeDiskon($index, $diskonIndex)
-    {
-        unset($this->details[$index]['diskon'][$diskonIndex]);
-        $this->details[$index]['diskon'] = array_values($this->details[$index]['diskon']);
-    }
-
-    // FORM BARU
+    // FORM BARU - Diskon methods
     public function addFormDiskon()
     {
         if (!is_array($this->formDetail['diskon'])) {
             $this->formDetail['diskon'] = [];
         }
-
         $this->formDetail['diskon'][] = 0;
     }
-
 
     public function removeFormDiskon($index)
     {
         unset($this->formDetail['diskon'][$index]);
         $this->formDetail['diskon'] = array_values($this->formDetail['diskon']);
     }
-
 
     public function render()
     {
