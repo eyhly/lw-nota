@@ -243,7 +243,7 @@
 
         // Listen untuk alert event dan force uncheck select all
         $wire.on('alert', (event) => {
-             const alertData = data[0] || data;
+            const alertData = event[0] || event;
 
             const checkbox = document.getElementById('selectAllCheckbox');
             if (checkbox) {
@@ -257,11 +257,11 @@
 
             // Tampilkan alert
             Swal.fire({
-                title: event.type === 'success' ? 'Berhasil!' : 'Gagal!',
-                text: event.message,
-                icon: event.type,
+                title: alertData.type === 'success' ? 'Berhasil!' : 'Gagal!',
+                text: alertData.message,
+                icon: alertData.type,
             }).then(() => {
-                if (event.type === 'success') {
+                if (alertData.type === 'success') {
                     window.location.href = "{{ route('nota.index') }}";
                 }
             });
@@ -274,7 +274,7 @@
             
             Swal.fire({
                 title: 'Konfirmasi',
-                text: `Apakah ingin melakukan aksi ${action}?`,
+                html: `Apakah ingin melakukan aksi <b>${action}</b>?`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Ya, lanjutkan',
@@ -317,6 +317,8 @@
                         Swal.showLoading();
                     }
                 });
+                //jalankan bulk action
+                $wire.call('runBulkAction');
             });
         });
     </script>
