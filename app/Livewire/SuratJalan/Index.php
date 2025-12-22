@@ -24,24 +24,27 @@ class Index extends Component
    
     public function render()
     {
+        return view('livewire.suratjalan.index', [
+            'title' => 'Data Surat Jalan',
+            'suratjalan' => $this->baseQuery()->paginate($this->paginate),
+        ]);
+    }
+
+    private function baseQuery()
+    {
         $query = SuratJalan::where(function ($q) {
             $q->where('pembeli', 'like', '%' . $this->search . '%')
             ->orWhere('status', 'like', '%' . $this->search . '%');
         });
 
-        // Jika sedang sort manual
-        if ($this->sortField && $this->sortDirection) {
+        if ($this->sortField && in_array($this->sortDirection, ['asc', 'desc'])) {
             $query->orderBy($this->sortField, $this->sortDirection);
-        } 
-        // Default: ID terbaru
-        else {
+        } else {
+            // DEFAULT: ID terbaru
             $query->orderBy('id', 'desc');
         }
 
-        return view('livewire.suratjalan.index', [
-            'title' => 'Data Surat Jalan',
-            'suratjalan' => $query->paginate($this->paginate),
-        ]);
+        return $query;
     }
 
     public function updatingPaginate()
@@ -107,6 +110,7 @@ class Index extends Component
         }
     }    
 
+    // Method yang dipanggil setelah konfirmasi
     public function runBulkAction()
     {
         if (empty($this->selectedIds)) {
@@ -118,32 +122,52 @@ class Index extends Component
         }
 
         switch ($this->bulkAction) {
+
             case 'delete':
                 SuratJalan::whereIn('id', $this->selectedIds)->delete();
-                $this->dispatch('alert', [
-                    'type' => 'success',
-                    'message' => 'Data berhasil dihapus'
-                ]);
+                $message = 'Data berhasil dihapus';
                 break;
 
             case 'approve':
                 SuratJalan::whereIn('id', $this->selectedIds)
-                    ->update(['status' => 'sudah']);
-                $this->dispatch('alert', [
-                    'type' => 'success',
-                    'message' => 'Status berhasil diupdate'
-                ]);
+                    ->update(['nota' => 1]);
+                $message = 'Data berhasil dicek';
+                break;
+
+            case 'unapprove':
+                SuratJalan::whereIn('id', $this->selectedIds)
+                    ->update(['nota' => 0]);
+                $message = 'Data batal dicek';
+                break;
+
+            case 'status':
+                SuratJalan::whereIn('id', $this->selectedIds)
+                    ->update(['status' => 1]);
+                $message = 'Status berhasil diupdate';
+                break;
+
+            case 'sprint':
+                SuratJalan::whereIn('id', $this->selectedIds)
+                    ->update(['print' => 1]);
+                $message = 'Status data berhasil diprint';
+                break;
+
+            case 'unprint':
+                SuratJalan::whereIn('id', $this->selectedIds)
+                    ->update(['print' => 0]);
+                $message = 'Status data batal diprint';
                 break;
 
             case 'print':
                 $ids = implode(',', $this->selectedIds);
                 
-                // reset supaya tidak ke-trigger ulang
-                $this->reset(['selectedIds', 'selectAll', 'bulkAction']);
+                // Update print status
+                SuratJalan::whereIn('id', $this->selectedIds)
+                    ->update(['print' => 1]);
 
-                return redirect()->route('nota.print.bulk', [
-                    'ids' => $ids
-                ]);
+                $this->reset(['selectedIds', 'bulkAction', 'selectAll']);
+
+                return redirect()->route('nota.print.bulk', ['ids' => $ids]);
 
             default:
                 $this->dispatch('alert', [
@@ -153,52 +177,92 @@ class Index extends Component
                 return;
         }
 
-        // reset setelah aksi
+        // Reset setelah aksi
         $this->reset(['selectedIds', 'selectAll', 'bulkAction']);
+
+        $this->dispatch('alert', [
+            'type' => 'success',
+            'message' => $message ?? 'Bulk action berhasil'
+        ]);
     }
 
-    // Method untuk toggle select all
     public function toggleSelectAll()
     {
-        // Ambil semua ID dari halaman saat ini
-        $currentPageIds = SuratJalan::where(function ($q) {
-                $q->where('pembeli', 'like', '%' . $this->search . '%')
-                ->orWhere('status', 'like', '%' . $this->search . '%');
-            })
-            ->orderBy($this->sortField, $this->sortDirection)
+        $currentPageIds = $this->baseQuery()
             ->paginate($this->paginate)
             ->pluck('id')
             ->toArray();
 
-        // Toggle: jika sudah ada yang terselect, hapus semua. Jika belum, select semua
         if (count(array_intersect($currentPageIds, $this->selectedIds)) === count($currentPageIds)) {
-            // Unselect semua di halaman ini
             $this->selectedIds = array_values(array_diff($this->selectedIds, $currentPageIds));
             $this->selectAll = false;
         } else {
-            // Select semua di halaman ini (merge dengan yang sudah ada)
             $this->selectedIds = array_values(array_unique(array_merge($this->selectedIds, $currentPageIds)));
             $this->selectAll = true;
         }
     }
 
-    // Update selectAll status ketika individual checkbox berubah
     public function updatedSelectedIds()
     {
-        $currentPageIds = SuratJalan::where(function ($q) {
-                $q->where('pembeli', 'like', '%' . $this->search . '%')
-                ->orWhere('status', 'like', '%' . $this->search . '%');
-            })
-            ->orderBy($this->sortField, $this->sortDirection)
+        $currentPageIds = $this->baseQuery()
             ->paginate($this->paginate)
             ->pluck('id')
             ->toArray();
 
-        // Check apakah semua ID di halaman ini sudah dicentang
         if (empty($currentPageIds)) {
             $this->selectAll = false;
         } else {
             $this->selectAll = count(array_intersect($currentPageIds, $this->selectedIds)) === count($currentPageIds);
         }
+    }
+
+    public function updatedBulkAction($value)
+    {
+        // Jika value kosong, skip
+        if (empty($value)) {
+            return;
+        }
+
+        // Validasi
+        if (empty($this->selectedIds)) {
+            $this->dispatch('alert', [
+                'type' => 'error',
+                'message' => 'Pilih data terlebih dahulu'
+            ]);
+            $this->bulkAction = ''; // Reset
+            return;
+        }
+
+        // Dispatch event untuk konfirmasi
+        $this->dispatch('confirm-bulk-action', [
+            'action' => $value
+        ]);
+    }
+
+    public function printBulk(Request $request)
+    {
+        $ids = explode(',', $request->ids);
+        $notas = SuratJalan::whereIn('id', $ids)->get();
+
+        return view('nota.print-bulk', compact('notas'));
+    }
+
+    public function confirmBulkAction()
+    {
+        if (!$this->bulkAction) return;
+
+        if (empty($this->selectedIds)) {
+            $this->dispatch('alert', [
+                'type' => 'error',
+                'message' => 'Pilih data terlebih dahulu'
+            ]);
+
+            $this->reset('bulkAction');
+            return;
+        }
+
+        $this->dispatch('confirm-bulk-action', [
+            'action' => $this->bulkAction
+        ]);
     }
 }

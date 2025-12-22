@@ -202,10 +202,11 @@
                       id="bulkActionSelect"
                   >
                       <option value="">Pilih aksi</option>
-                      <option value="delete">Delete</option>
-                      <option value="approve">Approve</option>
-                      <option value="status">Status</option>
-                      <option value="print">Print</option>
+                      <option value="sprint">Sudah Cetak</option>
+                      <option value="unprint">Belum Cetak</option>
+                      <option value="approve">Sudah Cek</option>
+                      <option value="unapprove">Belum Cek</option>
+                      <option value="delete">Hapus</option>
                   </select>
               </div>
 
@@ -260,11 +261,7 @@
                 title: alertData.type === 'success' ? 'Berhasil!' : 'Gagal!',
                 text: alertData.message,
                 icon: alertData.type,
-            }).then(() => {
-                if (alertData.type === 'success') {
-                    window.location.href = "{{ route('nota.index') }}";
-                }
-            });
+            })
         });
 
         // Event untuk konfirmasi bulk action
@@ -280,27 +277,10 @@
                 confirmButtonText: 'Ya, lanjutkan',
                 cancelButtonText: 'Batal',
                 allowOutsideClick: false,
-            }).then((result) => {
-                // if (result.isConfirmed) {
-                //     // Tampilkan loader
-                //     Swal.fire({
-                //         title: 'Memproses...',
-                //         text: 'Mohon tunggu',
-                //         allowOutsideClick: false,
-                //         didOpen: () => {
-                //             Swal.showLoading();
-                //         }
-                //     });
-
-                //     // Jalankan bulk action
-                //     $wire.call('runBulkAction');
-                // } else {
-                //     // Reset action jika dibatalkan
-                //     $wire.set('bulkAction', '');
-                // }
+            }).then((result) => {                
 
                 if(!result.isConfirmed){
-                  Reset action jika dibatalkan
+                  // Reset action jika dibatalkan
                   $wire.set('bulkAction', '');
                   return;
                 }

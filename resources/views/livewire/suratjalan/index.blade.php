@@ -122,9 +122,18 @@
                           @endif
                       </th>
 
-                      <th wire:click="sortBy('status')" style="cursor:pointer">
-                          Status
-                          @if ($sortField === 'status')
+                      <th wire:click="sortBy('nota')" style="cursor:pointer">
+                          Nota
+                          @if ($sortField === 'nota')
+                              <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                          @else
+                              <i class="fas fa-sort text-muted"></i>
+                          @endif
+                      </th>
+
+                      <th wire:click="sortBy('print')" style="cursor:pointer">
+                          Print
+                          @if ($sortField === 'print')
                               <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
                           @else
                               <i class="fas fa-sort text-muted"></i>
@@ -148,22 +157,19 @@
                       <td>{{ $loop->iteration }}</td>
                       <td>{{ $item->pembeli }}</td>
                       <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d F Y') }}</td>
-                      <td class="text-left">
-                          <label class="text-center switch">
-                              <input 
-                                  type="checkbox" 
-                                  wire:click="toggleStatus({{ $item->id }})"
-                                  @checked($item->status === 'sudah')>
-                              <span class="slider">
-                                  <span class="slider-text">
-                                      @if ($item->status === 'sudah')
-                                          <i class="fas fa-check fs-5"></i>
-                                      @else
-                                          <i class="text-danger fas fa-times fs-5"></i>
-                                      @endif
-                                  </span>
-                              </span>
-                          </label>
+                      <td>
+                        @if($item->nota === 1)
+                        <span class="text-success"><i class="fas fa-check fs-5"></i></span>
+                        @else
+                        <span class="text-danger"><i class="fas fa-times fs-5"></i></span>
+                        @endif
+                      </td>  
+                      <td>
+                          @if($item->print === 1)
+                              <span class="text-success"><i class="fas fa-check fs-5"></i></span>
+                          @else
+                              <span class="text-danger"><i class="fas fa-times fs-5"></i></span>
+                          @endif
                       </td>
                       <td>
                         <a wire:navigate href="{{ route('suratjalan.detail', $item->id) }}" class="btn btn-sm btn-info" data-toggle="modal" data-target="#editModal">
@@ -188,17 +194,19 @@
               <div class="d-flex align-items-center">
                   <span class="text-muted mr-2">With selected:</span>
 
-                  <select wire:model="bulkAction" class="form-control form-control-sm w-auto mr-2">
+                  <select
+                     wire:model.live="bulkAction"                      
+                      class="form-control form-control-sm w-auto mr-2"                      
+                      id="bulkActionSelect"
+                  >
                       <option value="">Pilih aksi</option>
-                      <option value="delete">Delete</option>
-                      <option value="approve">Approve</option>
-                      <option value="status">Status</option>
-                      <option value="print">Print</option>
+                      <option value="print">Cetak</option>
+                      <option value="sprint">Sudah Cetak</option>
+                      <option value="unprint">Belum Cetak</option>
+                      <option value="approve">Sudah Cek</option>
+                      <option value="unapprove">Belum Cek</option>
+                      <option value="delete">Hapus</option>
                   </select>
-
-                  <button type="submit" class="btn btn-sm btn-primary">
-                      Go
-                  </button>
               </div>
 
               {{-- Pagination bawah --}}
@@ -229,6 +237,8 @@
 
         // Listen untuk alert event dan force uncheck select all
         $wire.on('alert', (event) => {
+            const alertData = event[0] || event;
+
             const checkbox = document.getElementById('selectAllCheckbox');
             if (checkbox) {
                 checkbox.checked = false;
@@ -237,6 +247,51 @@
             // Uncheck semua individual checkbox
             document.querySelectorAll('input[type="checkbox"][wire\\:model\\.live="selectedIds"]').forEach(cb => {
                 cb.checked = false;
+            });
+
+            // Tampilkan alert
+            Swal.fire({
+                title: alertData.type === 'success' ? 'Berhasil!' : 'Gagal!',
+                text: alertData.message,
+                icon: alertData.type,
+            })
+        });
+
+        // Event untuk konfirmasi bulk action
+        $wire.on('confirm-bulk-action', (data) => {
+            // Ambil action dari data (bisa berupa object atau array)
+            const action = data.action || data[0]?.action || 'aksi ini';
+            
+            Swal.fire({
+                title: 'Konfirmasi',
+                html: `Apakah ingin melakukan aksi <b>${action}</b>?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, lanjutkan',
+                cancelButtonText: 'Batal',
+                allowOutsideClick: false,
+            }).then((result) => {                
+
+                if(!result.isConfirmed){
+                  // Reset action jika dibatalkan
+                  $wire.set('bulkAction', '');
+                  return;
+                }
+
+                // Tutup modal konfirmasi
+                Swal.close();
+
+                // Tampilkan loader
+                Swal.fire({
+                    title: 'Memproses...',
+                    text: 'Mohon tunggu',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                //jalankan bulk action
+                $wire.call('runBulkAction');
             });
         });
     </script>

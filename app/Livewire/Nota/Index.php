@@ -141,13 +141,31 @@ class Index extends Component
             case 'approve':
                 Nota::whereIn('id', $this->selectedIds)
                     ->update(['cek' => 1]);
-                $message = 'Data berhasil di-approve';
+                $message = 'Data berhasil dicek';
+                break;
+
+            case 'unapprove':
+                Nota::whereIn('id', $this->selectedIds)
+                    ->update(['cek' => 0]);
+                $message = 'Data batal dicek';
                 break;
 
             case 'status':
                 Nota::whereIn('id', $this->selectedIds)
                     ->update(['status' => 1]);
                 $message = 'Status berhasil diupdate';
+                break;
+
+            case 'sprint':
+                Nota::whereIn('id', $this->selectedIds)
+                    ->update(['print' => 1]);
+                $message = 'Status data berhasil diprint';
+                break;
+
+            case 'unprint':
+                Nota::whereIn('id', $this->selectedIds)
+                    ->update(['print' => 0]);
+                $message = 'Status data batal diprint';
                 break;
 
             case 'print':

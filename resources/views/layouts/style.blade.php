@@ -5,9 +5,11 @@
   <!-- Theme style -->
   <link rel="stylesheet" href="{{ asset('adminlte3/dist/css/adminlte.min.css') }}">
 <style>
-body {
-    text-transform: uppercase;    
+
+table{
+  text-transform: uppercase;
 }
+
 th{
   font-size: 0.88em;
 }
