@@ -11,7 +11,7 @@ class Create extends Component
 {
     public $no_nota,$pembeli,$nama_toko,$alamat,$tanggal,$subtotal=0,$diskon_persen=0,$diskon_rupiah=0,$total_harga=0,$total_coly=0,$jt_tempo;
     public $details = [];
-    public $title = 'Tambah Nota';
+    public $title = 'Buat Nota';
 
     // Untuk edit inline
     public $editIndex = null;
