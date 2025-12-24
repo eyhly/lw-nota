@@ -235,11 +235,7 @@
                 title: "Berhasil!",
                 text: "Kamu Berhasil Menghapus Data!",
                 icon: "success"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "{{ route('nota.index') }}";
-                }
-            });
+            })
         });
 
         // Listen untuk alert event dan force uncheck select all

@@ -65,16 +65,16 @@
                 <div class="font-weight-bold h4">Tambah Barang</div>
                 <div class="row">
                     <!-- Nama Barang -->
-                    <div class="col-md-3 mb-2">
-                        <label class="small">Nama Barang <span class="text-danger">*</span></label>
+                    <div class="col-md-8 mb-2">
+                        <label class="medium">Nama Barang <span class="text-danger">*</span></label>
                         <input type="text" class="form-control form-control-sm" wire:model="formDetail.nama_barang"
                             placeholder="Nama barang">
                     </div>
                 </div>
                 <div class="row">
                     <!-- Coly -->
-                    <div class="col-md-2 mb-2">
-                        <label class="small">Coly</label>
+                    <div class="col-md-3 mb-2">
+                        <label class="medium">Coly</label>
                         <div class="input-group input-group-sm">
                             <input type="number" class="form-control" wire:model="formDetail.coly" placeholder="0"
                                 style="max-width: 70px;">
@@ -84,8 +84,8 @@
                     </div>
 
                     <!-- Qty Isi -->
-                    <div class="col-md-2 mb-2">
-                        <label class="small">Qty Isi</label>
+                    <div class="col-md-3 mb-2">
+                        <label class="medium">Qty Isi</label>
                         <div class="input-group input-group-sm">
                             <input type="number" class="form-control" wire:model="formDetail.qty_isi" placeholder="0"
                                 style="max-width: 70px;">
@@ -95,23 +95,23 @@
                     </div>
 
                     <!-- Total Qty -->
-                    <div class="col-md-1 mb-2">
-                        <label class="small">Total</label>
+                    <div class="col-md-2 mb-2">
+                        <label class="medium">Total</label>
                         <input type="text" class="form-control form-control-sm text-center bg-light"
                             value="{{ $formDetail['coly'] * $formDetail['qty_isi'] }}" readonly>
                     </div>
                 </div>
                 <div class="row">
                     <!-- Harga -->
-                    <div class="col-md-2 mb-2">
-                        <label class="small">Harga</label>
+                    <div class="col-md-3 mb-2">
+                        <label class="medium">Harga</label>
                         <input type="number" class="form-control form-control-sm" wire:model="formDetail.harga"
                             placeholder="0">
                     </div>
 
                     <!-- Diskon -->
                     <div class="col-md-2 mb-2">
-                        <label class="small">Diskon (%)</label>
+                        <label class="medium">Diskon (%)</label>
                         @foreach ((array) ($formDetail['diskon'] ?? []) as $d => $val)
                             <div class="input-group input-group-sm mb-1">
                                 <input type="number" class="form-control"

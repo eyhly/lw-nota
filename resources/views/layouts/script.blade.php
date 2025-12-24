@@ -5,9 +5,23 @@
 <!-- AdminLTE App -->
 <script data-navigate-once src="{{ asset('adminlte3/dist/js/adminlte.min.js')}}"></script>
 
+<!-- sweatalert2 -->
+<script src="{{ asset('sweatalert2/dist/sweetalert2.all.min.js') }}"></script>
+   
+<!-- sweatalert helpers -->
+<script src="{{ asset('js/livewire-swal-helpers.js') }}"></script>
 
-  <!-- sweatalert2 -->
-   <script src="{{ asset('sweatalert2/dist/sweetalert2.all.min.js') }}"></script>
+<script>
+    function bootSwal() {
+        if (typeof initLivewireSwalHandlers === 'function') {
+            initLivewireSwalHandlers();
+        }
+    }
+
+    document.addEventListener('livewire:init', bootSwal);
+    document.addEventListener('livewire:navigated', bootSwal);
+</script>
+
 
 <!-- bulk action -->
  <script>
