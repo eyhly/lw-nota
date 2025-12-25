@@ -6,6 +6,7 @@ use App\Models\Nota;
 use App\Models\DetailNota;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\On;
 use Illuminate\Support\Facades\Hash;
 
 class Index extends Component
@@ -121,6 +122,7 @@ class Index extends Component
     }    
 
     // Method yang dipanggil setelah konfirmasi
+    #[On('run-bulk-action')]
     public function runBulkAction()
     {
         if (empty($this->selectedIds)) {

@@ -1,140 +1,220 @@
 <div>
-    <div class="content-wrapper">
-    <div class="card">
-        <!-- Content Header (Page header) -->
-    <section class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1><strong>{{ $title }}</strong></h1>
-          </div>
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">
-              <i class="fas fa-home mr-1"></i>  
-              Dashboard</a></li>
-              <li class="breadcrumb-item">
-                <i class="fas fa-list mr-1"></i>
-              List Surat Jalan</li>
-              <li class="breadcrumb-item active">
-                <i class="fas fa-eye mr-1"></i>
-              {{ $title }}</li>
-            </ol>
-          </div>
+    <div class="content-wrapper" style="padding: 2rem 3rem;">
+        <!-- NAVIGASI KEMBALI -->
+        <div class="mb-2">
+            <a href="{{ route('suratjalan.index') }}" class="page-back" style="font-size: 14px; color: #2563eb; text-decoration: none;">
+                ← Kembali ke Daftar Surat Jalan
+            </a>
         </div>
-      </div>
-    </section>
 
-        <div class="card-body">
-            <form wire:submit.prevent="updateSurat">
-                <div class="row justify-content-between mb-3">
-                    <div class="col-md-7">
-                        <div class="col-md-6 mb-2">
-                            <label>No Surat</label>
-                            <input type="text" wire:model="no_surat" class="form-control" readonly>
-                        </div>                   
-                        <div class="col-md-6 mb-2">
-                            <label>Tanggal</label>
-                            <input type="date" wire:model="tanggal" class="form-control">
-                        </div>
+        <!-- HEADER -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div style="font-size: 26px; font-weight: 700;">Detail Surat Jalan</div>
+
+            <div class="d-flex">
+                <a href="{{ route('nota.create.fromSurat', $suratjalan->id) }}" 
+                   class="btn btn-success mr-2" 
+                   style="min-width: 110px;">
+                    <i class="fas fa-plus mr-1"></i> Buat Nota
+                </a>
+                <a href="{{ route('pdf.surat', $suratjalan->id) }}" 
+                   target="_blank" 
+                   class="btn btn-warning text-dark"
+                   style="min-width: 110px;">
+                    <i class="fas fa-print mr-1"></i> Cetak
+                </a>
+            </div>
+        </div>
+
+        <form wire:submit.prevent="updateSurat">
+            <!-- INFORMASI SURAT JALAN -->
+            <div class="card mb-4" style="border: 1px solid #e5e7eb; border-radius: 8px;">
+                <div class="card-body">
+                    <div class="font-weight-bold h5 mb-4">Informasi Surat Jalan</div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="d-flex mb-2">
+                                <label style="font-weight: 500; min-width: 130px;">Nomor Surat Jalan</label>
+                                <span class="mx-2">:</span>
+                                <input type="text" 
+                                    wire:model="no_surat" 
+                                    class="form-control form-control-sm mr-5" 
+                                    readonly>
+                            </div>
+
+                            <div class="d-flex mb-2">
+                                <label style="font-weight: 500; min-width: 130px;">Tanggal Surat</label>
+                                <span class="mx-2">:</span>
+                                <input type="date" 
+                                    wire:model="tanggal" 
+                                    class="form-control form-control-sm mr-5">
+                            </div>                            
+                        </div>                       
+                        <div class="col-md-6">                        
+                            <div class="d-flex mb-2">
+                                <label style="font-weight: 500; min-width: 130px;">Nama Pembeli</label>
+                                <span class="mx-2">:</span>
+                                <input type="text" 
+                                    wire:model="pembeli" 
+                                    class="form-control form-control-sm mr-5">
+                            </div>
+
+                            <div class="d-flex mb-2">
+                                <label style="font-weight: 500; min-width: 130px;">Alamat</label>
+                                <span class="mx-2">:</span>
+                                <input type="text" 
+                                    wire:model="alamat" 
+                                    class="form-control form-control-sm mr-5">
+                            </div>
+                        </div>                       
                     </div>
+                </div>
+            </div>
 
-                    <div class="col-md-5">
-                        <div class="mb-2 col-md-8">
-                            <label>Pembeli</label>
-                            <input type="text" wire:model="pembeli" class="form-control">
-                        </div>
-                        <div class="mb-2 col-md-8">
-                            <label>Alamat</label>
-                            <input type="text" wire:model="alamat" class="form-control">
-                        </div>
-                        <div class=" d-flex mb-2 col-md-12">
-                            <a href="{{ route('nota.create.fromSurat', $suratjalan->id) }}" class="btn btn-success mr-3">
-                                <i class="fas fa-plus"></i> Buat Nota dari Surat Jalan
-                            </a>
-                            <!-- <div class="d-flex justify-content-end"> -->
-                                <a href="{{ route('pdf.surat', $suratjalan->id) }}" target="_blank" class="btn btn-sm btn-warning" >
-                                    <i class="fas fa-print mr-1"></i>
-                                    Print
-                                </a>
-                            <!-- </div> -->
-                        </div>
+            <!-- DAFTAR BARANG -->
+            <div class="card py-3 px-4 mb-4">
+              <div class="font-weight-bold h5">Daftar Barang</div>
+
+                <table class="table table-bordered bg-white">
+                    <thead class="table-light">
+                        <tr>
+                            <th>No</th>
+                            <th>Coly / Kemasan</th>
+                            <th>Jumlah Isi</th>
+                            <th>Nama Barang</th>
+                            <th class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($suratjalan->detailsj as $index => $detail)
+                            <tr>
+                                <td>{{ $index + 1 }}</td>
+
+                                {{-- Mode Edit --}}
+                                @if($editIndex === $index)
+                                    <td>
+                                        <div class="input-group input-group-sm">
+                                            <input type="number" 
+                                                   wire:model="editData.coly" 
+                                                   class="form-control"
+                                                   style="max-width: 70px;">
+                                            <input type="text" 
+                                                   wire:model="editData.satuan_coly" 
+                                                   class="form-control"
+                                                   placeholder="Satuan">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="input-group input-group-sm">
+                                            <input type="number" 
+                                                   wire:model="editData.isi" 
+                                                   class="form-control"
+                                                   style="max-width: 70px;">
+                                            <input type="text" 
+                                                   wire:model="editData.nama_isi" 
+                                                   class="form-control"
+                                                   placeholder="Satuan">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <input type="text" 
+                                               wire:model="editData.nama_barang" 
+                                               class="form-control form-control-sm">
+                                    </td>
+                                    <td class="text-center">
+                                        <button type="button"
+                                                wire:click="saveEdit" 
+                                                class="btn btn-sm btn-success">
+                                            <i class="fas fa-check"></i> Simpan
+                                        </button>
+                                        <button type="button"
+                                                wire:click="cancelEdit" 
+                                                class="btn btn-sm btn-secondary">
+                                            <i class="fas fa-times"></i> Batal
+                                        </button>
+                                    </td>
+                                @else
+                                    {{-- Mode Normal --}}
+                                    <td>{{ $detail->coly }} {{ $detail->satuan_coly }}</td>
+                                    <td>{{ $detail->isi }} {{ $detail->nama_isi }}</td>
+                                    <td>{{ $detail->nama_barang }}</td>
+                                    <td class="text-center">
+                                        <button type="button"
+                                                wire:click="startEdit({{ $index }}, {{ $detail->id }})" 
+                                                class="btn btn-sm btn-primary">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button type="button"
+                                                wire:click="deleteDetail({{ $detail->id }})" 
+                                                class="btn btn-sm btn-danger"
+                                                onclick="return confirm('Yakin hapus data ini?')">
+                                            <i class="fas fa-trash"></i> Hapus
+                                        </button>
+                                    </td>
+                                @endif
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-3">
+                                    <i class="fas fa-inbox fa-2x d-block mb-2"></i>
+                                    Tidak ada detail barang
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+
+                @if($suratjalan->detailsj->count() > 0)
+                    <div class="fw-semibold mt-2" style="font-size: 16px;">
+                        Total Coly : {{ $this->totalColy }}
                     </div>
-                </div>            
-             
-
-            <table class="table table-striped table-bordered">
-                <colgroup>
-                    <col style="width: 5%">   {{-- No --}}
-                    <col style="width: 15%">  {{-- Coly --}}
-                    <col style="width: 15%">  {{-- Isi --}}
-                    <col style="width: 45%">  {{-- Nama Barang (LEBAR) --}}
-                    <col style="width: 20%">  {{-- Aksi --}}
-                </colgroup>
-    <thead>
-        <tr>
-            <th>No</th>
-            <th>Coly</th>
-            <th>Isi</th>
-            <th>Nama Barang</th>
-            <th>Aksi</th>
-        </tr>
-    </thead>
-    <tbody>
-        @forelse ($suratjalan->detailsj as $index => $detail)
-            <tr>
-                <td>{{ $index + 1 }}</td>
-
-                {{-- Kalau sedang edit --}}
-                @if($editIndex === $index)
-                    <td>
-                        <div class="d-flex">
-                            <input type="number" wire:model="editData.coly" class="form-control">
-                            <input type="text" wire:model="editData.satuan_coly" class="form-control">
-                        </div>
-                    </td>                    
-                    <td>
-                        <div class="d-flex">
-                            <input type="number" wire:model="editData.isi" class="form-control">
-                            <input type="text" wire:model="editData.nama_isi" class="form-control">
-                        </div>
-                    </td>
-                    <td>
-                        <input type="text" wire:model="editData.nama_barang" class="form-control">
-                    </td>
-                    <td>
-                        <button wire:click="saveEdit" class="btn btn-success btn-sm">Simpan</button>
-                        <button wire:click="cancelEdit" class="btn btn-secondary btn-sm">Batal</button>
-                    </td>
-                @else
-                    <td>{{ $detail->coly }} {{ $detail->satuan_coly }}</td>
-                    <td>{{ $detail->isi }} {{ $detail->nama_isi }}</td>
-                    <td>{{ $detail->nama_barang }}</td>
-                    <td>
-                        <button wire:click="startEdit({{ $index }}, {{ $detail->id }})" class="btn btn-primary btn-sm">Edit</button>
-                        <button wire:click="deleteDetail({{ $detail->id }})" class="btn btn-danger btn-sm">Hapus</button>
-                    </td>
                 @endif
-            </tr>
-        @empty
-            <tr>
-                <td colspan="5" class="text-center">Tidak ada detail barang</td>
-            </tr>
-        @endforelse
+            </div>
 
-        @if($suratjalan->detailsj->count() > 0)
-            <tr>
-                <td class="text-left" colspan="4"><strong>Total Coly : <span class="ml-2">{{ $this->totalColy }}</span></strong></td>
-            </tr>
-        @endif
-    </tbody>
-</table>
-            <button type="submit" class="btn btn-primary">Simpan Surat</button>
+            <!-- FOOTER AKSI -->
+            <div class="d-flex justify-content-between">
+                <a href="{{ route('suratjalan.index') }}" 
+                   class="btn btn-secondary">
+                    <i class="fas fa-arrow-left mr-1"></i> Kembali
+                </a>
+                <button type="submit" 
+                        class="btn btn-primary"
+                        wire:loading.attr="disabled">
+                    <span wire:loading.remove wire:target="updateSurat">
+                        <i class="fas fa-save mr-1"></i> Simpan Surat Jalan
+                    </span>
+                    <span wire:loading wire:target="updateSurat">
+                        <i class="fas fa-spinner fa-spin mr-1"></i> Menyimpan...
+                    </span>
+                </button>
+            </div>
+        </form>
 
-            <a href="{{ route('suratjalan.index') }}" class="btn btn-secondary">Kembali</a>
-            </form>
-        </div>
     </div>
-</div>
 
+    @script
+    <script>
+        // Success alert untuk update
+        $wire.on('suratUpdated', () => {
+            Swal.fire({
+                title: 'Berhasil!',
+                text: 'Data surat jalan berhasil diperbarui.',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        });
+
+        // Alert untuk delete
+        $wire.on('detailDeleted', () => {
+            Swal.fire({
+                title: 'Berhasil!',
+                text: 'Detail barang berhasil dihapus.',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        });
+    </script>
+    @endscript
 </div>

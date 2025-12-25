@@ -1,315 +1,346 @@
 <div>
-    <div class="content-wrapper">
-    <div class="card">
-        <!-- Content Header (Page header) -->
-    <section class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1><strong>{{ $title }}</strong></h1>
-          </div>
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">
-              <i class="fas fa-home mr-1"></i>  
-              Dashboard</a></li>
-              <li class="breadcrumb-item">
-                <i class="fas fa-list mr-1"></i>
-              List Nota</li>
-              <li class="breadcrumb-item active">
-                <i class="fas fa-eye mr-1"></i>
-              {{ $title }}</li>
-            </ol>
-          </div>
+    <div class="content-wrapper" style="padding: 2rem 3rem;">
+        <!-- NAVIGASI KEMBALI -->
+        <div class="mb-2">
+            <a href="{{ route('nota.index') }}" class="page-back" style="font-size: 14px; color: #2563eb; text-decoration: none;">
+                ← Kembali ke List Nota
+            </a>
         </div>
-      </div><!-- /.container-fluid -->
-    </section>
 
-        <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div style="font-size: 26px; font-weight: 700;">Detail Nota</div>
 
-    {{-- Form edit nota utama --}}
-    <div class="mb-4">        
-        <form wire:submit.prevent="updateNota">
-            <div class="row justify-content-between mb-3">
-                <div class="col-md-7">
-                    <div class="col-md-6 mb-2">
-                        <label>No Nota</label>
-                        <input type="text" wire:model="no_nota" class="form-control" readonly>
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <label>Tanggal</label>
-                        <input type="date" wire:model="tanggal" class="form-control">
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <label>Jatuh Tempo</label>
-                        <input type="date" wire:model="jt_tempo" class="form-control">
-                    </div>
-                </div>
-                <div class="col-md-5">
-                    <div class="row">
-                        <div class="col-md-8 mb-2">
-                            <label>Pembeli</label>
-                            <input type="text" wire:model="pembeli" class="form-control">
-                        </div>
-                        <div class="col-md-8 mb-2">
-                            <label>Nama Toko</label>
-                            <input type="text" wire:model="nama_toko" class="form-control">
-                        </div>
-                        
-                        <div class="col-md-8 mb-2">
-                            <label>Alamat</label>
-                            <input type="text" wire:model="alamat" class="form-control"/>
-                        </div>
-                    </div>
-                </div>
-                
-            </div>
-            <div class="d-flex justify-content-end align-items-center">
+            <div class="d-flex">
                 <a href="{{ route('nota.print.update', $nota->id) }}" 
                 target="_blank" 
                 class="btn btn-sm btn-warning mr-4">
                     <i class="fas fa-print mr-1"></i> Print
                 </a>
 
-                    <div class="d-flex align-items-center text-center mr-4">
-                        <input
-                            type="checkbox"
+                    <div class="text-center mr-4">
+                        <button
+                            type="button"
                             wire:click="toggleCek({{ $nota->id }})"
                             wire:loading.attr="disabled"
                             wire:target="toggleCek({{ $nota->id }})"
-                            @checked($nota->cek == 1)
+                            class="btn btn-sm {{ $nota->cek ? 'btn-success' : 'btn-outline-secondary' }}"
+                            style="min-width: 90px;"
                         >
+                            {{-- Cek --}}
+                            <span wire:loading.remove wire:target="toggleCek({{ $nota->id }})">
+                                @if($nota->cek)
+                                    <i class="fas fa-check-circle mr-1"></i> Dicek
+                                @else
+                                    <i class="fas fa-times-circle mr-1"></i> Uncek
+                                @endif
+                            </span>
 
-                        <span class="ml-2">
-                            Cek
-                        </span>
-
-                        {{-- Loader --}}
-                        <span class="ml-2" wire:loading wire:target="toggleCek({{ $nota->id }})">
-                            <i class="fas fa-spinner fa-spin text-primary"></i>
-                        </span>
+                            {{-- Loader --}}
+                            <span wire:loading wire:target="toggleCek({{ $nota->id }})">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </span>
+                        </button>
                     </div>
 
-                    <div class="d-flex align-items-center text-center mr-4">
-                        <input
-                            type="checkbox"
+                    <div class="text-center mr-4">
+                        <button
+                            type="button"
                             wire:click="togglePrint({{ $nota->id }})"
                             wire:loading.attr="disabled"
                             wire:target="togglePrint({{ $nota->id }})"
-                            @checked($nota->print == 1)
+                            class="btn btn-sm {{ $nota->print ? 'btn-success' : 'btn-outline-secondary' }}"
+                            style="min-width: 90px;"
                         >
+                            {{-- Print --}}
+                            <span wire:loading.remove wire:target="togglePrint({{ $nota->id }})">
+                                @if($nota->print)
+                                    <i class="fas fa-check-circle mr-1"></i> Diprint
+                                @else
+                                    <i class="fas fa-times-circle mr-1"></i> Unprint
+                                @endif
+                            </span>
 
-                        <span class="ml-2">
-                            Print
-                        </span>
-
-                        {{-- Loader --}}
-                        <span class="ml-2" wire:loading wire:target="togglePrint({{ $nota->id }})">
-                            <i class="fas fa-spinner fa-spin text-primary"></i>
-                        </span>
-                    </div>
-
+                            {{-- Loader --}}
+                            <span wire:loading wire:target="togglePrint({{ $nota->id }})">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </span>
+                        </button>
+                    </div>                   
             </div>
-                    
-    </div>
+        </div>
 
-    <hr>
-
-    {{-- Tabel detail --}}
-  
-    <table class="table table-striped table-bordered uppercase">
-
-        <colgroup>
-            <col style="width: 40px">      <!-- No -->
-            <col style="width: 320px">     <!-- Nama Barang -->
-            <col style="width: 100px">     <!-- Coly -->
-            <col style="width: 100px">     <!-- Qty Isi -->
-            <col style="width: 120px">      <!-- Subtotal Qty -->
-            <col style="width: 130px">     <!-- Harga -->
-            <col style="width: 100px">      <!-- Diskon -->
-            <col style="width: 160px">     <!-- Total -->
-            <col style="width: 90px">      <!-- Aksi -->
-        </colgroup>
-
-        <thead>
-            <tr>
-                <th>No</th>
-                <th>Nama Barang</th>
-                <th>Coly</th>
-                <th>Qty</th>
-                <th>Total Qty</th>
-                <th>Harga</th>
-                <th>Diskon</th>
-                <th>Total</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-             @forelse ($nota->details as $index => $detail)
-                        <tr>
-                            <td>{{ $index + 1 }}</td>
-
-                            {{-- Nama Isi --}}
-                            <td>
-                                @if ($editIndex === $index)
-                                    <input type="text" class="form-control" wire:model="editData.nama_barang">
-                                @else
-                                    {{ $detail->nama_barang }}
-                                @endif
-                            </td>
-
-                            {{-- Coly --}}
-                            <td>
-                                @if ($editIndex === $index)
-                                <div class="d-flex">
-                                    <input type="number" class="form-control" wire:model="editData.coly">
-                                    <input type="text" class="form-control" wire:model="editData.satuan_coly">
+    <!-- Form edit nota utama -->        
+        <form wire:submit.prevent="updateNota">
+            <div class="card mb-4" style="border: 1px solid #e5e7eb; border-radius: 8px;">
+                <div class="card-body">
+                    <div class="font-weight-bold h5 mb-4">Informasi Nota</div>
+                
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                                <div class="d-flex mb-2">
+                                    <label style="font-weight: 500; min-width: 130px;">Nomor Nota</label>
+                                    <span class="mx-2">:</span>
+                                    <input type="text" 
+                                        wire:model="no_nota" 
+                                        class="form-control form-control-sm mr-5" 
+                                        readonly>
                                 </div>
-                                @else
-                                    {{ $detail->coly }} {{ $detail->satuan_coly }}
-                                @endif
-                            </td>
 
-                            {{-- Qty Isi --}}
-                            <td>
-                                @if ($editIndex === $index)
-                                <div class="d-flex">
-                                    <input type="number" class="form-control" wire:model="editData.qty_isi">
-                                    <input type="text" class="form-control" wire:model="editData.nama_isi">
+                                <div class="d-flex mb-2">
+                                    <label style="font-weight: 500; min-width: 130px;">Tanggal Nota</label>
+                                    <span class="mx-2">:</span>
+                                    <input type="date" 
+                                        wire:model="tanggal" 
+                                        class="form-control form-control-sm mr-5">
+                                </div>      
+
+                                <div class="d-flex mb-2">
+                                    <label style="font-weight: 500; min-width: 130px;">Jatuh Tempo</label>
+                                    <span class="mx-2">:</span>
+                                    <input type="date" 
+                                        wire:model="jt_tempo" 
+                                        class="form-control form-control-sm mr-5">
+                                </div>                            
+                        </div>                
+                        <div class="col-md-6">                        
+                                <div class="d-flex mb-2">
+                                    <label style="font-weight: 500; min-width: 130px;">Nama Pembeli</label>
+                                    <span class="mx-2">:</span>
+                                    <input type="text" 
+                                        wire:model="pembeli" 
+                                        class="form-control form-control-sm mr-5">
                                 </div>
-                                    
-                                @else
-                                    {{ $detail->qty_isi }} {{ $detail->nama_isi }}
-                                @endif
-                            </td>                            
 
-                            {{-- Jumlah --}}
-                            <td>
-                                {{ $editIndex === $index ? ($editData['coly'] * $editData['qty_isi']) : $detail->jumlah . ' ' . $detail->satuan_coly }}
-                            </td>
+                                <div class="d-flex mb-2">
+                                    <label style="font-weight: 500; min-width: 130px;">Nama Toko</label>
+                                    <span class="mx-2">:</span>
+                                    <input type="text" 
+                                        wire:model="nama_toko" 
+                                        class="form-control form-control-sm mr-5">
+                                </div>
 
-                            {{-- Harga --}}
-                            <td>
-                                @if ($editIndex === $index)
-                                    <input type="number" class="form-control" wire:model="editData.harga">
-                                @else
-                                    {{ number_format($detail->harga) }}
-                                @endif
-                            </td>
+                                <div class="d-flex mb-2">
+                                    <label style="font-weight: 500; min-width: 130px;">Alamat</label>
+                                    <span class="mx-2">:</span>
+                                    <input type="text" 
+                                        wire:model="alamat" 
+                                        class="form-control form-control-sm mr-5">
+                                </div>
+                            </div> 
+                    </div>                
+                </div>
+            </div>
+    <!-- Tabel detail -->
+    <div class="card py-3 px-4 mb-4">
+        <div class="font-weight-bold h5">Daftar Barang</div>
+        <table class="table table-bordered bg-white">
 
-                            {{-- Diskon --}}
-                            <td>
-                                @if ($editIndex === $index)
+            <colgroup>
+                <col style="width: 40px">      <!-- No -->
+                <col style="width: 320px">     <!-- Nama Barang -->
+                <col style="width: 100px">     <!-- Coly -->
+                <col style="width: 100px">     <!-- Qty Isi -->
+                <col style="width: 120px">      <!-- Subtotal Qty -->
+                <col style="width: 130px">     <!-- Harga -->
+                <col style="width: 100px">      <!-- Diskon -->
+                <col style="width: 160px">     <!-- Total -->
+                <col style="width: 90px">      <!-- Aksi -->
+            </colgroup>
 
-                                    @foreach ((array) ($editData['diskon'] ?? []) as $d => $val)
-                                        <div class="d-flex align-items-center mb-1">
-                                            <input type="number"
-                                                class="form-control me-1 mr-2"
-                                                wire:model="editData.diskon.{{ $d }}"
-                                                placeholder="%">
+            <thead class="table-light">
+                <tr>
+                    <th>No</th>
+                    <th>Nama Barang</th>
+                    <th>Coly</th>
+                    <th>Qty</th>
+                    <th>Total Qty</th>
+                    <th>Harga</th>
+                    <th>Diskon</th>
+                    <th>Total</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($nota->details as $index => $detail)
+                            <tr>
+                                <td>{{ $index + 1 }}</td>
 
-                                            <i class="fas fa-times text-danger"
-                                            style="cursor:pointer"
-                                            wire:click="removeEditDiskon({{ $d }})">
-                                            </i>
-                                        </div>
-                                    @endforeach
+                                {{-- Nama Isi --}}
+                                <td>
+                                    @if ($editIndex === $index)
+                                        <input type="text" class="form-control" wire:model="editData.nama_barang">
+                                    @else
+                                        {{ $detail->nama_barang }}
+                                    @endif
+                                </td>
 
-                                    <button class="btn btn-sm btn-success d-flex align-items-center"
-                                            wire:click="addEditDiskon">
-                                        <span>+</span> Diskon
-                                    </button>
+                                {{-- Coly --}}
+                                <td>
+                                    @if ($editIndex === $index)
+                                    <div class="d-flex">
+                                        <input type="number" class="form-control" wire:model="editData.coly">
+                                        <input type="text" class="form-control" wire:model="editData.satuan_coly">
+                                    </div>
+                                    @else
+                                        {{ $detail->coly }} {{ $detail->satuan_coly }}
+                                    @endif
+                                </td>
 
-                                @else
-                                    {{ implode(' + ', (array) ($detail->diskon ? explode(',', $detail->diskon) : [])) }}
-                                @endif
-                            </td>
+                                {{-- Qty Isi --}}
+                                <td>
+                                    @if ($editIndex === $index)
+                                    <div class="d-flex">
+                                        <input type="number" class="form-control" wire:model="editData.qty_isi">
+                                        <input type="text" class="form-control" wire:model="editData.nama_isi">
+                                    </div>
+                                        
+                                    @else
+                                        {{ $detail->qty_isi }} {{ $detail->nama_isi }}
+                                    @endif
+                                </td>                            
 
-                            {{-- Total --}}
-                            <td>
-                                @if ($editIndex === $index)
-                                    @php
-                                        $rowDiskon = array_sum((array) ($editData['diskon'] ?? []));
-                                    @endphp
-                                    {{ number_format($editData['total']) }}
-                                @else
-                                    {{ number_format($detail->total) }}
-                                @endif
-                            </td>
+                                {{-- Jumlah --}}
+                                <td>
+                                    {{ $editIndex === $index ? ($editData['coly'] * $editData['qty_isi']) : $detail->jumlah . ' ' . $detail->satuan_coly }}
+                                </td>
 
-                            {{-- Aksi --}}
-                            <td class="text-center">
-                                <div class="d-flex justify-content-center gap-2">
+                                {{-- Harga --}}
+                                <td>
+                                    @if ($editIndex === $index)
+                                        <input type="number" class="form-control" wire:model="editData.harga">
+                                    @else
+                                        {{ number_format($detail->harga) }}
+                                    @endif
+                                </td>
+
+                                {{-- Diskon --}}
+                                <td>
                                     @if ($editIndex === $index)
 
-                                        {{-- Simpan --}}
-                                        <button type="button"
-                                                wire:click="saveEdit"
-                                                class="btn btn-success btn-sm mr-2"
-                                                title="Simpan">
-                                            <i class="fas fa-check"></i>
+                                        @foreach ((array) ($editData['diskon'] ?? []) as $d => $val)
+                                            <div class="d-flex align-items-center mb-1">
+                                                <input type="number"
+                                                    class="form-control me-1 mr-2"
+                                                    wire:model="editData.diskon.{{ $d }}"
+                                                    placeholder="%">
+
+                                                <i class="fas fa-times text-danger"
+                                                style="cursor:pointer"
+                                                wire:click="removeEditDiskon({{ $d }})">
+                                                </i>
+                                            </div>
+                                        @endforeach
+
+                                        <button class="btn btn-sm btn-success d-flex align-items-center"
+                                                wire:click="addEditDiskon">
+                                            <span>+</span> Diskon
                                         </button>
 
-                                        {{-- Batal --}}
-                                        <button type="button"
-                                                wire:click="cancelEdit"
-                                                class="btn btn-secondary btn-sm"
-                                                title="Batal">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-
-                                    @else                                    
-
-                                        {{-- Edit --}}
-                                        <button type="button"
-                                                wire:click="startEdit({{ $index }}, {{ $detail->id }})"
-                                                class="btn btn-primary btn-sm mr-2"
-                                                title="Edit">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-
-                                        {{-- Hapus --}}
-                                        <button type="button"
-                                                wire:click="deleteDetail({{ $detail->id }})"
-                                                class="btn btn-danger btn-sm"
-                                                title="Hapus"
-                                                onclick="return confirm('Yakin hapus data ini?')">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-
+                                    @else
+                                        {{ implode(' + ', (array) ($detail->diskon ? explode(',', $detail->diskon) : [])) }}
                                     @endif
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="9" class="text-center">Tidak ada detail barang</td>
-                        </tr>
-                    @endforelse
-                @if($nota->details->count() > 0)
-                <tr> 
-                    <td class="text-right text-bold" colSpan="7">Subtotal:</td> 
-                    <td colSpan="2">Rp{{ number_format($subtotal, 0, ',', '.') }}</td> 
-                </tr> 
-                <tr> 
-                    <td class="text-right text-bold" colSpan="7">Diskon:</td> 
-                    <td colSpan="2">{{ $diskon_persen }}% (Rp{{ number_format($diskon_rupiah, 0, ',', '.') }})</td> 
-                </tr> 
-                <tr> 
-                    <td class="text-right text-bold" colSpan="7">Total Harga:</td> 
-                    <td colSpan="2">Rp{{ number_format($total_harga, 0, ',', '.') }}</td> 
-                </tr>
-                
-                @endif               
-        </tbody>
+                                </td>
 
-    </table>    
-    <button wire:click="updateNota" type="submit" class="btn btn-primary mt-3">Simpan Nota</button>
+                                {{-- Total --}}
+                                <td>
+                                    @if ($editIndex === $index)
+                                        @php
+                                            $rowDiskon = array_sum((array) ($editData['diskon'] ?? []));
+                                        @endphp
+                                        {{ number_format($editData['total']) }}
+                                    @else
+                                        {{ number_format($detail->total) }}
+                                    @endif
+                                </td>
+
+                                {{-- Aksi --}}
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        @if ($editIndex === $index)
+
+                                            {{-- Simpan --}}
+                                            <button type="button"
+                                                    wire:click="saveEdit"
+                                                    class="btn btn-success btn-sm mr-2"
+                                                    title="Simpan">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+
+                                            {{-- Batal --}}
+                                            <button type="button"
+                                                    wire:click="cancelEdit"
+                                                    class="btn btn-secondary btn-sm"
+                                                    title="Batal">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+
+                                        @else                                    
+
+                                            {{-- Edit --}}
+                                            <button type="button"
+                                                    wire:click="startEdit({{ $index }}, {{ $detail->id }})"
+                                                    class="btn btn-primary btn-sm mr-2"
+                                                    title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+
+                                            {{-- Hapus --}}
+                                            <button type="button"
+                                                    wire:click="deleteDetail({{ $detail->id }})"
+                                                    class="btn btn-danger btn-sm"
+                                                    title="Hapus"
+                                                    onclick="return confirm('Yakin hapus data ini?')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="9" class="text-center">Tidak ada detail barang</td>
+                            </tr>
+                        @endforelse
+                    @if($nota->details->count() > 0)
+                    <tr> 
+                        <td class="text-right text-bold" colSpan="7">Subtotal:</td> 
+                        <td colSpan="2">Rp{{ number_format($subtotal, 0, ',', '.') }}</td> 
+                    </tr> 
+                    <tr> 
+                        <td class="text-right text-bold" colSpan="7">Diskon:</td> 
+                        <td colSpan="2">{{ $diskon_persen }}% (Rp{{ number_format($diskon_rupiah, 0, ',', '.') }})</td> 
+                    </tr> 
+                    <tr> 
+                        <td class="text-right text-bold" colSpan="7">Total Harga:</td> 
+                        <td colSpan="2">Rp{{ number_format($total_harga, 0, ',', '.') }}</td> 
+                    </tr>
+                    
+                    @endif               
+            </tbody>
+
+        </table>
+    </div>
+    <!-- FOOTER AKSI -->
+            <div class="d-flex justify-content-between">
+                <a href="{{ route('nota.index') }}" 
+                   class="btn btn-secondary">
+                    <i class="fas fa-arrow-left mr-1"></i> Kembali
+                </a>
+                <button type="submit" 
+                        class="btn btn-primary"
+                        wire:loading.attr="disabled">
+                    <span wire:loading.remove wire:target="updateNota">
+                        <i class="fas fa-save mr-1"></i> Simpan Nota 
+                    </span>
+                    <span wire:loading wire:target="updateNota">
+                        <i class="fas fa-spinner fa-spin mr-1"></i> Menyimpan...
+                    </span>
+                </button>
+            </div>
     </form>
 </div>
 
-    </div>
-</div>
 @script
 <script>
     $wire.on('notaUpdated', () => {

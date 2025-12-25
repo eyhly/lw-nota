@@ -12,14 +12,19 @@
 <script src="{{ asset('js/livewire-swal-helpers.js') }}"></script>
 
 <script>
-    function bootSwal() {
+    // Init saat pertama load
+    document.addEventListener('DOMContentLoaded', function() {
         if (typeof initLivewireSwalHandlers === 'function') {
             initLivewireSwalHandlers();
         }
-    }
+    });
 
-    document.addEventListener('livewire:init', bootSwal);
-    document.addEventListener('livewire:navigated', bootSwal);
+    // Re-init saat navigasi Livewire (jika pakai wire:navigate)
+    document.addEventListener('livewire:navigated', function() {
+        if (typeof initLivewireSwalHandlers === 'function') {
+            initLivewireSwalHandlers();
+        }
+    });
 </script>
 
 

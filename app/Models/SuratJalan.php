@@ -18,6 +18,8 @@ class SuratJalan extends Model
         'kendaraan',
         'no_kendaraan',        
         'total_coly',
+        'nota',
+        'print',
         'status',
     ];
 

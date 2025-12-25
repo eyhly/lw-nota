@@ -1,129 +1,290 @@
 <div>
-    <div class="content-wrapper px-3">
-    <section class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1><strong>{{ $title }}</strong></h1>
-          </div>
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">
-              <i class="fas fa-home mr-1"></i>  
-              Dashboard</a></li>
-              <li class="breadcrumb-item active">
-                <i class="fas fa-plus mr-1"></i>
-              {{ $title }}</li>
-            </ol>
-          </div>
-        </div>
-      </div>
-    </section>
+    <div class="content-wrapper" style="padding-right: 3rem; padding-left: 3rem;">
+        <section class="content-header">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1><strong>{{ $title }}</strong></h1>
+                </div>
+                <div class="col-sm-6">
+                    <a href="{{ route('suratjalan.index') }}" class="btn btn-secondary mr-2 float-sm-right">
+                        <i class="fas fa-arrow-left mr-1"></i> Kembali
+                    </a>
+                </div>
+            </div>
+        </section>
 
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="mb-2">
-                <label>No Surat Jalan</label>
-                <input type="text" id="no_surat" wire:model="no_surat" readonly class="form-control">
-            </div>
-            <div class="mb-2">
-                <label>Tanggal</label>
-                <input type="date" class="form-control" wire:model="tanggal">
-            </div>
-            <div class="mb-2">
-                <label>Kendaraan</label>
-                <input type="text" class="form-control" wire:model="kendaraan" placeholder="kendaraan">
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="mb-2">
-                <label>Pembeli</label>
-                <input type="text" class="form-control" wire:model="pembeli" placeholder="pembeli">
-            </div>
-            <div class="mb-2">
-                <label>Alamat</label>
-                <input type="text" class="form-control" wire:model="alamat" placeholder="alamat">
-            </div>
-            <div class="mb-2">
-                <label>No Kendaraan</label>
-                <input class="form-control" wire:model="no_kendaraan" placeholder="no kendaraan">
-            </div>
-        </div>
-    </div>
-
-    <table class="table table-bordered table-sm align-middle">
-        <colgroup>
-            <col style="width: 5%">   {{-- No --}}
-            <col style="width: 20%">  {{-- Coly --}}
-            <col style="width: 20%">  {{-- Isi --}}
-            <col style="width: 45%">  {{-- Nama Barang (LEBAR) --}}
-            <col style="width: 10%">  {{-- Aksi --}}
-        </colgroup>
-
-        <thead class="table-secondary text-center">
-            <tr>
-                <th>No</th>
-                <th>Coly</th>
-                <th>Isi</th>
-                <th>Nama Barang</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($detailsj as $i => $item)
-                <tr>
-                    <td class="text-center">{{ $i + 1 }}</td>
-                    <td>{{ $item['coly'] }} {{ $item['satuan_coly'] }}</td>
-                    <td>{{ $item['isi'] }} {{ $item['nama_isi'] }}</td>
-                    <td>{{ $item['nama_barang'] }}</td>
-                    <td class="text-center">
-                        <button wire:click="removeDetail({{ $i }})" class="btn btn-sm btn-danger">Hapus</button>
-                    </td>
-                </tr>
-            @endforeach
-
-            <tr>
-                <td class="text-center">{{ count($detailsj) + 1 }}</td>
-                <td>
-                    <div class="d-flex gap-1">
-                        <input type="number" class="form-control form-control-sm" wire:model="formDetail.coly">
-                        <input type="text" class="form-control form-control-sm" wire:model="formDetail.satuan_coly" placeholder="coly">
+        <!-- Form Header Surat Jalan -->
+        <div class="card p-4 mb-4">
+            <div class="font-weight-bold h4">Informasi Surat Jalan</div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-2">
+                        <label>No Surat Jalan</label>
+                        <input type="text" id="no_surat" wire:model="no_surat" readonly class="form-control">
                     </div>
-                </td>
-
-                <td>
-                    <div class="d-flex gap-1">
-                        <input type="number" class="form-control form-control-sm" wire:model="formDetail.isi">
-                        <input type="text" class="form-control form-control-sm" wire:model="formDetail.nama_isi" placeholder="isi">
+                    <div class="mb-2">
+                        <label>Tanggal</label>
+                        <input type="date" class="form-control" wire:model="tanggal">
                     </div>
-                </td>
+                    <div class="mb-2">
+                        <label>Kendaraan</label>
+                        <input type="text" class="form-control" wire:model="kendaraan" placeholder="Kendaraan">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-2">
+                        <label>Pembeli</label>
+                        <input type="text" class="form-control" wire:model="pembeli" placeholder="Pembeli">
+                    </div>
+                    <div class="mb-2">
+                        <label>Alamat</label>
+                        <input type="text" class="form-control" wire:model="alamat" placeholder="Alamat">
+                    </div>
+                    <div class="mb-2">
+                        <label>No Kendaraan</label>
+                        <input type="text" class="form-control" wire:model="no_kendaraan" placeholder="No Kendaraan">
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                <td>
-                    <input
-                        type="text"
-                        class="form-control form-control-sm"
-                        wire:model="formDetail.nama_barang"
-                        placeholder="nama barang"
-                    >
-                </td>
-                <td class="text-center">
-                    <button wire:click="addDetail" class="btn btn-sm btn-primary">Tambah</button>
-                </td>
-            </tr>
-        </tbody>
-        <tfoot>
-            <tr>                
-                <th colspan="2" class="text-right">
-                Total Coly:               
-                </th>
-                <th>{{ ($this->total_coly) }}</th>
-                <th></th>
-            </tr>
-        </tfoot>
-    </table>
+        <!-- Form Input Barang Baru (di Atas Tabel) -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="font-weight-bold h4">Tambah Barang</div>
+                
+                <div class="row">
+                    <!-- Nama Barang -->
+                    <div class="col-md-8 mb-2">
+                        <label class="medium">Nama Barang <span class="text-danger">*</span></label>
+                        <input type="text" 
+                               class="form-control form-control-sm" 
+                               wire:model="formDetail.nama_barang"
+                               placeholder="Nama barang">
+                    </div>
+                </div>
 
-    <div class="text-right">
-        <button wire:click="store" class="btn btn-success">Simpan Surat</button>
+                <div class="row">
+                    <!-- Coly -->
+                    <div class="col-md-3 mb-2">
+                        <label class="medium">Coly</label>
+                        <div class="input-group input-group-sm">
+                            <input type="number" 
+                                   class="form-control" 
+                                   wire:model.live="formDetail.coly"
+                                   placeholder="0"
+                                   style="max-width: 70px;">
+                            <input type="text" 
+                                   class="form-control" 
+                                   wire:model="formDetail.satuan_coly" 
+                                   placeholder="Satuan">
+                        </div>
+                    </div>
+
+                    <!-- Isi -->
+                    <div class="col-md-3 mb-2">
+                        <label class="medium">Isi</label>
+                        <div class="input-group input-group-sm">
+                            <input type="number" 
+                                   class="form-control" 
+                                   wire:model.live="formDetail.isi"
+                                   placeholder="0"
+                                   style="max-width: 70px;">
+                            <input type="text" 
+                                   class="form-control" 
+                                   wire:model="formDetail.nama_isi"
+                                   placeholder="Satuan">
+                        </div>
+                    </div>
+
+                    <!-- Total (Readonly) -->
+                    <div class="col-md-2 mb-2">
+                        <label class="medium">Total</label>
+                        <input type="text" 
+                            class="form-control form-control-sm text-center bg-light"
+                            wire:model="formTotal"
+                            readonly>
+
+                    </div>
+                </div>
+
+                <!-- Tombol Tambah -->
+                <div class="mt-3 text-right">
+                    <button wire:click="addDetail" 
+                            type="button"
+                            class="btn btn-primary btn-sm">
+                        <i class="fas fa-plus mr-1"></i> Tambah
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabel Daftar Barang -->
+        <div class="card py-3 px-4 mb-0">
+            <div class="font-weight-bold h4">Daftar Barang</div>
+            <table class="table table-bordered table-sm align-middle">
+                <colgroup>
+                    <col style="width: 5%">   <!-- No -->
+                    <col style="width: 45%">  <!-- Nama Barang -->
+                    <col style="width: 20%">  <!-- Coly -->
+                    <col style="width: 20%">  <!-- Isi -->
+                    <col style="width: 10%">  <!-- Aksi -->
+                </colgroup>
+
+                <thead class="table-secondary text-center">
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Barang</th>
+                        <th>Coly</th>
+                        <th>Isi</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($detailsj as $i => $item)
+                        <tr>
+                            <td class="text-center">{{ $i + 1 }}</td>
+
+                            <!-- Nama Barang -->
+                            <td>
+                                @if ($editIndex === $i)
+                                    <input type="text" 
+                                           class="form-control form-control-sm" 
+                                           wire:model="editData.nama_barang">
+                                @else
+                                    {{ $item['nama_barang'] }}
+                                @endif
+                            </td>
+
+                            <!-- Coly -->
+                            <td>
+                                @if ($editIndex === $i)
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" 
+                                               class="form-control" 
+                                               wire:model="editData.coly"
+                                               style="max-width: 70px;">
+                                        <input type="text" 
+                                               class="form-control" 
+                                               wire:model="editData.satuan_coly">
+                                    </div>
+                                @else
+                                    {{ $item['coly'] }} {{ $item['satuan_coly'] }}
+                                @endif
+                            </td>
+
+                            <!-- Isi -->
+                            <td>
+                                @if ($editIndex === $i)
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" 
+                                               class="form-control" 
+                                               wire:model="editData.isi"
+                                               style="max-width: 70px;">
+                                        <input type="text" 
+                                               class="form-control" 
+                                               wire:model="editData.nama_isi">
+                                    </div>
+                                @else
+                                    {{ $item['isi'] }} {{ $item['nama_isi'] }}
+                                @endif
+                            </td>
+
+                            <!-- Aksi -->
+                            <td class="text-center">
+                                @if ($editIndex === $i)
+                                    <button type="button"
+                                            wire:click="saveEdit"
+                                            class="btn btn-success btn-sm mr-1"
+                                            title="Simpan">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+
+                                    <button type="button"
+                                            wire:click="cancelEdit"
+                                            class="btn btn-secondary btn-sm"
+                                            title="Batal">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                @else
+                                    <button type="button"
+                                            wire:click="startEdit({{ $i }})"
+                                            class="btn btn-primary btn-sm mr-1"
+                                            title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+
+                                    <button type="button"
+                                            wire:click="removeDetail({{ $i }})"
+                                            class="btn btn-danger btn-sm"
+                                            title="Hapus">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-3">
+                                <i class="fas fa-inbox fa-2x d-block mb-2"></i>
+                                Belum ada barang
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+
+                <tfoot>
+                    <tr>
+                        <th colspan="2" class="text-right">Total Coly:</th>
+                        <th colspan="3" class="text-left">{{ $this->total_coly }}</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="text-right py-3">
+            <button type="button" 
+                    wire:click="store" 
+                    wire:loading.attr="disabled"
+                    class="btn btn-success">
+                <span wire:loading.remove wire:target="store">
+                    <i class="fas fa-save mr-1"></i> Simpan Surat Jalan
+                </span>
+                <span wire:loading wire:target="store">
+                    <i class="fas fa-spinner fa-spin mr-1"></i> Menyimpan...
+                </span>
+            </button>
+        </div>
+
+        @script
+        <script>
+            // Success Alert
+            $wire.on('showSuccessAlert', (data) => {
+                Swal.fire({
+                    title: "Berhasil!",
+                    text: "Surat Jalan berhasil disimpan!",
+                    icon: "success",
+                    confirmButtonText: "OK"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "{{ route('suratjalan.index') }}";
+                    }
+                });
+            });
+
+            // Error Alert
+            $wire.on('alert', (data) => {
+                const alertData = data[0] || data;
+                
+                Swal.fire({
+                    title: alertData.type === 'success' ? 'Berhasil!' : 'Gagal!',
+                    html: alertData.message,
+                    icon: alertData.type,
+                    confirmButtonText: "OK"
+                });
+            });
+        </script>
+        @endscript
+
     </div>
-</div>
 </div>

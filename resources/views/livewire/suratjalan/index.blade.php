@@ -226,74 +226,7 @@
     <!-- close delete modal -->
     @script
     <script>
-        $wire.on('closeDeleteModal', () => {
-            $('#deleteModal').modal('hide');
-            Swal.fire({
-              title: "Berhasil!",
-              text: "Kamu Berhasil Menghapus Data!",
-              icon: "success"
-            });
-        });
-
-        // Listen untuk alert event dan force uncheck select all
-        $wire.on('alert', (event) => {
-            const alertData = event[0] || event;
-
-            const checkbox = document.getElementById('selectAllCheckbox');
-            if (checkbox) {
-                checkbox.checked = false;
-            }
-            
-            // Uncheck semua individual checkbox
-            document.querySelectorAll('input[type="checkbox"][wire\\:model\\.live="selectedIds"]').forEach(cb => {
-                cb.checked = false;
-            });
-
-            // Tampilkan alert
-            Swal.fire({
-                title: alertData.type === 'success' ? 'Berhasil!' : 'Gagal!',
-                text: alertData.message,
-                icon: alertData.type,
-            })
-        });
-
-        // Event untuk konfirmasi bulk action
-        $wire.on('confirm-bulk-action', (data) => {
-            // Ambil action dari data (bisa berupa object atau array)
-            const action = data.action || data[0]?.action || 'aksi ini';
-            
-            Swal.fire({
-                title: 'Konfirmasi',
-                html: `Apakah ingin melakukan aksi <b>${action}</b>?`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, lanjutkan',
-                cancelButtonText: 'Batal',
-                allowOutsideClick: false,
-            }).then((result) => {                
-
-                if(!result.isConfirmed){
-                  // Reset action jika dibatalkan
-                  $wire.set('bulkAction', '');
-                  return;
-                }
-
-                // Tutup modal konfirmasi
-                Swal.close();
-
-                // Tampilkan loader
-                Swal.fire({
-                    title: 'Memproses...',
-                    text: 'Mohon tunggu',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-                //jalankan bulk action
-                $wire.call('runBulkAction');
-            });
-        });
+        initLivewireSwalHandlers();
     </script>
     @endscript
   </div>

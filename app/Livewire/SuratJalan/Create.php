@@ -9,9 +9,13 @@ use Illuminate\Support\Facades\DB;
 
 class Create extends Component
 {
-    public $no_surat, $pembeli, $alamat, $tanggal, $kendaraan, $no_kendaraan, $coly, $satuan_coly, $isi, $nama_isi, $nama_barang, $total_coly, $status;
+    public $no_surat, $pembeli, $alamat, $tanggal, $kendaraan, $no_kendaraan, $coly, $satuan_coly, $isi, $nama_isi, $nama_barang, $total_coly, $status, $nota, $print;
     public $detailsj = [];
     public $title = 'Tambah Surat Jalan';
+
+    // Untuk edit inline
+    public $editIndex = null;
+    public $editData = [];
 
     public $formDetail = [
         'coly'        => 0,
@@ -61,6 +65,34 @@ class Create extends Component
         $this->detailsj = array_values($this->detailsj);
     }
 
+    public function startEdit($index)
+    {
+        $this->editIndex = $index;
+        $this->editData = $this->detailsj[$index];
+    }
+
+    public function saveEdit()
+    {
+        $this->detailsj[$this->editIndex] = $this->editData;
+
+        $this->editIndex = null;
+        $this->editData = [];
+    }
+
+    public function cancelEdit()
+    {
+        $this->editIndex = null;
+        $this->editData = [];
+    }
+
+    public function getFormTotalProperty()
+    {
+        $coly = (int) ($this->formDetail['coly'] ?? 0);
+        $isi  = (int) ($this->formDetail['isi'] ?? 0);
+
+        return $coly * $isi;
+    }
+
     public function store()
     {
         $this->validate([
@@ -80,6 +112,8 @@ class Create extends Component
                 'no_kendaraan' => $this->no_kendaraan,
                 'total_coly' => $this->total_coly,
                 'status' => $this->status,
+                'nota' => 0,
+                'print' => 0,
             ]);
 
             foreach($this->detailsj as $d) {
