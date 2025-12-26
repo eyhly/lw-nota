@@ -35,7 +35,7 @@
               <i class="fas fa-plus mr-1"></i>  
               Tambah Data</a>
             </div>
-            <div class="btn-group dropleft">
+            <!-- <div class="btn-group dropleft">
               <button type="button" class="btn btn-sm btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                 <i class="fas fa-print mr-1"></i>
                 Print
@@ -48,13 +48,13 @@
                 <i class="fas fa-file-pdf mr-1"></i>  
                 PDF</a>
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center mb-2">
               {{-- Info data --}}
-              <div class="text-muted small">
+              <div class="text-muted medium">
                   Menampilkan {{ $nota->count() }} dari {{ $nota->total() }} data
               </div>
           </div>

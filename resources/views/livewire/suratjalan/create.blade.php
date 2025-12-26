@@ -1,15 +1,21 @@
 <div>
     <div class="content-wrapper" style="padding-right: 3rem; padding-left: 3rem;">
+        <div class="mb-2">
+            <a href="{{ route('suratjalan.index') }}" class="page-back" style="font-size: 14px; color: #2563eb; text-decoration: none;">
+                ← Kembali ke Daftar Surat Jalan
+            </a>
+        </div>
+    
         <section class="content-header">
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <h1><strong>{{ $title }}</strong></h1>
                 </div>
-                <div class="col-sm-6">
+                <!-- <div class="col-sm-6">
                     <a href="{{ route('suratjalan.index') }}" class="btn btn-secondary mr-2 float-sm-right">
                         <i class="fas fa-arrow-left mr-1"></i> Kembali
                     </a>
-                </div>
+                </div> -->
             </div>
         </section>
 
@@ -102,7 +108,7 @@
                         <label class="medium">Total</label>
                         <input type="text" 
                             class="form-control form-control-sm text-center bg-light"
-                            wire:model="formTotal"
+                            value="{{ $this->formTotal }}"
                             readonly>
 
                     </div>

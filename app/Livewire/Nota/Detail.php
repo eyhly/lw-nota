@@ -85,29 +85,31 @@ class Detail extends Component
     {
        $detail = DetailNota::find($this->editData['id']);
 
-// jumlah barang
-$this->editData['jumlah'] =
-    (int) $this->editData['coly'] * (int) $this->editData['qty_isi'];
+    // jumlah barang
+    $this->editData['jumlah'] =
+        (int) $this->editData['coly'] * (int) $this->editData['qty_isi'];
 
-// total diskon persen
-$diskon = array_sum(
-    array_map('floatval', (array) ($this->editData['diskon'] ?? []))
-);
+    // total diskon persen
+    $diskon = array_sum(
+        array_map('floatval', (array) ($this->editData['diskon'] ?? []))
+    );
 
-// subtotal
-$subtotal = $this->editData['jumlah'] * (int) $this->editData['harga'];
 
-// total setelah diskon
-$this->editData['total'] =
-    $subtotal * (1 - ($diskon / 100));
+    $this->dispatch('$refresh');
+    // subtotal
+    $subtotal = $this->editData['jumlah'] * (int) $this->editData['harga'];
 
-// simpan diskon ke DB
-$this->editData['diskon'] = implode(', ', array_map(
-    'strval',
-    $this->editData['diskon'] ?? []
-));
+    // total setelah diskon
+    $this->editData['total'] =
+        $subtotal * (1 - ($diskon / 100));
 
-$detail->update($this->editData);
+    // simpan diskon ke DB
+    $this->editData['diskon'] = implode(', ', array_map(
+        'strval',
+        $this->editData['diskon'] ?? []
+    ));
+
+    $detail->update($this->editData);
 
 
         // refresh data
@@ -233,21 +235,17 @@ $detail->update($this->editData);
 
     public function toggleCek($id)
     {
-        $item = Nota::find($id);
-
-        if ($item) {
-            $item->cek = $item->cek == 1 ? 0 : 1;
-            $item->save();
+        if ($this->nota && $this->nota->id == $id) {
+            $this->nota->cek = ! $this->nota->cek;
+            $this->nota->save();
         }
     }
 
     public function togglePrint($id)
     {
-        $item = Nota::find($id);
-
-        if ($item) {
-            $item->print = $item->print == 1 ? 0 : 1;
-            $item->save();
+        if ($this->nota && $this->nota->id == $id) {
+            $this->nota->print = ! $this->nota->print;
+            $this->nota->save();
         }
     }
 

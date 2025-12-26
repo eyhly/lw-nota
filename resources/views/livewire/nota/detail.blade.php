@@ -23,7 +23,7 @@
                             wire:click="toggleCek({{ $nota->id }})"
                             wire:loading.attr="disabled"
                             wire:target="toggleCek({{ $nota->id }})"
-                            class="btn btn-sm {{ $nota->cek ? 'btn-success' : 'btn-outline-secondary' }}"
+                            class="btn btn-sm {{ $nota->cek ? 'btn-success' : 'btn-outline-danger' }}"
                             style="min-width: 90px;"
                         >
                             {{-- Cek --}}
@@ -48,7 +48,7 @@
                             wire:click="togglePrint({{ $nota->id }})"
                             wire:loading.attr="disabled"
                             wire:target="togglePrint({{ $nota->id }})"
-                            class="btn btn-sm {{ $nota->print ? 'btn-success' : 'btn-outline-secondary' }}"
+                            class="btn btn-sm {{ $nota->print ? 'btn-success' : 'btn-outline-danger' }}"
                             style="min-width: 90px;"
                         >
                             {{-- Print --}}
@@ -231,7 +231,7 @@
                                             </div>
                                         @endforeach
 
-                                        <button class="btn btn-sm btn-success d-flex align-items-center"
+                                        <button type="button" class="btn btn-sm btn-success d-flex align-items-center"
                                                 wire:click="addEditDiskon">
                                             <span>+</span> Diskon
                                         </button>

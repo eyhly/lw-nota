@@ -1,15 +1,16 @@
 <div>
     <div class="content-wrapper" style="padding-right: 3rem; padding-left: 3rem;">
+        <div class="mb-2">
+            <a href="{{ route('nota.index') }}" class="page-back" style="font-size: 14px; color: #2563eb; text-decoration: none;">
+                ← Kembali ke List Nota
+            </a>
+        </div>
+
         <section class="content-header">
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <h1><strong>{{ $title }}</strong></h1>
-                </div>
-                <div class="col-sm-6">
-                    <a href="{{ route('nota.index') }}" class="btn btn-secondary mr-2 float-sm-right">
-                        <i class="fas fa-arrow-left mr-1"></i> Kembali
-                    </a>
-                </div>
+                </div>                
                 {{-- <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="#">
@@ -65,7 +66,7 @@
                 <div class="font-weight-bold h4">Tambah Barang</div>
                 <div class="row">
                     <!-- Nama Barang -->
-                    <div class="col-md-8 mb-2">
+                    <div class="col-md-12 mb-2">
                         <label class="medium">Nama Barang <span class="text-danger">*</span></label>
                         <input type="text" class="form-control form-control-sm" wire:model="formDetail.nama_barang"
                             placeholder="Nama barang">
@@ -73,7 +74,7 @@
                 </div>
                 <div class="row">
                     <!-- Coly -->
-                    <div class="col-md-3 mb-2">
+                    <div class="col-md-4 mb-2">
                         <label class="medium">Coly</label>
                         <div class="input-group input-group-sm">
                             <input type="number" class="form-control" wire:model="formDetail.coly" placeholder="0"
@@ -84,7 +85,7 @@
                     </div>
 
                     <!-- Qty Isi -->
-                    <div class="col-md-3 mb-2">
+                    <div class="col-md-4 mb-2">
                         <label class="medium">Qty Isi</label>
                         <div class="input-group input-group-sm">
                             <input type="number" class="form-control" wire:model="formDetail.qty_isi" placeholder="0"
@@ -95,7 +96,7 @@
                     </div>
 
                     <!-- Total Qty -->
-                    <div class="col-md-2 mb-2">
+                    <div class="col-md-4 mb-2">
                         <label class="medium">Total</label>
                         <input type="text" class="form-control form-control-sm text-center bg-light"
                             value="{{ $formDetail['coly'] * $formDetail['qty_isi'] }}" readonly>
@@ -103,14 +104,14 @@
                 </div>
                 <div class="row">
                     <!-- Harga -->
-                    <div class="col-md-3 mb-2">
+                    <div class="col-md-7 mb-2">
                         <label class="medium">Harga</label>
                         <input type="number" class="form-control form-control-sm" wire:model="formDetail.harga"
                             placeholder="0">
                     </div>
 
                     <!-- Diskon -->
-                    <div class="col-md-2 mb-2">
+                    <div class="col-md-5 mb-2">
                         <label class="medium">Diskon (%)</label>
                         @foreach ((array) ($formDetail['diskon'] ?? []) as $d => $val)
                             <div class="input-group input-group-sm mb-1">
@@ -132,20 +133,20 @@
                 </div>
 
                 <!-- Tombol Tambah -->
-                <div class="mt-3 text-right">
+                <div class="col-md-12 mt-3 text-right" style="color: #495057;">
                     @php
-                        $formDiskon = array_sum((array) ($formDetail['diskon'] ?? []));
+                        $formDiskon = array_sum(array: (array) ($formDetail['diskon'] ?? []));
                         $subtotalItem =
                             $formDetail['harga'] *
                             $formDetail['coly'] *
                             $formDetail['qty_isi'] *
                             (1 - $formDiskon / 100);
                     @endphp
-                    <span class="mr-3">
+                    <span class="mr-3 h5">
                         <strong>Subtotal:</strong>
-                        <span class="text-primary h6">Rp {{ number_format($subtotalItem, 0, ',', '.') }}</span>
+                        <span><strong> Rp {{ number_format($subtotalItem, 0, ',', '.') }}</strong></span>
                     </span>
-                    <button wire:click="addDetail" type="button" class="btn btn-primary btn-sm">
+                    <button wire:click="addDetail" type="button" class="btn btn-primary btn-sm" style="width: 250px">
                         <i class="fas fa-plus mr-1"></i> Tambah
                     </button>
                 </div>
