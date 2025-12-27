@@ -13,16 +13,66 @@
 
             <div class="d-flex">
                 <a href="{{ route('nota.create.fromSurat', $suratjalan->id) }}" 
-                   class="btn btn-success mr-2" 
+                   class="btn btn-success btn-sm mr-2" 
                    style="min-width: 110px;">
                     <i class="fas fa-plus mr-1"></i> Buat Nota
                 </a>
-                <a href="{{ route('pdf.surat', $suratjalan->id) }}" 
+                <a href="{{ route('suratjalan.print.update', $suratjalan->id) }}" 
                    target="_blank" 
-                   class="btn btn-warning text-dark"
+                   class="btn btn-warning btn-sm text-dark mr-2"
                    style="min-width: 110px;">
                     <i class="fas fa-print mr-1"></i> Cetak
                 </a>
+
+                 <div class="text-center mr-2">
+                        <button
+                            type="button"
+                            wire:click="toggleNota({{ $suratjalan->id }})"
+                            wire:loading.attr="disabled"
+                            wire:target="toggleNota({{ $suratjalan->id }})"
+                            class="btn btn-sm {{ $suratjalan->nota ? 'btn-success' : 'btn-outline-danger' }}"
+                            style="min-width: 90px;"
+                        >
+                            {{-- Nota --}}
+                            <span wire:loading.remove wire:target="toggleNota({{ $suratjalan->id }})">
+                                @if($suratjalan->nota)
+                                    <i class="fas fa-check-circle mr-1"></i> Nota
+                                @else
+                                    <i class="fas fa-times-circle mr-1"></i> Nota
+                                @endif
+                            </span>
+
+                            {{-- Loader --}}
+                            <span wire:loading wire:target="toggleNota({{ $suratjalan->id }})">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </span>
+                        </button>
+                    </div>
+
+                    <div class="text-center mr-4">
+                        <button
+                            type="button"
+                            wire:click="togglePrint({{ $suratjalan->id }})"
+                            wire:loading.attr="disabled"
+                            wire:target="togglePrint({{ $suratjalan->id }})"
+                            class="btn btn-sm {{ $suratjalan->print ? 'btn-success' : 'btn-outline-danger' }}"
+                            style="min-width: 90px;"
+                        >
+                            {{-- Print --}}
+                            <span wire:loading.remove wire:target="togglePrint({{ $suratjalan->id }})">
+                                @if($suratjalan->print)
+                                    <i class="fas fa-check-circle mr-1"></i> Diprint
+                                @else
+                                    <i class="fas fa-times-circle mr-1"></i> Unprint
+                                @endif
+                            </span>
+
+                            {{-- Loader --}}
+                            <span wire:loading wire:target="togglePrint({{ $suratjalan->id }})">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </span>
+                        </button>
+                    </div>    
             </div>
         </div>
 
@@ -49,14 +99,22 @@
                                 <input type="date" 
                                     wire:model="tanggal" 
                                     class="form-control form-control-sm mr-5">
-                            </div>                            
+                            </div>
+                            
+                            <div class="d-flex mb-2">
+                                <label style="font-weight: 500; min-width: 130px;">Nama Kendaraan</label>
+                                <span class="mx-2">:</span>
+                                <input type="text" 
+                                    wire:model="kendaraan" 
+                                    class="form-control form-control-sm mr-5">
+                            </div>
                         </div>                       
                         <div class="col-md-6">                        
                             <div class="d-flex mb-2">
-                                <label style="font-weight: 500; min-width: 130px;">Nama Pembeli</label>
+                                <label style="font-weight: 500; min-width: 130px;">Nama Toko</label>
                                 <span class="mx-2">:</span>
                                 <input type="text" 
-                                    wire:model="pembeli" 
+                                    wire:model="nama_toko" 
                                     class="form-control form-control-sm mr-5">
                             </div>
 
@@ -66,6 +124,15 @@
                                 <input type="text" 
                                     wire:model="alamat" 
                                     class="form-control form-control-sm mr-5">
+                            </div>
+
+                            <div class="d-flex mb-2">
+                                <label style="font-weight: 500; min-width: 130px;">Nomor Kendaraan</label>
+                                <span class="mx-2">:</span>
+                                <input type="text" 
+                                    wire:model="no_kendaraan" 
+                                    class="form-control form-control-sm mr-5" 
+                                    readonly>
                             </div>
                         </div>                       
                     </div>
@@ -108,7 +175,7 @@
                                     <td>
                                         <div class="input-group input-group-sm">
                                             <input type="number" 
-                                                   wire:model="editData.isi" 
+                                                   wire:model="editData.qty_isi" 
                                                    class="form-control"
                                                    style="max-width: 70px;">
                                             <input type="text" 
@@ -137,7 +204,7 @@
                                 @else
                                     {{-- Mode Normal --}}
                                     <td>{{ $detail->coly }} {{ $detail->satuan_coly }}</td>
-                                    <td>{{ $detail->isi }} {{ $detail->nama_isi }}</td>
+                                    <td>{{ $detail->qty_isi }} {{ $detail->nama_isi }}</td>
                                     <td>{{ $detail->nama_barang }}</td>
                                     <td class="text-center">
                                         <button type="button"

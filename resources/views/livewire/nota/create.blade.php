@@ -26,6 +26,7 @@
         </section>
 
         <!-- Form Header Nota -->
+         
         <div class="card p-4 mb-4">
             <div class="font-weight-bold h4">Informasi Nota</div>
             <div class="row">
@@ -36,11 +37,21 @@
                     </div>
                     <div class="mb-2">
                         <label>Tanggal</label>
-                        <input type="date" class="form-control" wire:model="tanggal">
+                        <input type="date" class="form-control" wire:model.live="tanggal">
                     </div>
                     <div class="mb-2">
                         <label>Jatuh Tempo</label>
-                        <input type="date" class="form-control" wire:model="jt_tempo">
+                        <input type="date" class="form-control" wire:model.live="jt_tempo">                        
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                        <button type="button" wire:click="setJatuhTempo(1)"
+                                class="flex-1 px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+                            + 1 Bulan
+                        </button>
+                        <button type="button" wire:click="setJatuhTempo(2)"
+                                class="flex-1 px-3 py-1.5 text-sm bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition-colors">
+                            + 2 Bulan
+                        </button>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -61,97 +72,99 @@
         </div>
 
         <!-- Form Input Barang Baru (di Atas Tabel) -->
-        <div class="card mb-3">
-            <div class="card-body">
-                <div class="font-weight-bold h4">Tambah Barang</div>
-                <div class="row">
-                    <!-- Nama Barang -->
-                    <div class="col-md-12 mb-2">
-                        <label class="medium">Nama Barang <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control form-control-sm" wire:model="formDetail.nama_barang"
-                            placeholder="Nama barang">
-                    </div>
-                </div>
-                <div class="row">
-                    <!-- Coly -->
-                    <div class="col-md-4 mb-2">
-                        <label class="medium">Coly</label>
-                        <div class="input-group input-group-sm">
-                            <input type="number" class="form-control" wire:model="formDetail.coly" placeholder="0"
-                                style="max-width: 70px;">
-                            <input type="text" class="form-control" wire:model="formDetail.satuan_coly"
-                                placeholder="Satuan">
+        <form wire:submit.prevent="addDetail">          
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="font-weight-bold h4">Tambah Barang</div>
+                    <div class="row">
+                        <!-- Nama Barang -->
+                        <div class="col-md-12 mb-2">
+                            <label class="medium">Nama Barang <span class="text-danger">*</span></label>
+                            <input type="text" id="nama-barang" autofocus class="form-control form-control-sm" wire:model.defer="formDetail.nama_barang"
+                                placeholder="Nama barang">
                         </div>
                     </div>
-
-                    <!-- Qty Isi -->
-                    <div class="col-md-4 mb-2">
-                        <label class="medium">Qty Isi</label>
-                        <div class="input-group input-group-sm">
-                            <input type="number" class="form-control" wire:model="formDetail.qty_isi" placeholder="0"
-                                style="max-width: 70px;">
-                            <input type="text" class="form-control" wire:model="formDetail.nama_isi"
-                                placeholder="Satuan">
-                        </div>
-                    </div>
-
-                    <!-- Total Qty -->
-                    <div class="col-md-4 mb-2">
-                        <label class="medium">Total</label>
-                        <input type="text" class="form-control form-control-sm text-center bg-light"
-                            value="{{ $formDetail['coly'] * $formDetail['qty_isi'] }}" readonly>
-                    </div>
-                </div>
-                <div class="row">
-                    <!-- Harga -->
-                    <div class="col-md-7 mb-2">
-                        <label class="medium">Harga</label>
-                        <input type="number" class="form-control form-control-sm" wire:model="formDetail.harga"
-                            placeholder="0">
-                    </div>
-
-                    <!-- Diskon -->
-                    <div class="col-md-5 mb-2">
-                        <label class="medium">Diskon (%)</label>
-                        @foreach ((array) ($formDetail['diskon'] ?? []) as $d => $val)
-                            <div class="input-group input-group-sm mb-1">
-                                <input type="number" class="form-control"
-                                    wire:model="formDetail.diskon.{{ $d }}" placeholder="%">
-                                <div class="input-group-append">
-                                    <button class="btn btn-danger btn-sm" type="button"
-                                        wire:click="removeFormDiskon({{ $d }})">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
+                    <div class="row">
+                        <!-- Coly -->
+                        <div class="col-md-4 mb-2">
+                            <label class="medium">Coly</label>
+                            <div class="input-group input-group-sm">
+                                <input type="number" class="form-control" wire:model="formDetail.coly" placeholder="0"
+                                    style="max-width: 70px;">
+                                <input type="text" class="form-control" wire:model="formDetail.satuan_coly"
+                                    placeholder="Satuan">
                             </div>
-                        @endforeach
+                        </div>
 
-                        <button class="btn btn-sm btn-success btn-block" type="button" wire:click="addFormDiskon">
-                            <i class="fas fa-plus"></i> Diskon
+                        <!-- Qty Isi -->
+                        <div class="col-md-4 mb-2">
+                            <label class="medium">Qty Isi</label>
+                            <div class="input-group input-group-sm">
+                                <input type="number" class="form-control" wire:model="formDetail.qty_isi" placeholder="0"
+                                    style="max-width: 70px;">
+                                <input type="text" class="form-control" wire:model="formDetail.nama_isi"
+                                    placeholder="Satuan">
+                            </div>
+                        </div>
+
+                        <!-- Total Qty -->
+                        <div class="col-md-4 mb-2">
+                            <label class="medium">Total</label>
+                            <input type="text" class="form-control form-control-sm text-center bg-light"
+                                value="{{ $formDetail['coly'] * $formDetail['qty_isi'] }}" readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <!-- Harga -->
+                        <div class="col-md-7 mb-2">
+                            <label class="medium">Harga</label>
+                            <input type="number" class="form-control form-control-sm" wire:model="formDetail.harga"
+                                placeholder="0">
+                        </div>
+
+                        <!-- Diskon -->
+                        <div class="col-md-5 mb-2">
+                            <label class="medium">Diskon (%)</label>
+                            @foreach ((array) ($formDetail['diskon'] ?? []) as $d => $val)
+                                <div class="input-group input-group-sm mb-1">
+                                    <input type="number" class="form-control"
+                                        wire:model="formDetail.diskon.{{ $d }}" placeholder="%">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-danger btn-sm" type="button"
+                                            wire:click="removeFormDiskon({{ $d }})">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            @endforeach
+
+                            <button class="btn btn-sm btn-success btn-block" type="button" wire:click="addFormDiskon">
+                                <i class="fas fa-plus"></i> Diskon
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tombol Tambah -->
+                    <div class="col-md-12 mt-3 text-right" style="color: #495057;">
+                        @php
+                            $formDiskon = array_sum(array: (array) ($formDetail['diskon'] ?? []));
+                            $subtotalItem =
+                                $formDetail['harga'] *
+                                $formDetail['coly'] *
+                                $formDetail['qty_isi'] *
+                                (1 - $formDiskon / 100);
+                        @endphp
+                        <span class="mr-3 h5">
+                            <strong>Subtotal:</strong>
+                            <span><strong> Rp {{ number_format($subtotalItem, 0, ',', '.') }}</strong></span>
+                        </span>
+                        <button type="submit" class="btn btn-primary btn-sm" style="width: 250px">
+                            <i class="fas fa-plus mr-1"></i> Tambah
                         </button>
                     </div>
                 </div>
-
-                <!-- Tombol Tambah -->
-                <div class="col-md-12 mt-3 text-right" style="color: #495057;">
-                    @php
-                        $formDiskon = array_sum(array: (array) ($formDetail['diskon'] ?? []));
-                        $subtotalItem =
-                            $formDetail['harga'] *
-                            $formDetail['coly'] *
-                            $formDetail['qty_isi'] *
-                            (1 - $formDiskon / 100);
-                    @endphp
-                    <span class="mr-3 h5">
-                        <strong>Subtotal:</strong>
-                        <span><strong> Rp {{ number_format($subtotalItem, 0, ',', '.') }}</strong></span>
-                    </span>
-                    <button wire:click="addDetail" type="button" class="btn btn-primary btn-sm" style="width: 250px">
-                        <i class="fas fa-plus mr-1"></i> Tambah
-                    </button>
-                </div>
             </div>
-        </div>
+        </form>
 
         <!-- Tabel Daftar Barang -->
         <div class="card py-3 px-4 mb-0">
@@ -234,7 +247,9 @@
                                     <input type="number" class="form-control form-control-sm"
                                         wire:model="editData.harga">
                                 @else
-                                    {{ number_format($item['harga'], 0, ',', '.') }}
+                                    <input type="number" class="form-control form-control-sm"
+                                        wire:model="editData.harga">
+                                    <!-- {{ number_format($item['harga'], 0, ',', '.') }} -->
                                 @endif
                             </td>
 
@@ -342,17 +357,14 @@
 
         @script
             <script>
-                $wire.on('showSuccessAlert', (data) => {
-                    Swal.fire({
-                        title: "Berhasil!",
-                        text: "Nota berhasil disimpan!",
-                        icon: "success",
-                        confirmButtonText: "OK"
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = "{{ route('nota.index') }}";
-                        }
-                    });
+                 initLivewireSwalHandlers({
+                    redirectUrl: "{{ route('nota.index') }}"
+                });
+
+                window.addEventListener('focus-nama-barang', () => {
+                    setTimeout(() => {
+                        document.getElementById('nama-barang')?.focus();
+                    }, 50);
                 });
             </script>
         @endscript

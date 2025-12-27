@@ -39,8 +39,8 @@
                 </div>
                 <div class="col-md-6">
                     <div class="mb-2">
-                        <label>Pembeli</label>
-                        <input type="text" class="form-control" wire:model="pembeli" placeholder="Pembeli">
+                        <label>Nama Toko</label>
+                        <input type="text" class="form-control" wire:model="nama_toko" placeholder="Nama Toko">
                     </div>
                     <div class="mb-2">
                         <label>Alamat</label>
@@ -55,75 +55,78 @@
         </div>
 
         <!-- Form Input Barang Baru (di Atas Tabel) -->
-        <div class="card mb-3">
-            <div class="card-body">
-                <div class="font-weight-bold h4">Tambah Barang</div>
-                
-                <div class="row">
-                    <!-- Nama Barang -->
-                    <div class="col-md-8 mb-2">
-                        <label class="medium">Nama Barang <span class="text-danger">*</span></label>
-                        <input type="text" 
-                               class="form-control form-control-sm" 
-                               wire:model="formDetail.nama_barang"
-                               placeholder="Nama barang">
-                    </div>
-                </div>
-
-                <div class="row">
-                    <!-- Coly -->
-                    <div class="col-md-3 mb-2">
-                        <label class="medium">Coly</label>
-                        <div class="input-group input-group-sm">
-                            <input type="number" 
-                                   class="form-control" 
-                                   wire:model.live="formDetail.coly"
-                                   placeholder="0"
-                                   style="max-width: 70px;">
+        <form wire:submit.prevent="addDetail">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="font-weight-bold h4">Tambah Barang</div>
+                    
+                    <div class="row">
+                        <!-- Nama Barang -->
+                        <div class="col-md-8 mb-2">
+                            <label class="medium">Nama Barang <span class="text-danger">*</span></label>
                             <input type="text" 
-                                   class="form-control" 
-                                   wire:model="formDetail.satuan_coly" 
-                                   placeholder="Satuan">
+                                id="nama-barang"
+                                autofocus
+                                class="form-control form-control-sm" 
+                                wire:model.defer="formDetail.nama_barang"
+                                placeholder="Nama barang">
                         </div>
                     </div>
 
-                    <!-- Isi -->
-                    <div class="col-md-3 mb-2">
-                        <label class="medium">Isi</label>
-                        <div class="input-group input-group-sm">
-                            <input type="number" 
-                                   class="form-control" 
-                                   wire:model.live="formDetail.isi"
-                                   placeholder="0"
-                                   style="max-width: 70px;">
+                    <div class="row">
+                        <!-- Coly -->
+                        <div class="col-md-3 mb-2">
+                            <label class="medium">Coly</label>
+                            <div class="input-group input-group-sm">
+                                <input type="number" 
+                                    class="form-control" 
+                                    wire:model.live="formDetail.coly"
+                                    placeholder="0"
+                                    style="max-width: 70px;">
+                                <input type="text" 
+                                    class="form-control" 
+                                    wire:model="formDetail.satuan_coly" 
+                                    placeholder="Satuan">
+                            </div>
+                        </div>
+
+                        <!-- Isi -->
+                        <div class="col-md-3 mb-2">
+                            <label class="medium">Isi</label>
+                            <div class="input-group input-group-sm">
+                                <input type="number" 
+                                    class="form-control" 
+                                    wire:model.live="formDetail.qty_isi"
+                                    placeholder="0"
+                                    style="max-width: 70px;">
+                                <input type="text" 
+                                    class="form-control" 
+                                    wire:model="formDetail.nama_isi"
+                                    placeholder="Satuan">
+                            </div>
+                        </div>
+
+                        <!-- Total (Readonly) -->
+                        <div class="col-md-2 mb-2">
+                            <label class="medium">Total</label>
                             <input type="text" 
-                                   class="form-control" 
-                                   wire:model="formDetail.nama_isi"
-                                   placeholder="Satuan">
+                                class="form-control form-control-sm text-center bg-light"
+                                value="{{ $this->formTotal }}"
+                                readonly>
+
                         </div>
                     </div>
 
-                    <!-- Total (Readonly) -->
-                    <div class="col-md-2 mb-2">
-                        <label class="medium">Total</label>
-                        <input type="text" 
-                            class="form-control form-control-sm text-center bg-light"
-                            value="{{ $this->formTotal }}"
-                            readonly>
-
+                    <!-- Tombol Tambah -->
+                    <div class="mt-3 text-right">
+                        <button type="submit"
+                                class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus mr-1"></i> Tambah
+                        </button>
                     </div>
-                </div>
-
-                <!-- Tombol Tambah -->
-                <div class="mt-3 text-right">
-                    <button wire:click="addDetail" 
-                            type="button"
-                            class="btn btn-primary btn-sm">
-                        <i class="fas fa-plus mr-1"></i> Tambah
-                    </button>
                 </div>
             </div>
-        </div>
+        </form>
 
         <!-- Tabel Daftar Barang -->
         <div class="card py-3 px-4 mb-0">
@@ -185,14 +188,14 @@
                                     <div class="input-group input-group-sm">
                                         <input type="number" 
                                                class="form-control" 
-                                               wire:model="editData.isi"
+                                               wire:model="editData.qty_isi"
                                                style="max-width: 70px;">
                                         <input type="text" 
                                                class="form-control" 
                                                wire:model="editData.nama_isi">
                                     </div>
                                 @else
-                                    {{ $item['isi'] }} {{ $item['nama_isi'] }}
+                                    {{ $item['qty_isi'] }} {{ $item['nama_isi'] }}
                                 @endif
                             </td>
 
@@ -249,45 +252,24 @@
         </div>
 
         <div class="text-right py-3">
-            <button type="button" 
-                    wire:click="store" 
-                    wire:loading.attr="disabled"
+            <button type="button"
+                    wire:click="store"
                     class="btn btn-success">
-                <span wire:loading.remove wire:target="store">
-                    <i class="fas fa-save mr-1"></i> Simpan Surat Jalan
-                </span>
-                <span wire:loading wire:target="store">
-                    <i class="fas fa-spinner fa-spin mr-1"></i> Menyimpan...
-                </span>
+                <i class="fas fa-save mr-1"></i> Simpan Surat Jalan
             </button>
         </div>
 
         @script
         <script>
             // Success Alert
-            $wire.on('showSuccessAlert', (data) => {
-                Swal.fire({
-                    title: "Berhasil!",
-                    text: "Surat Jalan berhasil disimpan!",
-                    icon: "success",
-                    confirmButtonText: "OK"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = "{{ route('suratjalan.index') }}";
-                    }
-                });
+             initLivewireSwalHandlers({
+                redirectUrl: "{{ route('suratjalan.index') }}"
             });
 
-            // Error Alert
-            $wire.on('alert', (data) => {
-                const alertData = data[0] || data;
-                
-                Swal.fire({
-                    title: alertData.type === 'success' ? 'Berhasil!' : 'Gagal!',
-                    html: alertData.message,
-                    icon: alertData.type,
-                    confirmButtonText: "OK"
-                });
+            window.addEventListener('focus-nama-barang', () => {
+                setTimeout(() => {
+                    document.getElementById('nama-barang')?.focus();
+                }, 50);
             });
         </script>
         @endscript

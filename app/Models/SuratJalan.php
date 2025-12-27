@@ -13,7 +13,7 @@ class SuratJalan extends Model
         'id',
         'no_surat',
         'tanggal',
-        'pembeli',
+        'nama_toko',
         'alamat',
         'kendaraan',
         'no_kendaraan',        

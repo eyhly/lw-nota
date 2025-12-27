@@ -12,7 +12,7 @@ class Detail extends Component
     public $suratjalan;
     public $title = 'Detail Surat Jalan';    
 
-    public $no_surat, $pembeli, $alamat, $tanggal;
+    public $no_surat, $nama_toko, $alamat, $tanggal, $kendaraan, $no_kendaraan;
 
     public $editIndex = null;
     public $editData = [];
@@ -22,25 +22,31 @@ class Detail extends Component
         $this->suratjalan = SuratJalan::with('detailsj')->findOrFail($id);
 
         $this->no_surat     = $this->suratjalan->no_surat;
-        $this->pembeli     = $this->suratjalan->pembeli;
+        $this->nama_toko     = $this->suratjalan->nama_toko;
         $this->alamat     = $this->suratjalan->alamat;
         $this->tanggal     = $this->suratjalan->tanggal;        
+        $this->kendaraan     = $this->suratjalan->kendaraan;        
+        $this->no_kendaraan     = $this->suratjalan->no_kendaraan;        
     }
 
     public function updateSurat()
     {
         $this->validate([
             'no_surat'     => 'required|string',
-            'pembeli'     => 'required|string',
+            'nama_toko'     => 'required|string',
             'alamat'     => 'required|string',
-            'tanggal'     => 'required|date',                      
+            'tanggal'     => 'required|date',
+            'kendaraan'     => 'required|string',                 
+            'no_kendaraan'     => 'required|string'                   
         ]);
 
         $this->suratjalan->update([
             'no_surat'     => $this->no_surat,
-            'pembeli'     => $this->pembeli,
+            'nama_toko'     => $this->nama_toko,
             'alamat'     => $this->alamat,
             'tanggal'     => $this->tanggal,            
+            'kendaraan'     => $this->kendaraan,            
+            'no_kendaraan'     => $this->no_kendaraan,            
         ]);
 
         session()->flash('success', 'Data surat jalan berhasil diperbarui.');
@@ -55,7 +61,7 @@ class Detail extends Component
             'id'          => $detail->id,
             'coly'        => $detail->coly,
             'satuan_coly' => $detail->satuan_coly,
-            'isi'         => $detail->isi,
+            'qty_isi'         => $detail->qty_isi,
             'nama_isi'    => $detail->nama_isi,
             'nama_barang' => $detail->nama_barang,
         ];
@@ -116,5 +122,32 @@ class Detail extends Component
     public function render()
     {
         return view('livewire.suratjalan.detail')->layout('layouts.app');
+    }
+
+    public function updatePrintAndRedirectSJ($id)
+    {
+        $suratjalan = SuratJalan::findOrFail($id);
+
+        // update print = 1
+        $suratjalan->update(['print' => 1]);
+
+        // redirect ke halaman PDF
+        return redirect()->route('pdf.surat', $id);
+    }
+
+    public function toggleNota($id)
+    {
+        if ($this->suratjalan && $this->suratjalan->id == $id) {
+            $this->suratjalan->nota = ! $this->suratjalan->nota;
+            $this->suratjalan->save();
+        }
+    }
+
+    public function togglePrint($id)
+    {
+        if ($this->suratjalan && $this->suratjalan->id == $id) {
+            $this->suratjalan->print = ! $this->suratjalan->print;
+            $this->suratjalan->save();
+        }
     }
 }

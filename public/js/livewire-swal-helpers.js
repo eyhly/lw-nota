@@ -113,6 +113,7 @@ function initLivewireSwalHandlers(options = {}) {
         // =============================
         Livewire.on('showSuccessAlert', (event) => {
             const data = Array.isArray(event) ? event[0] : event;
+            Swal.close();
 
             Swal.fire({
                 title: data.title || 'Berhasil!',
@@ -138,6 +139,20 @@ function initLivewireSwalHandlers(options = {}) {
             }).then((result) => {
                 if (result.isConfirmed && config.redirectUrl) {
                     window.location.href = config.redirectUrl;
+                }
+            });
+        });
+        
+        Livewire.on('swal-loading', (event) => {
+            const data = Array.isArray(event) ? event[0] : event;
+
+            Swal.fire({
+                title: data?.title || 'Memproses...',
+                text: data?.message || 'Mohon tunggu',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
                 }
             });
         });
@@ -185,5 +200,5 @@ const SwalHelper = {
     },
     close: () => {
         Swal.close();
-    }
+    }    
 };

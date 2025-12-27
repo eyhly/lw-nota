@@ -17,7 +17,7 @@
                     Pembeli
                 </div>
                 <div class="col-8">
-                    : {{$pembeli}}
+                    : {{$nama_toko}}
                 </div>
             </div>
             <div class="row">

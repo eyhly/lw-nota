@@ -15,7 +15,7 @@ class DetailSuratJalan extends Model
         'nama_barang',
         'coly',
         'satuan_coly',
-        'isi',
+        'qty_isi',
         'nama_isi',
     ];
 

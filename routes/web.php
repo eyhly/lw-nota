@@ -27,6 +27,9 @@ Route::get('/surat/print/{id}', [DetailSurat::class, 'pdf'])->name('pdf.surat');
 Route::get('/nota/{id}/print-update', [Detail::class, 'updatePrintAndRedirect'])
     ->name('nota.print.update');
 
+Route::get('/suratjalan/{id}/print-update', [DetailSurat::class, 'updatePrintAndRedirectSJ'])
+    ->name('suratjalan.print.update');
+
 // //surat jalan
 Route::view('surat-jalan/', 'suratjalan.index')->name('suratjalan.index');
 Route::view('surat-jalan/create', 'suratjalan.create')->name('suratjalan.create');

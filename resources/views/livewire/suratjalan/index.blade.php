@@ -104,9 +104,9 @@
 
                       <th>No</th>
 
-                      <th wire:click="sortBy('pembeli')" style="cursor:pointer">
-                          Pembeli
-                          @if ($sortField === 'pembeli')
+                      <th wire:click="sortBy('nama_toko')" style="cursor:pointer">
+                          Nama Toko
+                          @if ($sortField === 'nama_toko')
                               <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
                           @else
                               <i class="fas fa-sort text-muted"></i>
@@ -140,7 +140,7 @@
                           @endif
                       </th>
 
-                      <th>Aksi</i></th>
+                      <th>Aksi </i></th>
                   </tr>
                 </thead>
 
@@ -155,7 +155,7 @@
                               @checked(in_array($item->id, $selectedIds))>
                       </td>
                       <td>{{ $loop->iteration }}</td>
-                      <td>{{ $item->pembeli }}</td>
+                      <td>{{ $item->nama_toko }}</td>
                       <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d F Y') }}</td>
                       <td>
                         @if($item->nota === 1)
@@ -174,10 +174,7 @@
                       <td>
                         <a wire:navigate href="{{ route('suratjalan.detail', $item->id) }}" class="btn btn-sm btn-info" data-toggle="modal" data-target="#editModal">
                           <i class="fas fa-eye mr-1"></i>Detail
-                        </a>
-                        <button wire:navigate href="{{ route('suratjalan.edit', $item->id) }}" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#editModal">
-                          <i class="fas fa-edit"></i>
-                        </button>
+                        </a>                   
 
                         <!-- delete -->
                         <button wire:click="confirm({{$item->id}})" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteModal">

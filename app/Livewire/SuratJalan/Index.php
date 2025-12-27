@@ -21,7 +21,7 @@ class Index extends Component
     public array $selectedIds = [];
     public string $bulkAction = '';
 
-    public $no_surat, $tanggal, $pembeli, $kendaraan, $no_kendaraan, $total_coly, $status, $suratjalan_id;
+    public $no_surat, $tanggal, $nama_toko, $kendaraan, $no_kendaraan, $total_coly, $status, $suratjalan_id;
    
     public function render()
     {
@@ -34,7 +34,7 @@ class Index extends Component
     private function baseQuery()
     {
         $query = SuratJalan::where(function ($q) {
-            $q->where('pembeli', 'like', '%' . $this->search . '%')
+            $q->where('nama_toko', 'like', '%' . $this->search . '%')
             ->orWhere('status', 'like', '%' . $this->search . '%');
         });
 
@@ -89,7 +89,7 @@ class Index extends Component
     {
         $suratjalan = SuratJalan::findOrFail($id);
 
-        $this->pembeli = $suratjalan->pembeli;
+        $this->nama_toko = $suratjalan->nama_toko;
         $this->tanggal = $suratjalan->tanggal;
         $this->suratjalan_id = $suratjalan->id;
     }

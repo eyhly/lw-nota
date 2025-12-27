@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class Create extends Component
 {
-    public $no_surat, $pembeli, $alamat, $tanggal, $kendaraan, $no_kendaraan, $coly, $satuan_coly, $isi, $nama_isi, $nama_barang, $total_coly, $status, $nota, $print;
+    public $no_surat, $nama_toko, $alamat, $tanggal, $kendaraan, $no_kendaraan, $coly, $satuan_coly, $qty_isi, $nama_isi, $nama_barang, $total_coly, $status, $nota, $print;
     public $detailsj = [];
     public $title = 'Tambah Surat Jalan';
 
@@ -20,7 +20,7 @@ class Create extends Component
     public $formDetail = [
         'coly'        => 0,
         'satuan_coly' => '',
-        'isi'         => 0,
+        'qty_isi'         => 0,
         'nama_isi'    => '',
         'nama_barang' => '',
     ];
@@ -37,7 +37,7 @@ class Create extends Component
     public function resetForm()
     {
         $this->reset([
-            'pembeli',
+            'nama_toko',
             'alamat',
             'tanggal',
             'total_coly',
@@ -48,15 +48,21 @@ class Create extends Component
 
         public function addDetail()
     {
+        if (empty($this->formDetail['nama_barang'])) {
+            return;
+        }
+
         $this->detailsj[] = $this->formDetail;
 
         $this->formDetail = [
             'coly'        => 0,
             'satuan_coly' => '',
-            'isi'         => 0,
+            'qty_isi'         => 0,
             'nama_isi'    => '',
             'nama_barang' => '',
         ];
+
+        $this->dispatch('focus-nama-barang');
     }
 
     public function removeDetail($index)
@@ -88,24 +94,35 @@ class Create extends Component
     public function getFormTotalProperty()
     {
         $coly = (int) ($this->formDetail['coly'] ?? 0);
-        $isi  = (int) ($this->formDetail['isi'] ?? 0);
+        $qty_isi  = (int) ($this->formDetail['qty_isi'] ?? 0);
 
-        return $coly * $isi;
+        return $coly * $qty_isi;
     }
 
     public function store()
     {
+        $this->dispatch('swal-loading', [
+            'title' => 'Menyimpan Surat Jalan...',
+            'message' => 'Mohon tunggu'
+        ]);
+
         $this->validate([
             'no_surat' => 'required|unique:surat_jalan,no_surat',
             'tanggal' => 'required|date',
-            'pembeli' => 'required',
+            'nama_toko' => 'required',
             'alamat' => 'required',
         ]);
+
+        if (empty($this->detailsj)) {
+            $this->dispatch('swal-close');
+            session()->flash('error', 'Minimal harus ada 1 barang!');
+            return;
+        }
 
         DB::transaction(function() {
             $suratjalan = SuratJalan::create([
                 'no_surat' => $this->no_surat,
-                'pembeli' => $this->pembeli,
+                'nama_toko' => $this->nama_toko,
                 'alamat' => $this->alamat,
                 'tanggal' => $this->tanggal,
                 'kendaraan' => $this->kendaraan,
@@ -121,8 +138,9 @@ class Create extends Component
             }
         });
 
-        session()->flash('success', 'Data surat jalan berhasil ditambahkan');
-        return redirect()->route('suratjalan.index');
+        $this->dispatch('showSuccessAlert', [
+            'message' => 'Surat Jalan berhasil disimpan!'
+        ]);
     }
 
     public function getTotalColyProperty()

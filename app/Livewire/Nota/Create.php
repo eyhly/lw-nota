@@ -38,14 +38,18 @@ class Create extends Component
 
         if ($id) {
             $surat = \App\Models\SuratJalan::with('detailsj')->findOrFail($id);
-            $this->pembeli = $surat->pembeli;
+            $this->nama_toko = $surat->nama_toko;
+            $this->alamat = $surat->alamat;
+            $this->tanggal = $surat->tanggal;
+
+            $this->jt_tempo = Carbon::parse($surat->tanggal)->addMonths(2)->toDateString();
 
             foreach ($surat->detailsj as $detail) {
                 $this->details[] = [
                     'nama_barang'  => $detail->nama_barang,
                     'coly'         => $detail->coly,
                     'satuan_coly'  => $detail->satuan_coly ?? '',
-                    'qty_isi'      => $detail->qty_isi ?? 1,
+                    'qty_isi'      => $detail->qty_isi,
                     'nama_isi'     => $detail->nama_isi ?? '',
                     'jumlah'       => $detail->coly * ($detail->qty_isi ?? 1),
                     'harga'        => 0,
@@ -61,6 +65,13 @@ class Create extends Component
         if ($value) {
             $this->no_nota = Nota::generateNextNoNota($value);
             $this->jt_tempo = Carbon::parse($value)->addMonths(2)->toDateString();
+        }
+    }
+
+    public function setJatuhTempo($months)
+    {
+        if ($this->tanggal) {
+            $this->jt_tempo = Carbon::parse($this->tanggal)->addMonths($months)->toDateString();
         }
     }
 
@@ -110,6 +121,8 @@ class Create extends Component
             'jumlah' => 0,
             'total' => 0,
         ];
+
+        $this->dispatch('focus-nama-barang');
     }
 
     public function removeDetail($index)
@@ -217,6 +230,11 @@ class Create extends Component
 
     public function store()
     {
+        $this->dispatch('swal-loading', [
+            'title' => 'Menyimpan Nota...',
+            'message' => 'Mohon tunggu sebentar'
+        ]);
+
         $this->validate([
             'no_nota' => 'required|unique:nota,no_nota',
             'pembeli' => 'required',
@@ -226,6 +244,7 @@ class Create extends Component
         ]);
 
         if (empty($this->details)) {
+            $this->dispatch('swal-close');
             session()->flash('error', 'Minimal harus ada 1 barang!');
             return;
         }
@@ -257,7 +276,9 @@ class Create extends Component
             }
         });
 
-        $this->dispatch('showSuccessAlert');
+        $this->dispatch('showSuccessAlert', [
+            'message' => 'Nota berhasil disimpan!'
+        ]);
     }
 
     public function getSubtotalProperty()
