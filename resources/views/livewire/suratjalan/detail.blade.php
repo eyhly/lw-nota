@@ -100,14 +100,7 @@
                                     wire:model="tanggal" 
                                     class="form-control form-control-sm mr-5">
                             </div>
-                            
-                            <div class="d-flex mb-2">
-                                <label style="font-weight: 500; min-width: 130px;">Nama Kendaraan</label>
-                                <span class="mx-2">:</span>
-                                <input type="text" 
-                                    wire:model="kendaraan" 
-                                    class="form-control form-control-sm mr-5">
-                            </div>
+                                                        
                         </div>                       
                         <div class="col-md-6">                        
                             <div class="d-flex mb-2">
@@ -125,15 +118,7 @@
                                     wire:model="alamat" 
                                     class="form-control form-control-sm mr-5">
                             </div>
-
-                            <div class="d-flex mb-2">
-                                <label style="font-weight: 500; min-width: 130px;">Nomor Kendaraan</label>
-                                <span class="mx-2">:</span>
-                                <input type="text" 
-                                    wire:model="no_kendaraan" 
-                                    class="form-control form-control-sm mr-5" 
-                                    readonly>
-                            </div>
+                            
                         </div>                       
                     </div>
                 </div>
@@ -144,12 +129,22 @@
               <div class="font-weight-bold h5">Daftar Barang</div>
 
                 <table class="table table-bordered bg-white">
+                    <colgroup>
+                        <col style="width: 5%">   <!-- No -->
+                        <col style="width: 15%">  <!-- Coly -->
+                        <col style="width: 15%">  <!-- Isi -->
+                        <col style="width: 30%">  <!-- Nama Barang -->
+                        <col style="width: 15%">  <!-- Keterangan -->
+                        <col style="width: 20%">  <!-- Aksi -->
+                    </colgroup>
+
                     <thead class="table-light">
                         <tr>
                             <th>No</th>
-                            <th>Coly / Kemasan</th>
-                            <th>Jumlah Isi</th>
+                            <th>Coly</th>
+                            <th>Isi</th>
                             <th>Nama Barang</th>
+                            <th>Keterangan</th>
                             <th class="text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -164,7 +159,7 @@
                                         <div class="input-group input-group-sm">
                                             <input type="number" 
                                                    wire:model="editData.coly" 
-                                                   class="form-control"
+                                                   class="form-control  mr-2"
                                                    style="max-width: 70px;">
                                             <input type="text" 
                                                    wire:model="editData.satuan_coly" 
@@ -176,7 +171,7 @@
                                         <div class="input-group input-group-sm">
                                             <input type="number" 
                                                    wire:model="editData.qty_isi" 
-                                                   class="form-control"
+                                                   class="form-control mr-2"
                                                    style="max-width: 70px;">
                                             <input type="text" 
                                                    wire:model="editData.nama_isi" 
@@ -187,6 +182,11 @@
                                     <td>
                                         <input type="text" 
                                                wire:model="editData.nama_barang" 
+                                               class="form-control form-control-sm">
+                                    </td>
+                                    <td>
+                                        <input type="text" 
+                                               wire:model="editData.keterangan" 
                                                class="form-control form-control-sm">
                                     </td>
                                     <td class="text-center">
@@ -206,6 +206,7 @@
                                     <td>{{ $detail->coly }} {{ $detail->satuan_coly }}</td>
                                     <td>{{ $detail->qty_isi }} {{ $detail->nama_isi }}</td>
                                     <td>{{ $detail->nama_barang }}</td>
+                                    <td>{{ $detail->keterangan }}</td>
                                     <td class="text-center">
                                         <button type="button"
                                                 wire:click="startEdit({{ $index }}, {{ $detail->id }})" 
@@ -233,7 +234,7 @@
                 </table>
 
                 @if($suratjalan->detailsj->count() > 0)
-                    <div class="fw-semibold mt-2" style="font-size: 16px;">
+                    <div class="text-bold mt-2" style="font-size: 18px;">
                         Total Coly : {{ $this->totalColy }}
                     </div>
                 @endif

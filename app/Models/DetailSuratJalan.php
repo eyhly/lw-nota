@@ -12,11 +12,12 @@ class DetailSuratJalan extends Model
     protected $fillable = [
         'id',
         's_jalan_id',
-        'nama_barang',
         'coly',
         'satuan_coly',
         'qty_isi',
         'nama_isi',
+        'nama_barang',
+        'keterangan',
     ];
 
     public function suratjalan()

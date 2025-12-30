@@ -114,17 +114,18 @@ function initLivewireSwalHandlers(options = {}) {
         Livewire.on('showSuccessAlert', (event) => {
             const data = Array.isArray(event) ? event[0] : event;
             Swal.close();
-
-            Swal.fire({
-                title: data.title || 'Berhasil!',
-                text: data.message || 'Data berhasil disimpan!',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            }).then((result) => {
-                if (result.isConfirmed && config.redirectUrl) {
-                    window.location.href = config.redirectUrl;
-                }
-            });
+            setTimeout(() => {
+                Swal.fire({
+                    title: data.title || 'Berhasil!',
+                    text: data.message || 'Data berhasil disimpan!',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed && data.redirect) {
+                        window.location.href = data.redirect;
+                    }
+                });
+            },0);            
         });
 
         // =============================

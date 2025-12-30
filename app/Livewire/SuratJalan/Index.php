@@ -21,7 +21,7 @@ class Index extends Component
     public array $selectedIds = [];
     public string $bulkAction = '';
 
-    public $no_surat, $tanggal, $nama_toko, $kendaraan, $no_kendaraan, $total_coly, $status, $suratjalan_id;
+    public $no_surat, $tanggal, $nama_toko, $total_coly, $status, $suratjalan_id;
    
     public function render()
     {

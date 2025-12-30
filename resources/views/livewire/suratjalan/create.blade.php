@@ -31,11 +31,7 @@
                     <div class="mb-2">
                         <label>Tanggal</label>
                         <input type="date" class="form-control" wire:model="tanggal">
-                    </div>
-                    <div class="mb-2">
-                        <label>Kendaraan</label>
-                        <input type="text" class="form-control" wire:model="kendaraan" placeholder="Kendaraan">
-                    </div>
+                    </div>                    
                 </div>
                 <div class="col-md-6">
                     <div class="mb-2">
@@ -45,11 +41,7 @@
                     <div class="mb-2">
                         <label>Alamat</label>
                         <input type="text" class="form-control" wire:model="alamat" placeholder="Alamat">
-                    </div>
-                    <div class="mb-2">
-                        <label>No Kendaraan</label>
-                        <input type="text" class="form-control" wire:model="no_kendaraan" placeholder="No Kendaraan">
-                    </div>
+                    </div>                    
                 </div>
             </div>
         </div>
@@ -62,7 +54,7 @@
                     
                     <div class="row">
                         <!-- Nama Barang -->
-                        <div class="col-md-8 mb-2">
+                        <div class="col-md-12 mb-2">
                             <label class="medium">Nama Barang <span class="text-danger">*</span></label>
                             <input type="text" 
                                 id="nama-barang"
@@ -75,11 +67,11 @@
 
                     <div class="row">
                         <!-- Coly -->
-                        <div class="col-md-3 mb-2">
+                        <div class="col-md-6 mb-2">
                             <label class="medium">Coly</label>
                             <div class="input-group input-group-sm">
                                 <input type="number" 
-                                    class="form-control" 
+                                    class="form-control mr-2" 
                                     wire:model.live="formDetail.coly"
                                     placeholder="0"
                                     style="max-width: 70px;">
@@ -91,11 +83,11 @@
                         </div>
 
                         <!-- Isi -->
-                        <div class="col-md-3 mb-2">
+                        <div class="col-md-6 mb-2">
                             <label class="medium">Isi</label>
                             <div class="input-group input-group-sm">
                                 <input type="number" 
-                                    class="form-control" 
+                                    class="form-control mr-2" 
                                     wire:model.live="formDetail.qty_isi"
                                     placeholder="0"
                                     style="max-width: 70px;">
@@ -107,13 +99,24 @@
                         </div>
 
                         <!-- Total (Readonly) -->
-                        <div class="col-md-2 mb-2">
+                        <!-- <div class="col-md-2 mb-2">
                             <label class="medium">Total</label>
                             <input type="text" 
                                 class="form-control form-control-sm text-center bg-light"
                                 value="{{ $this->formTotal }}"
                                 readonly>
 
+                        </div> -->
+                    </div>
+
+                    <div class="row">
+                        <!-- Keterangan -->
+                        <div class="col-md-12 mb-2">
+                            <label class="medium">Keterangan</label>
+                            <input type="text"                                
+                                class="form-control form-control-sm" 
+                                wire:model="formDetail.keterangan"
+                                placeholder="Keterangan (Opsional)">
                         </div>
                     </div>
 
@@ -134,18 +137,20 @@
             <table class="table table-bordered table-sm align-middle">
                 <colgroup>
                     <col style="width: 5%">   <!-- No -->
+                    <col style="width: 10%">  <!-- Coly -->
+                    <col style="width: 10%">  <!-- Isi -->
                     <col style="width: 45%">  <!-- Nama Barang -->
-                    <col style="width: 20%">  <!-- Coly -->
-                    <col style="width: 20%">  <!-- Isi -->
+                    <col style="width: 20%">  <!-- Keterangan -->
                     <col style="width: 10%">  <!-- Aksi -->
                 </colgroup>
 
                 <thead class="table-secondary text-center">
                     <tr>
                         <th>No</th>
-                        <th>Nama Barang</th>
                         <th>Coly</th>
                         <th>Isi</th>
+                        <th>Nama Barang</th>
+                        <th>Keterangan</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -154,6 +159,41 @@
                         <tr>
                             <td class="text-center">{{ $i + 1 }}</td>
 
+                            
+                            <!-- Coly -->
+                            <td>
+                                @if ($editIndex === $i)
+                                <div class="input-group input-group-sm">
+                                    <input type="number" 
+                                    class="form-control" 
+                                    wire:model="editData.coly"
+                                    style="max-width: 70px;">
+                                    <input type="text" 
+                                    class="form-control" 
+                                    wire:model="editData.satuan_coly">
+                                </div>
+                                @else
+                                {{ $item['coly'] }} {{ $item['satuan_coly'] }}
+                                @endif
+                            </td>
+                            
+                            <!-- Isi -->
+                            <td>
+                                @if ($editIndex === $i)
+                                <div class="input-group input-group-sm">
+                                    <input type="number" 
+                                    class="form-control" 
+                                    wire:model="editData.qty_isi"
+                                    style="max-width: 70px;">
+                                    <input type="text" 
+                                    class="form-control" 
+                                    wire:model="editData.nama_isi">
+                                </div>
+                                @else
+                                {{ $item['qty_isi'] }} {{ $item['nama_isi'] }}
+                                @endif
+                            </td>
+                            
                             <!-- Nama Barang -->
                             <td>
                                 @if ($editIndex === $i)
@@ -164,38 +204,15 @@
                                     {{ $item['nama_barang'] }}
                                 @endif
                             </td>
-
-                            <!-- Coly -->
+                            
+                            <!-- Keterangan -->
                             <td>
                                 @if ($editIndex === $i)
-                                    <div class="input-group input-group-sm">
-                                        <input type="number" 
-                                               class="form-control" 
-                                               wire:model="editData.coly"
-                                               style="max-width: 70px;">
-                                        <input type="text" 
-                                               class="form-control" 
-                                               wire:model="editData.satuan_coly">
-                                    </div>
+                                    <input type="text" 
+                                           class="form-control form-control-sm" 
+                                           wire:model="editData.keterangan">
                                 @else
-                                    {{ $item['coly'] }} {{ $item['satuan_coly'] }}
-                                @endif
-                            </td>
-
-                            <!-- Isi -->
-                            <td>
-                                @if ($editIndex === $i)
-                                    <div class="input-group input-group-sm">
-                                        <input type="number" 
-                                               class="form-control" 
-                                               wire:model="editData.qty_isi"
-                                               style="max-width: 70px;">
-                                        <input type="text" 
-                                               class="form-control" 
-                                               wire:model="editData.nama_isi">
-                                    </div>
-                                @else
-                                    {{ $item['qty_isi'] }} {{ $item['nama_isi'] }}
+                                    {{ $item['keterangan'] }}
                                 @endif
                             </td>
 
@@ -244,8 +261,7 @@
 
                 <tfoot>
                     <tr>
-                        <th colspan="2" class="text-right">Total Coly:</th>
-                        <th colspan="3" class="text-left">{{ $this->total_coly }}</th>
+                        <th colspan="6" class="text-left">Total Coly : {{ $this->total_coly }}</th>
                     </tr>
                 </tfoot>
             </table>

@@ -12,7 +12,7 @@ class Detail extends Component
     public $suratjalan;
     public $title = 'Detail Surat Jalan';    
 
-    public $no_surat, $nama_toko, $alamat, $tanggal, $kendaraan, $no_kendaraan;
+    public $no_surat, $nama_toko, $alamat, $tanggal;
 
     public $editIndex = null;
     public $editData = [];
@@ -25,8 +25,6 @@ class Detail extends Component
         $this->nama_toko     = $this->suratjalan->nama_toko;
         $this->alamat     = $this->suratjalan->alamat;
         $this->tanggal     = $this->suratjalan->tanggal;        
-        $this->kendaraan     = $this->suratjalan->kendaraan;        
-        $this->no_kendaraan     = $this->suratjalan->no_kendaraan;        
     }
 
     public function updateSurat()
@@ -36,17 +34,13 @@ class Detail extends Component
             'nama_toko'     => 'required|string',
             'alamat'     => 'required|string',
             'tanggal'     => 'required|date',
-            'kendaraan'     => 'required|string',                 
-            'no_kendaraan'     => 'required|string'                   
         ]);
 
         $this->suratjalan->update([
             'no_surat'     => $this->no_surat,
             'nama_toko'     => $this->nama_toko,
             'alamat'     => $this->alamat,
-            'tanggal'     => $this->tanggal,            
-            'kendaraan'     => $this->kendaraan,            
-            'no_kendaraan'     => $this->no_kendaraan,            
+            'tanggal'     => $this->tanggal,                                 
         ]);
 
         session()->flash('success', 'Data surat jalan berhasil diperbarui.');
@@ -61,9 +55,10 @@ class Detail extends Component
             'id'          => $detail->id,
             'coly'        => $detail->coly,
             'satuan_coly' => $detail->satuan_coly,
-            'qty_isi'         => $detail->qty_isi,
+            'qty_isi'     => $detail->qty_isi,
             'nama_isi'    => $detail->nama_isi,
             'nama_barang' => $detail->nama_barang,
+            'keterangan'  => $detail->keterangan,
         ];
     }
 
@@ -113,7 +108,8 @@ class Detail extends Component
         $data = array(
             'title' => 'Detail SuratJalan',
             'suratjalan' => $suratjalan,
-            'chunks' => $chunks
+            'chunks' => $chunks,
+            'startNumber' => 0 
         );
         $pdf = Pdf::loadView('pdf.surat', $data)->setPaper('a4', 'landscape');;
         return $pdf->stream('suratjalan.pdf');

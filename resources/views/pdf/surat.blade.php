@@ -54,14 +54,26 @@
     .kendaraan {
     font-size: 15px;
     }
+
+    .coly {
+    font-size: 18px;
+    }
+
+    .header{
+      top: 0;
+    }
     
   </style>
 </head>
 <body>
 
+@php
+    $globalIndex = 0;
+@endphp
+
 @foreach($chunks as $chunkIndex => $detailsj)
   <!-- Header Nota -->
-  <table>
+  <table style="margin-top:0px; margin-bottom: 0x;" class="header">
     <tr>
       <td width="30%">
         <b>MENTARI JAYA</b><br>
@@ -87,13 +99,13 @@
       </td>
       <td width="35%">
         Kepada Yth, <br>
-        {{ $suratjalan->pembeli }} <br>
+        {{ $suratjalan->nama_toko }} <br>
         {{ $suratjalan->alamat }}
       </td>
     </tr>
   </table>
 
-  <table style="width: 100%; margin-bottom: 2px; margin-top:2px;">
+  <!-- <table style="width: 100%; margin-bottom: 2px; margin-top:2px;">
     <tr class="kendaraan">
       <td style="text-align: left;">
         Kami kirimkan barang-barang tersebut dibawah ini dengan kendaraan 
@@ -103,7 +115,7 @@
         <b>No. {{ $suratjalan->no_kendaraan }}</b>
       </td>
     </tr>
-  </table>
+  </table> -->
 
   <!-- Detail Barang -->
   <table>
@@ -112,21 +124,23 @@
         <th align="center" width="5%">NO</th>
         <th align="center" width="15%">COLY</th>
         <th align="center" width="15%">ISI</th>
-        <th align="left" width="65%">NAMA BARANG</th>
+        <th align="left" width="45%">NAMA BARANG</th>
+        <th align="left" width="20%">KETERANGAN</th>
       </tr>
     </thead>
     <tbody>
       @foreach($detailsj as $i => $d)
       <tr>
-        <td align="center">{{ ($chunkIndex*10) + $i + 1 }}</td>
+        <td align="center">{{ ++$globalIndex }}</td>
         <td align="center">
-            <div class="d-flex justify-content-between w-100">
-                <span class="text-end w-50">{{ $d->coly }}</span>
-                <span class="text-start w-50">{{ $d->satuan_coly }}</span>
+            <div class="d-flex justify-content-between w-80">
+                <span class="text-end w-40">{{ $d->coly }}</span>
+                <span class="text-start w-40">{{ $d->satuan_coly }}</span>
             </div>
         </td>
-        <td align="center">{{ $d->isi }} {{ $d->nama_isi }}</td>
+        <td align="center">{{ $d->qty_isi }} {{ $d->nama_isi }}</td>
         <td align="left">{{ $d->nama_barang }}</td>
+        <td align="left">{{ $d->keterangan }}</td>
       </tr>
       @endforeach
 
@@ -141,13 +155,15 @@
 
   <!-- Footer -->
   <div class="footer">
+    @if($loop->last)
     <hr>
     <table>
       <tr>
-        <td class="kendaraan" width="10%" valign="top" align="center">
+        <td class="coly" width="10%" valign="top" align="left">
           <b>Total Coly {{$suratjalan->total_coly}}</b>
         </td>  
       </tr>
+      <br>
       <tr>            
         <td width="30%" valign="top" align="center">
           Tanda Terima,<br><br><br><br>
@@ -159,6 +175,7 @@
         </td>      
       </tr>
     </table>
+    @endif
   </div>
 
   @if(!$loop->last)

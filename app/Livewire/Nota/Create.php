@@ -10,6 +10,7 @@ use Carbon\Carbon;
 class Create extends Component
 {
     public $no_nota,$pembeli,$nama_toko,$alamat,$tanggal,$subtotal=0,$diskon_persen=0,$diskon_rupiah=0,$total_harga=0,$total_coly=0,$jt_tempo;
+    public $surat_jalan_id = null;
     public $details = [];
     public $title = 'Buat Nota';
 
@@ -38,6 +39,7 @@ class Create extends Component
 
         if ($id) {
             $surat = \App\Models\SuratJalan::with('detailsj')->findOrFail($id);
+            $this->surat_jalan_id = $id;
             $this->nama_toko = $surat->nama_toko;
             $this->alamat = $surat->alamat;
             $this->tanggal = $surat->tanggal;
@@ -82,13 +84,14 @@ class Create extends Component
             'tanggal',
             'nama_toko',
             'alamat',
-            'subtotal',
+            'subtotal', 
             'diskon_persen',
             'diskon_rupiah',
             'total_harga',
             'total_coly',
             'jt_tempo',
             'details',
+            'surat_jalan_id',
         ]);
     }
 
@@ -274,10 +277,20 @@ class Create extends Component
                 $d['diskon'] = implode(', ', array_map('strval', $d['diskon'] ?? []));
                 $nota->details()->create($d);
             }
+
+            if ($this->surat_jalan_id) {
+                DB::table('surat_jalan')
+                    ->where('id', $this->surat_jalan_id)
+                    ->update([
+                        'nota' => 1,
+                        'nota_id' => $nota->id
+                    ]);
+            }
         });
 
         $this->dispatch('showSuccessAlert', [
-            'message' => 'Nota berhasil disimpan!'
+            'message' => 'Nota berhasil disimpan!',
+            'redirect' => route(name: 'nota.index')
         ]);
     }
 

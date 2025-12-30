@@ -89,7 +89,7 @@
                         <div class="col-md-4 mb-2">
                             <label class="medium">Coly</label>
                             <div class="input-group input-group-sm">
-                                <input type="number" class="form-control" wire:model="formDetail.coly" placeholder="0"
+                                <input type="number" class="form-control mr-2" wire:model="formDetail.coly" placeholder="0"
                                     style="max-width: 70px;">
                                 <input type="text" class="form-control" wire:model="formDetail.satuan_coly"
                                     placeholder="Satuan">
@@ -100,7 +100,7 @@
                         <div class="col-md-4 mb-2">
                             <label class="medium">Qty Isi</label>
                             <div class="input-group input-group-sm">
-                                <input type="number" class="form-control" wire:model="formDetail.qty_isi" placeholder="0"
+                                <input type="number" class="form-control mr-2" wire:model="formDetail.qty_isi" placeholder="0"
                                     style="max-width: 70px;">
                                 <input type="text" class="form-control" wire:model="formDetail.nama_isi"
                                     placeholder="Satuan">
@@ -242,19 +242,26 @@
                             </td>
 
                             <!-- Harga -->
-                            <td>
+                            <!-- <td>
                                 @if ($editIndex === $i)
                                     <input type="number" class="form-control form-control-sm"
                                         wire:model="editData.harga">
                                 @else
                                     <input type="number" class="form-control form-control-sm"
                                         wire:model="editData.harga">
-                                    <!-- {{ number_format($item['harga'], 0, ',', '.') }} -->
+                                    {{ number_format($item['harga'], 0, ',', '.') }}
                                 @endif
+                                
+                            </td> -->
+
+                            <td>
+                                <input type="number"
+                                class="form-control form-control-sm text-end"
+                                wire:model.debounce.400ms="details.{{ $i }}.harga">
                             </td>
 
                             <!-- Diskon -->
-                            <td>
+                            <!-- <td>
                                 @if ($editIndex === $i)
                                     @foreach ((array) ($editData['diskon'] ?? []) as $d => $val)
                                         <div class="input-group input-group-sm mb-1">
@@ -274,8 +281,47 @@
                                         <i class="fas fa-plus"></i>
                                     </button>
                                 @else
+                                    @foreach ((array) ($editData['diskon'] ?? []) as $d => $val)
+                                        <div class="input-group input-group-sm mb-1">
+                                            <input type="number" class="form-control"
+                                                wire:model="editData.diskon.{{ $d }}" placeholder="%">
+                                            <div class="input-group-append">
+                                                <button class="btn btn-danger btn-sm" type="button"
+                                                    wire:click="removeEditDiskon({{ $d }})">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    @endforeach
+
+                                    <button class="btn btn-success btn-sm btn-block" type="button"
+                                        wire:click="addEditDiskon">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
                                     {{ implode(' + ', (array) ($item['diskon'] ?? [])) }}
                                 @endif
+                            </td> -->
+
+                            <td>
+                                @foreach ((array) ($item['diskon'] ?? []) as $d => $val)
+                                    <div class="input-group input-group-sm mb-1">
+                                        <input type="number"
+                                            class="form-control text-end"
+                                            wire:model.debounce.400ms="details.{{ $i }}.diskon.{{ $d }}"
+                                            placeholder="%">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-danger btn-sm" type="button"
+                                                wire:click="removeDiskon({{ $i }}, {{ $d }})">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                @endforeach
+
+                                <button class="btn btn-success btn-sm btn-block" type="button"
+                                    wire:click="addDiskon({{ $i }})">
+                                    <i class="fas fa-plus"></i>
+                                </button>
                             </td>
 
                             <!-- Total -->

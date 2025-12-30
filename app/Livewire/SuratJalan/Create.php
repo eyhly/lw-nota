@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class Create extends Component
 {
-    public $no_surat, $nama_toko, $alamat, $tanggal, $kendaraan, $no_kendaraan, $coly, $satuan_coly, $qty_isi, $nama_isi, $nama_barang, $total_coly, $status, $nota, $print;
+    public $no_surat, $nama_toko, $alamat, $tanggal, $coly, $satuan_coly, $qty_isi, $nama_isi, $nama_barang, $keterangan, $total_coly, $status, $nota, $print;
     public $detailsj = [];
     public $title = 'Tambah Surat Jalan';
 
@@ -20,9 +20,10 @@ class Create extends Component
     public $formDetail = [
         'coly'        => 0,
         'satuan_coly' => '',
-        'qty_isi'         => 0,
+        'qty_isi'     => 0,
         'nama_isi'    => '',
         'nama_barang' => '',
+        'keterangan' => '',
     ];
 
     public function mount()
@@ -60,6 +61,7 @@ class Create extends Component
             'qty_isi'         => 0,
             'nama_isi'    => '',
             'nama_barang' => '',
+            'keterangan' => '',
         ];
 
         $this->dispatch('focus-nama-barang');
@@ -125,8 +127,6 @@ class Create extends Component
                 'nama_toko' => $this->nama_toko,
                 'alamat' => $this->alamat,
                 'tanggal' => $this->tanggal,
-                'kendaraan' => $this->kendaraan,
-                'no_kendaraan' => $this->no_kendaraan,
                 'total_coly' => $this->total_coly,
                 'status' => $this->status,
                 'nota' => 0,
@@ -139,7 +139,8 @@ class Create extends Component
         });
 
         $this->dispatch('showSuccessAlert', [
-            'message' => 'Surat Jalan berhasil disimpan!'
+            'message' => 'Surat Jalan berhasil disimpan!',
+            'redirect' => route(name: 'suratjalan.index')
         ]);
     }
 
