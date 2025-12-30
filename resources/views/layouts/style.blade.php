@@ -87,4 +87,15 @@ input:not(:checked) ~ .switch-text {
   margin-right: 0.5em;
 }
 
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Hilangkan spinner input number (Firefox) */
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
 </style>

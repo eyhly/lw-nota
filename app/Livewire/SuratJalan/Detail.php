@@ -111,7 +111,7 @@ class Detail extends Component
             'chunks' => $chunks,
             'startNumber' => 0 
         );
-        $pdf = Pdf::loadView('pdf.surat', $data)->setPaper('a4', 'landscape');;
+        $pdf = Pdf::loadView('pdf.surat', $data)->setPaper('a5', 'landscape');;
         return $pdf->stream('suratjalan.pdf');
     }
 

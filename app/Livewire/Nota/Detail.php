@@ -38,7 +38,7 @@ class Detail extends Component
     {
         $this->validate([
             'no_nota'  => 'required|string',
-            'pembeli'  => 'required|string',
+            'pembeli'  => 'nullable|string',
             'tanggal'  => 'required|date',
             'nama_toko'   => 'required|string',
             'alamat'   => 'required|string',
@@ -209,7 +209,7 @@ class Detail extends Component
             'nota' => $nota,
             'chunks' => $chunks
         );
-        $pdf = Pdf::loadView('pdf.index', $data)->setPaper('a4', 'landscape');;
+        $pdf = Pdf::loadView('pdf.index', $data)->setPaper('a6', 'landscape');;
         return $pdf->stream('nota.pdf');
     }
 

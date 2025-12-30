@@ -163,11 +163,11 @@
                             <!-- Coly -->
                             <td>
                                 @if ($editIndex === $i)
-                                <div class="input-group input-group-sm">
+                                <div class="d-flex flex-column gap-1">
                                     <input type="number" 
-                                    class="form-control" 
+                                    class="form-control mb-2" 
                                     wire:model="editData.coly"
-                                    style="max-width: 70px;">
+                                    >
                                     <input type="text" 
                                     class="form-control" 
                                     wire:model="editData.satuan_coly">
@@ -180,11 +180,11 @@
                             <!-- Isi -->
                             <td>
                                 @if ($editIndex === $i)
-                                <div class="input-group input-group-sm">
+                                <div class="d-flex flex-column gap-1">
                                     <input type="number" 
-                                    class="form-control" 
+                                    class="form-control mb-2" 
                                     wire:model="editData.qty_isi"
-                                    style="max-width: 70px;">
+                                    >
                                     <input type="text" 
                                     class="form-control" 
                                     wire:model="editData.nama_isi">
@@ -261,7 +261,7 @@
 
                 <tfoot>
                     <tr>
-                        <th colspan="6" class="text-left">Total Coly : {{ $this->total_coly }}</th>
+                        <th colspan="6" class="text-left" style="font-size: medium;">Total Coly : {{ $this->total_coly }}</th>
                     </tr>
                 </tfoot>
             </table>

@@ -143,22 +143,23 @@ class Create extends Component
     }
 
     public function saveEdit()
-    {
-        if ($this->editIndex !== null) {
-            // Clean diskon array
-            $this->editData['diskon'] = array_values(
-                array_filter((array) $this->editData['diskon'], 'is_numeric')
-            );
+    {       
+            if ($this->editIndex === null) return;
 
-            // Update data
-            $this->details[$this->editIndex] = $this->editData;
+            $i = $this->editIndex;
+
+            // HANYA field yang memang pakai edit mode
+            $this->details[$i]['nama_barang']  = $this->editData['nama_barang'];
+            $this->details[$i]['coly']         = $this->editData['coly'];
+            $this->details[$i]['satuan_coly']  = $this->editData['satuan_coly'];
+            $this->details[$i]['qty_isi']      = $this->editData['qty_isi'];
+            $this->details[$i]['nama_isi']     = $this->editData['nama_isi'];
 
             // Recalc
             $this->recalcRow($this->editIndex);
 
             // Reset edit mode
-            $this->cancelEdit();
-        }
+            $this->cancelEdit();        
     }
 
     public function cancelEdit()
@@ -167,18 +168,18 @@ class Create extends Component
         $this->editData = [];
     }
 
-    public function addEditDiskon()
+    public function addDiskon($row)
     {
-        if (!is_array($this->editData['diskon'])) {
-            $this->editData['diskon'] = [];
+        if (!isset($this->details[$row]['diskon']) || !is_array($this->details[$row]['diskon'])) {
+            $this->details[$row]['diskon'] = [];
         }
-        $this->editData['diskon'][] = 0;
+        $this->details[$row]['diskon'][] = 0;
     }
 
-    public function removeEditDiskon($index)
+    public function removeDiskon($row, $index)
     {
-        unset($this->editData['diskon'][$index]);
-        $this->editData['diskon'] = array_values($this->editData['diskon']);
+        unset($this->details[$row]['diskon'][$index]);
+        $this->details[$row]['diskon'] = array_values($this->details[$row]['diskon']);
     }
 
     public function updatedEditData($value, $name)

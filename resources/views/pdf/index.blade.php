@@ -13,8 +13,8 @@
 
     body {
       font-family: 'MartianMono', monospace;
-      font-size: 20px;
-      margin: 20px;
+      font-size: 8px;
+      margin: 3px;
       text-transform: uppercase;
     }
 
@@ -29,11 +29,11 @@
     }
 
     thead th {
-      padding: 4px;  
+      padding: 2px;  
     }
 
     tbody td {
-      padding: 4px;
+      padding: 2px;
     }
 
     .footer {
@@ -47,12 +47,16 @@
     }
 
     .faktur {
-    font-size: 28px;
+    font-size: 10px;
     font-weight: bold;
     }
   </style>
 </head>
 <body>
+
+@php
+    $globalIndex = 0;
+@endphp
 
 @foreach($chunks as $chunkIndex => $details)
   <!-- Header Nota -->
@@ -84,7 +88,10 @@
       </td>
       <td width="35%">
         Kepada Yth, <br>
-        {{ $nota->pembeli }}, {{ $nota->nama_toko}}<br>
+        {{ $nota->nama_toko }}<br>
+        @if(!empty($nota->pembeli))
+            {{ $nota->pembeli }}<br>
+        @endif
         {{ $nota->alamat }}
       </td>
     </tr>
@@ -108,7 +115,7 @@
     <tbody>
       @foreach($details as $i => $d)
       <tr>
-        <td align="center">{{ ($chunkIndex*10) + $i + 1 }}</td>
+        <td align="center">{{ ++$globalIndex }}</td>
         <td align="left">{{ $d->nama_barang }}</td>
         <td align="center">
             <div class="d-flex justify-content-between w-100">
@@ -140,6 +147,7 @@
 
   <!-- Footer -->
   <div class="footer">
+    @if($loop->last)
     <hr>
     <table>
       <tr>
@@ -172,6 +180,7 @@
         </td>
       </tr>
     </table>
+  @endif
   </div>
 
   @if(!$loop->last)

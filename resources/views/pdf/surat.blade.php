@@ -13,8 +13,8 @@
 
     body {
       font-family: 'MartianMono', monospace;
-      font-size: 20px;
-      margin: 20px;
+      font-size: 10px;
+      margin: 5px;
       text-transform: uppercase;
     }
 
@@ -29,11 +29,16 @@
     }
 
     thead th {
-      padding: 4px;  
+      padding: 2px;  
     }
 
     tbody td {
-      padding: 4px;
+      padding: 2px;
+    }
+
+    td {
+      vertical-align: top;
+      padding-bottom: 5px;
     }
 
     .footer {
@@ -47,16 +52,16 @@
     }
 
     .faktur {
-    font-size: 28px;
+    font-size: 15px;
     font-weight: bold;
     }
 
     .kendaraan {
-    font-size: 15px;
+    font-size: 10px;
     }
 
     .coly {
-    font-size: 18px;
+    font-size: 10px;
     }
 
     .header{
@@ -124,8 +129,8 @@
         <th align="center" width="5%">NO</th>
         <th align="center" width="15%">COLY</th>
         <th align="center" width="15%">ISI</th>
-        <th align="left" width="45%">NAMA BARANG</th>
-        <th align="left" width="20%">KETERANGAN</th>
+        <th align="left" style="padding-left: 5px" width="45%">NAMA BARANG</th>
+        <th align="left" style="padding-left: 5px" width="20%">KETERANGAN</th>
       </tr>
     </thead>
     <tbody>
@@ -139,8 +144,8 @@
             </div>
         </td>
         <td align="center">{{ $d->qty_isi }} {{ $d->nama_isi }}</td>
-        <td align="left">{{ $d->nama_barang }}</td>
-        <td align="left">{{ $d->keterangan }}</td>
+        <td align="left" style="padding-left: 5px">{{ $d->nama_barang }}</td>
+        <td style="padding-left: 5px; text-align: left;">{{ $d->keterangan }}</td>
       </tr>
       @endforeach
 
