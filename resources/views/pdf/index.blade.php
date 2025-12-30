@@ -13,7 +13,7 @@
 
     body {
       font-family: 'MartianMono', monospace;
-      font-size: 8px;
+      font-size: 10px;
       margin: 3px;
       text-transform: uppercase;
     }
@@ -36,6 +36,11 @@
       padding: 2px;
     }
 
+    td {
+      vertical-align: top;
+      padding-bottom: 5px;
+    }
+
     .footer {
       position: fixed;
       bottom: 0;
@@ -49,6 +54,21 @@
     .faktur {
     font-size: 10px;
     font-weight: bold;
+    }
+
+    .grup{
+      margin: auto;   
+      width: 100%;
+    }
+
+    .gp1 {  
+      text-align: right; 
+      width: 50%;
+    }
+
+    .gp2 {
+      text-align: left; 
+      width: 50%;
     }
   </style>
 </head>
@@ -66,7 +86,7 @@
         <b>MENTARI JAYA</b><br>
         <b>SURABAYA</b>
       </td>
-      <td width="40%" align="center">
+      <td width="40%" style="text-align: center;">
         <p class="faktur"><u>FAKTUR</u></p>
       </td>
       <td width="30%"></td>
@@ -102,37 +122,37 @@
   <table>
     <thead>
       <tr>
-        <th align="center">NO</th>
-        <th align="left">NAMA BARANG</th>
-        <th align="center">COLY</th>
-        <th align="center">ISI</th>
-        <th align="center">TOTAL QTY</th>
-        <th align="right">HARGA</th>
-        <th align="center">% DISC</th>
-        <th align="right">SUBTOTAL</th>
+        <th style="text-align: center;">NO</th>
+        <th style="text-align: left;">NAMA BARANG</th>
+        <th style="text-align: center;">COLY</th>
+        <th style="text-align: center;">ISI</th>
+        <th style="text-align: center;">TOTAL QTY</th>
+        <th style="text-align: right;">HARGA</th>
+        <th style="text-align: center;">% DISC</th>
+        <th style="text-align: right; padding-right: 10px;">SUBTOTAL</th>
       </tr>
     </thead>
     <tbody>
       @foreach($details as $i => $d)
       <tr>
-        <td align="center">{{ ++$globalIndex }}</td>
-        <td align="left">{{ $d->nama_barang }}</td>
-        <td align="center">
+        <td style="text-align: center;">{{ ++$globalIndex }}</td>
+        <td style="text-align: left;">{{ $d->nama_barang }}</td>
+        <td style="text-align: center;">
             <div class="d-flex justify-content-between w-100">
                 <span class="text-end w-50">{{ $d->coly }}</span>
                 <span class="text-start w-50">{{ $d->satuan_coly }}</span>
             </div>
         </td>
-        <td align="center">{{ $d->qty_isi }} {{ $d->nama_isi }}</td>
-        <td align="center">{{ $d->jumlah }} {{ $d->nama_isi }}</td>
-        <td align="right">{{ number_format($d->harga,0,',','.') }}</td>
-        <td align="center">
+        <td style="text-align: center;">{{ $d->qty_isi }} {{ $d->nama_isi }}</td>
+        <td style="text-align: center;">{{ $d->jumlah }} {{ $d->nama_isi }}</td>
+        <td style="text-align: right;">{{ number_format($d->harga,0,',','.') }}</td>
+        <td style="text-align: center;">
         @php
             $diskon = json_decode($d->diskon, true);
         @endphp
         {{ !empty($diskon) && is_array($diskon) ? implode('+', $diskon) : '0' }}
         </td>
-        <td align="right">{{ number_format($d->total,0,',','.') }}</td>
+        <td style="text-align: right;">{{ number_format($d->total,0,',','.') }}</td>
       </tr>
       @endforeach
 
@@ -155,7 +175,7 @@
           Hormat Kami,<br><br><br><br>
           (&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)
         </td>
-        <td width="35%" align="center">
+        <td width="35%" style="text-align: center;">
           Bila sudah jatuh tempo<br>
           Mohon transfer ke :<br>
           <b>BCA : 506 082 9499 <br>
@@ -163,17 +183,17 @@
           A/N : GO GIOK LIE <br>
           <b>TERIMA KASIH</b>
         </td>
-        <td width="5%" valign="top" align="left">
+        <td width="5%" valign="top" style="text-align: left;">
           Subtotal <br>
           Disc {{ $nota->diskon_persen }}% <br>
           <b>Total </b>
         </td>
-        <td width="2%" valign="top" align="left">
+        <td width="2%" valign="top" style="text-align: left;">
           : <br>
           : <br>
           <b> :</b>
         </td>
-        <td width="20%" valign="top" align="right">
+        <td width="20%" valign="top" style="text-align: right;">
            Rp. {{ number_format($nota->subtotal,0,',','.') }} <br>
            Rp. {{ number_format($nota->diskon_rupiah,0,',','.') }} <br>
           <b>  Rp. {{ number_format($nota->total_harga,0,',','.') }}</b>
