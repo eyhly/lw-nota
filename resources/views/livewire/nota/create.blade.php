@@ -239,68 +239,16 @@
                             <!-- Total Qty -->
                             <td class="text-center">
                                 {{ $editIndex === $i ? $editData['coly'] * $editData['qty_isi'] : $item['jumlah'] }}
-                            </td>
+                            </td>                           
 
                             <!-- Harga -->
-                            <!-- <td>
-                                @if ($editIndex === $i)
-                                    <input type="number" class="form-control form-control-sm"
-                                        wire:model="editData.harga">
-                                @else
-                                    <input type="number" class="form-control form-control-sm"
-                                        wire:model="editData.harga">
-                                    {{ number_format($item['harga'], 0, ',', '.') }}
-                                @endif
-                                
-                            </td> -->
-
                             <td>
                                 <input type="number"
                                 class="form-control form-control-sm text-end"
                                 wire:model.debounce.400ms="details.{{ $i }}.harga">
                             </td>
 
-                            <!-- Diskon -->
-                            <!-- <td>
-                                @if ($editIndex === $i)
-                                    @foreach ((array) ($editData['diskon'] ?? []) as $d => $val)
-                                        <div class="input-group input-group-sm mb-1">
-                                            <input type="number" class="form-control"
-                                                wire:model="editData.diskon.{{ $d }}" placeholder="%">
-                                            <div class="input-group-append">
-                                                <button class="btn btn-danger btn-sm" type="button"
-                                                    wire:click="removeEditDiskon({{ $d }})">
-                                                    <i class="fas fa-times"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    @endforeach
-
-                                    <button class="btn btn-success btn-sm btn-block" type="button"
-                                        wire:click="addEditDiskon">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                @else
-                                    @foreach ((array) ($editData['diskon'] ?? []) as $d => $val)
-                                        <div class="input-group input-group-sm mb-1">
-                                            <input type="number" class="form-control"
-                                                wire:model="editData.diskon.{{ $d }}" placeholder="%">
-                                            <div class="input-group-append">
-                                                <button class="btn btn-danger btn-sm" type="button"
-                                                    wire:click="removeEditDiskon({{ $d }})">
-                                                    <i class="fas fa-times"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    @endforeach
-
-                                    <button class="btn btn-success btn-sm btn-block" type="button"
-                                        wire:click="addEditDiskon">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                    {{ implode(' + ', (array) ($item['diskon'] ?? [])) }}
-                                @endif
-                            </td> -->
+                            <!-- Diskon -->                       
 
                             <td>
                                 @foreach ((array) ($item['diskon'] ?? []) as $d => $val)
