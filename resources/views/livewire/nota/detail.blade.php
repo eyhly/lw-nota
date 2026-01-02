@@ -132,7 +132,26 @@
             </div>
     <!-- Tabel detail -->
     <div class="card py-3 px-4 mb-4">
-        <div class="font-weight-bold h5">Daftar Barang</div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="font-weight-bold h5 mb-0">Daftar Barang</div>
+                    
+                @if(!$isAdding && $editIndex === null)
+                    <button type="button" 
+                        wire:click="startAdding" 
+                        class="btn btn-success btn-sm">
+                        <i class="fas fa-plus mr-1"></i> Tambah Item
+                    </button>
+                @endif
+        </div>
+
+        @if(session()->has('message'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('message') }}
+                <button type="button" class="close" data-dismiss="alert">
+                    <span>&times;</span>
+                </button>
+            </div>
+        @endif
         <table class="table table-bordered bg-white">
 
             <colgroup>
@@ -160,7 +179,7 @@
                     <th>Aksi</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody>                
                 @forelse ($nota->details as $index => $detail)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
@@ -298,10 +317,131 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr>
-                                <td colspan="9" class="text-center">Tidak ada detail barang</td>
-                            </tr>
+                            @if(!$isAdding)
+                                <tr>
+                                    <td colspan="9" class="text-center">Tidak ada detail barang</td>
+                                </tr>
+                            @endif
                         @endforelse
+
+                        <!-- Row untuk Add New Item -->
+                        @if($isAdding)
+                            <tr class="table-info">
+                                <td class="text-center">
+                                    <i class="fas fa-plus-circle text-success"></i>
+                                </td>
+
+                                <!-- Nama Barang -->
+                                <td>
+                                    <input type="text" 
+                                           class="form-control form-control-sm" 
+                                           wire:model="newItem.nama_barang"
+                                           placeholder="Nama barang">
+                                    @error('newItem.nama_barang') 
+                                        <small class="text-danger">{{ $message }}</small> 
+                                    @enderror
+                                </td>
+
+                                <!-- Coly -->
+                                <td>
+                                    <div class="d-flex">
+                                        <input type="number" 
+                                               class="form-control form-control-sm mr-1" 
+                                               wire:model="newItem.coly"
+                                               placeholder="Coly">
+                                        <input type="text" 
+                                               class="form-control form-control-sm" 
+                                               wire:model="newItem.satuan_coly"
+                                               placeholder="Satuan">
+                                    </div>
+                                    @error('newItem.coly') 
+                                        <small class="text-danger">{{ $message }}</small> 
+                                    @enderror
+                                </td>
+
+                                <!-- Qty Isi -->
+                                <td>
+                                    <div class="d-flex">
+                                        <input type="number" 
+                                               class="form-control form-control-sm mr-1" 
+                                               wire:model="newItem.qty_isi"
+                                               placeholder="Qty">
+                                        <input type="text" 
+                                               class="form-control form-control-sm" 
+                                               wire:model="newItem.nama_isi"
+                                               placeholder="Satuan">
+                                    </div>
+                                    @error('newItem.qty_isi') 
+                                        <small class="text-danger">{{ $message }}</small> 
+                                    @enderror
+                                </td>
+
+                                <!-- Jumlah -->
+                                <td class="text-center">
+                                    {{ $newItem['jumlah'] }} {{ $newItem['satuan_coly'] ?? '' }}
+                                </td>
+
+                                <!-- Harga -->
+                                <td>
+                                    <input type="number" 
+                                           class="form-control form-control-sm" 
+                                           wire:model="newItem.harga"
+                                           placeholder="Harga">
+                                    @error('newItem.harga') 
+                                        <small class="text-danger">{{ $message }}</small> 
+                                    @enderror
+                                </td>
+
+                                <!-- Diskon -->
+                                <td>
+                                    @foreach ((array) ($newItem['diskon'] ?? []) as $d => $val)
+                                        <div class="d-flex align-items-center mb-1">
+                                            <input type="number"
+                                                class="form-control form-control-sm me-1 mr-2"
+                                                wire:model="newItem.diskon.{{ $d }}"
+                                                placeholder="%">
+
+                                            <i class="fas fa-times text-danger"
+                                               style="cursor:pointer"
+                                               wire:click="removeNewItemDiskon({{ $d }})">
+                                            </i>
+                                        </div>
+                                    @endforeach
+
+                                    <button type="button" 
+                                            class="btn btn-sm btn-success d-flex align-items-center"
+                                            wire:click="addNewItemDiskon">
+                                        <span>+</span> Diskon
+                                    </button>
+                                </td>
+
+                                <!-- Total -->
+                                <td class="text-right">
+                                    {{ number_format($newItem['total']) }}
+                                </td>
+
+                                <!-- Aksi -->
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <!-- Simpan -->
+                                        <button type="button"
+                                                wire:click="saveNewItem"
+                                                class="btn btn-success btn-sm mr-2"
+                                                title="Simpan">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+
+                                        <!-- Batal -->
+                                        <button type="button"
+                                                wire:click="cancelAdding"
+                                                class="btn btn-secondary btn-sm"
+                                                title="Batal">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endif
                     @if($nota->details->count() > 0)
                     <tr> 
                         <td class="text-right text-bold" colSpan="7">Subtotal:</td> 
