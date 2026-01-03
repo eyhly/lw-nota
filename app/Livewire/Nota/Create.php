@@ -95,6 +95,13 @@ class Create extends Component
         ]);
     }
 
+    private function recalcFooter()
+    {
+        $this->subtotal    = $this->getSubtotalProperty();
+        $this->total_coly  = $this->getTotalColyProperty();
+        $this->total_harga = $this->getTotalHargaProperty();
+    }
+
     public function addDetail()
     {
         // Validasi minimal
@@ -111,6 +118,7 @@ class Create extends Component
 
         $index = count($this->details) - 1;
         $this->recalcRow($index);
+        $this->recalcFooter();
 
         // Reset form
         $this->formDetail = [
@@ -157,6 +165,7 @@ class Create extends Component
 
             // Recalc
             $this->recalcRow($this->editIndex);
+            $this->recalcFooter();
 
             // Reset edit mode
             $this->cancelEdit();        
@@ -229,6 +238,7 @@ class Create extends Component
     {
         if (preg_match('/details\.(\d+)\./', $name, $m)) {
             $this->recalcRow((int) $m[1]);
+            $this->recalcFooter();
         }
     }
 
@@ -241,7 +251,7 @@ class Create extends Component
 
         $this->validate([
             'no_nota' => 'required|unique:nota,no_nota',
-            'pembeli' => 'required',
+            'pembeli' => 'nullable',
             'nama_toko' => 'required',
             'alamat' => 'required',
             'tanggal' => 'required|date',
@@ -257,6 +267,19 @@ class Create extends Component
         $this->subtotal     = $this->getSubtotalProperty();
         $this->total_coly   = $this->getTotalColyProperty();
         $this->total_harga  = $this->getTotalHargaProperty();
+        
+        // coba
+        // foreach ($this->details as $d) {
+        //         // $d['diskon'] = array_map(fn ($v)=> (int) $v, $d['diskon']);
+
+        //         $diskonArr = array_map('intval', (array) ($d['diskon'] ?? []));
+        //         $diskon    = array_sum($diskonArr);
+
+        //         dd([
+        //             'diskonArr' => $diskonArr,
+        //             'diskon_sum' => $diskon,
+        //         ]);
+        //     }
 
         DB::transaction(function () {
             $nota = Nota::create([
@@ -274,9 +297,34 @@ class Create extends Component
                 'status'         => 1,
             ]);
 
+            // foreach ($this->details as $d) {
+            //     $d['diskon'] = array_map(fn ($v)=> (int) $v, $d['diskon']);
+            //     $nota->details()->create($d);
+            // }
+
             foreach ($this->details as $d) {
-                $d['diskon'] = implode(', ', array_map('strval', $d['diskon'] ?? []));
-                $nota->details()->create($d);
+
+                $coly   = (int) ($d['coly'] ?? 0);
+                $qty    = (int) ($d['qty_isi'] ?? 0);
+                $harga  = (int) ($d['harga'] ?? 0);
+
+                $diskonArr = array_map('intval', (array) ($d['diskon'] ?? []));
+                $diskon    = array_sum($diskonArr);
+
+                $jumlah = $coly * $qty;
+                $total  = ($harga * $jumlah) * (1 - ($diskon / 100));
+
+                $nota->details()->create([
+                    'nama_barang' => $d['nama_barang'],
+                    'coly'        => $coly,
+                    'satuan_coly' => $d['satuan_coly'],
+                    'qty_isi'     => $qty,
+                    'nama_isi'    => $d['nama_isi'],
+                    'jumlah'      => $jumlah,
+                    'harga'       => $harga,
+                    'diskon'      => $diskonArr,
+                    'total'       => round($total),
+                ]);
             }
 
             if ($this->surat_jalan_id) {
@@ -302,12 +350,17 @@ class Create extends Component
 
     public function getTotalHargaProperty()
     {
+        $subtotal = $this->getSubtotalProperty();
+
         if ($this->diskon_persen > 0) {
-            $this->diskon_rupiah = ($this->subtotal * $this->diskon_persen) / 100;
-            return $this->subtotal - $this->diskon_rupiah;
+            return round($subtotal - ($subtotal * $this->diskon_persen / 100));
         }
 
-        return $this->subtotal - ($this->diskon_rupiah ?? 0);
+        if ($this->diskon_rupiah > 0) {
+            return round($subtotal - $this->diskon_rupiah);
+        }
+
+        return $subtotal;
     }
 
     public function updatedDiskonPersen($value)
@@ -319,6 +372,7 @@ class Create extends Component
         }
 
         $this->total_harga = $this->getTotalHargaProperty();
+        $this->recalcFooter();
     }
 
     public function updatedDiskonRupiah($value)
@@ -330,6 +384,7 @@ class Create extends Component
         }
 
         $this->total_harga = $this->getTotalHargaProperty();
+        $this->recalcFooter();
     }
 
     public function getTotalColyProperty()
@@ -354,9 +409,9 @@ class Create extends Component
 
     public function render()
     {
-        $this->subtotal = $this->getSubtotalProperty();
-        $this->total_coly = $this->getTotalColyProperty();
-        $this->total_harga = $this->getTotalHargaProperty();
+        // $this->subtotal = $this->getSubtotalProperty();
+        // $this->total_coly = $this->getTotalColyProperty();
+        // $this->total_harga = $this->getTotalHargaProperty();
 
         return view('livewire.nota.create');
     }

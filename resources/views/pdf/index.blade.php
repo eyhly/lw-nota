@@ -6,7 +6,10 @@
 
   <style>
     @page {
-        margin: 20px;
+        margin-top: 160px;  /* Ruang untuk header */
+        margin-bottom: 20px;
+        margin-left: 15px;
+        margin-right: 15px;
     }
 
     @font-face {
@@ -59,12 +62,21 @@
       bottom: 15px;
       width: 100%;
     }
+
+    .page-header {
+        position: fixed;
+        top: -120px;  /* Posisi di area margin atas */
+        left: 0;
+        right: 0;
+        width: 100%;
+    }
   </style>
 </head>
 
 <body>
 
 <!-- HEADER -->
+ <div class="page-header">
 <table>
   <tr>
     <td width="30%">
@@ -102,9 +114,9 @@
     </td>
   </tr>
 </table>
-
-<br>
-
+</div>
+  <br>
+  
 <!-- DETAIL BARANG -->
 @php $no = 1; @endphp
 
@@ -132,8 +144,7 @@
       <td style="text-align: center;">{{ $d->jumlah }} {{ $d->nama_isi }}</td>
       <td style="text-align: right;">{{ number_format($d->harga,0,',','.') }}</td>
       <td style="text-align: right;">
-        @php $diskon = json_decode($d->diskon,true); @endphp
-        {{ is_array($diskon) ? implode('+',$diskon) : '0' }}
+         {{!empty($d->diskon) ? implode('+', $d->diskon): 0}}
       </td>
       <td style="text-align: center;">{{ number_format($d->total,0,',','.') }}</td>
     </tr>

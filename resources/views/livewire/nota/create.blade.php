@@ -213,8 +213,8 @@
                             <!-- Coly -->
                             <td>
                                 @if ($editIndex === $i)
-                                    <div class="input-group input-group-sm">
-                                        <input type="number" class="form-control" wire:model="editData.coly"
+                                    <div class="d-flex flex-column gap-1">
+                                        <input type="number" class="form-control mb-2" wire:model="editData.coly"
                                             style="max-width: 70px;">
                                         <input type="text" class="form-control" wire:model="editData.satuan_coly">
                                     </div>
@@ -226,8 +226,8 @@
                             <!-- Qty Isi -->
                             <td>
                                 @if ($editIndex === $i)
-                                    <div class="input-group input-group-sm">
-                                        <input type="number" class="form-control" wire:model="editData.qty_isi"
+                                    <div class="d-flex flex-column gap-1">
+                                        <input type="number" class="form-control mb-2" wire:model="editData.qty_isi"
                                             style="max-width: 70px;">
                                         <input type="text" class="form-control" wire:model="editData.nama_isi">
                                     </div>

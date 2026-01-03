@@ -196,8 +196,8 @@
                                 {{-- Coly --}}
                                 <td>
                                     @if ($editIndex === $index)
-                                    <div class="d-flex">
-                                        <input type="number" class="form-control" wire:model="editData.coly">
+                                    <div class="d-flex flex-column gap-1">
+                                        <input type="number" class="form-control mb-2" wire:model="editData.coly">
                                         <input type="text" class="form-control" wire:model="editData.satuan_coly">
                                     </div>
                                     @else
@@ -208,8 +208,8 @@
                                 {{-- Qty Isi --}}
                                 <td>
                                     @if ($editIndex === $index)
-                                    <div class="d-flex">
-                                        <input type="number" class="form-control" wire:model="editData.qty_isi">
+                                    <div class="d-flex flex-column gap-1">
+                                        <input type="number" class="form-control mb-2" wire:model="editData.qty_isi">
                                         <input type="text" class="form-control" wire:model="editData.nama_isi">
                                     </div>
                                         
@@ -256,7 +256,8 @@
                                         </button>
 
                                     @else
-                                        {{ implode(' + ', (array) ($detail->diskon ? explode(',', $detail->diskon) : [])) }}
+                                         {{ !empty($detail->diskon) ? implode('+', $detail->diskon) : 0 }}  
+                                        <!-- {{ (array) !empty($detail->diskon) ? implode('+', $detail->diskon): 0}} -->
                                     @endif
                                 </td>
 
@@ -344,9 +345,9 @@
 
                                 <!-- Coly -->
                                 <td>
-                                    <div class="d-flex">
+                                    <div class="d-flex flex-column gap-1">
                                         <input type="number" 
-                                               class="form-control form-control-sm mr-1" 
+                                               class="form-control form-control-sm mb-1" 
                                                wire:model="newItem.coly"
                                                placeholder="Coly">
                                         <input type="text" 
@@ -361,9 +362,9 @@
 
                                 <!-- Qty Isi -->
                                 <td>
-                                    <div class="d-flex">
+                                    <div class="d-flex flex-column gap-1">
                                         <input type="number" 
-                                               class="form-control form-control-sm mr-1" 
+                                               class="form-control form-control-sm mb-1" 
                                                wire:model="newItem.qty_isi"
                                                placeholder="Qty">
                                         <input type="text" 

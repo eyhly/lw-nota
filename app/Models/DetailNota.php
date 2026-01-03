@@ -27,4 +27,6 @@ class DetailNota extends Model
     {
         return $this->belongsTo(Nota::class, 'nota_id', 'id');
     }
+
+    protected $casts = ['diskon' => 'array',];
 }

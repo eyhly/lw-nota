@@ -10,11 +10,11 @@ use PDF;
 class Detail extends Component
 {
     public $nota;
-    public $title = 'Detail Nota'; 
-    
-    public $no_nota, $pembeli, $tanggal, $nama_toko, $alamat, $jt_tempo, 
-           $subtotal, $total_harga, $total_coly, 
-           $diskon_persen = 0, $diskon_rupiah = 0;
+    public $title = 'Detail Nota';
+
+    public $no_nota, $pembeli, $tanggal, $nama_toko, $alamat, $jt_tempo,
+        $subtotal, $total_harga, $total_coly,
+        $diskon_persen = 0, $diskon_rupiah = 0;
 
     public $editIndex = null;
     public $editData = [];
@@ -64,11 +64,11 @@ class Detail extends Component
     }
 
     // tambah barang
-    
+
     public function startAdding()
     {
         $this->isAdding = true;
-        $this->editIndex = null; 
+        $this->editIndex = null;
         $this->resetNewItem();
     }
 
@@ -113,9 +113,7 @@ class Detail extends Component
         $this->newItem['total'] = $subtotal * (1 - ($diskon / 100));
 
         // Format diskon for DB
-        $diskonString = !empty($this->newItem['diskon']) 
-            ? implode(', ', array_map('strval', $this->newItem['diskon']))
-            : null;
+        $diskonString = array_map(fn($v) => (int) $v, $this->newItem['diskon']);
 
         // Create new detail
         DetailNota::create([
@@ -213,9 +211,7 @@ class Detail extends Component
             'jumlah'      => $detail->jumlah,
             'harga'       => $detail->harga,
             'total_harga' => $detail->total_harga,
-            'diskon'      => $detail->diskon
-                                    ? explode(',', $detail->diskon)
-                                    : [],
+            'diskon'      => $detail->diskon,
             'total'       => $detail->total,
         ];
 
@@ -224,33 +220,29 @@ class Detail extends Component
 
     public function saveEdit()
     {
-       $detail = DetailNota::find($this->editData['id']);
+        $detail = DetailNota::find($this->editData['id']);
 
-    // jumlah barang
-    $this->editData['jumlah'] =
-        (int) $this->editData['coly'] * (int) $this->editData['qty_isi'];
+        // jumlah barang
+        $this->editData['jumlah'] =
+            (int) $this->editData['coly'] * (int) $this->editData['qty_isi'];
 
-    // total diskon persen
-    $diskon = array_sum(
-        array_map('floatval', (array) ($this->editData['diskon'] ?? []))
-    );
+        // total diskon persen
+        $diskon = array_sum(
+            array_map('floatval', (array) ($this->editData['diskon'] ?? []))
+        );
 
+        $this->dispatch('$refresh');
+        // subtotal
+        $subtotal = $this->editData['jumlah'] * (int) $this->editData['harga'];
 
-    $this->dispatch('$refresh');
-    // subtotal
-    $subtotal = $this->editData['jumlah'] * (int) $this->editData['harga'];
+        // total setelah diskon
+        $this->editData['total'] =
+            $subtotal * (1 - ($diskon / 100));
 
-    // total setelah diskon
-    $this->editData['total'] =
-        $subtotal * (1 - ($diskon / 100));
+        // simpan diskon ke DB
+        $this->editData['diskon'] = array_map(fn($v) => (int) $v, $this->editData['diskon']);
 
-    // simpan diskon ke DB
-    $this->editData['diskon'] = implode(', ', array_map(
-        'strval',
-        $this->editData['diskon'] ?? []
-    ));
-
-    $detail->update($this->editData);
+        $detail->update($this->editData);
 
 
         // refresh data
@@ -340,7 +332,8 @@ class Detail extends Component
         return $this->nota->details->sum('coly');
     }
 
-    public function pdf($id){
+    public function pdf($id)
+    {
         $nota = Nota::with('details')->findOrFail($id);
 
         // $chunks = $nota->details->chunk(10);
@@ -389,5 +382,4 @@ class Detail extends Component
             $this->nota->save();
         }
     }
-
 }
