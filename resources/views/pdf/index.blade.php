@@ -6,10 +6,10 @@
 
   <style>
     @page {
-        margin-top: 160px;  /* Ruang untuk header */
+        margin-top: 9rem; 
         margin-bottom: 20px;
-        margin-left: 15px;
-        margin-right: 15px;
+        margin-left: 1rem;
+        margin-right: 1rem;
     }
 
     @font-face {
@@ -21,7 +21,7 @@
       font-family: 'MartianMono', monospace;
       font-size: 13px;
       text-transform: uppercase;
-      padding-bottom: 6rem;
+      padding-bottom: 3rem;
     }
 
     table {
@@ -40,12 +40,7 @@
       page-break-inside: avoid;
     }
 
-    th {
-      padding: 3px;
-      font-size: 12px;
-    }
-
-    td {
+    th, td {
       padding: 3px;
       vertical-align: top;
       word-wrap: break-word;
@@ -65,7 +60,7 @@
 
     .page-header {
         position: fixed;
-        top: -120px;  /* Posisi di area margin atas */
+        top: -7rem;  /* Posisi di area margin atas */
         left: 0;
         right: 0;
         width: 100%;
@@ -77,7 +72,7 @@
 
 <!-- HEADER -->
  <div class="page-header">
-<table>
+<table style="margin-bottom: 0.8rem">
   <tr>
     <td width="30%">
       <b>MENTARI JAYA</b><br>
@@ -90,9 +85,7 @@
   </tr>
 </table>
 
-<br>
-
-<table>
+<table style="margin-bottom: 0.8rem">
   <tr>
     <td width="15%">
       No Nota <br>
@@ -115,19 +108,18 @@
   </tr>
 </table>
 </div>
-  <br>
+
   
 <!-- DETAIL BARANG -->
-@php $no = 1; @endphp
 
 <table>
   <thead>
     <tr>
-      <th style="text-align: left;" width="2%">NO</th>
-      <th width="35%">NAMA BARANG</th>
-      <th width="10%">COLY</th>
-      <th width="10%">ISI</th>
-      <th width="10%">TOTAL QTY</th>
+      <th style="text-align: left;" width="3%">NO</th>
+      <th width="33%">NAMA BARANG</th>
+      <th style="text-align: center;" width="10%">COLY</th>
+      <th style="text-align: center;" width="10%">ISI</th>
+      <th style="text-align: center;" width="11%">TOTAL QTY</th>
       <th style="text-align: right;" width="12%">HARGA</th>
       <th style="text-align: right;" width="8%">DISC</th>
       <th style="text-align: right;" width="13%">SUBTOTAL</th>
@@ -135,6 +127,7 @@
   </thead>
 
   <tbody>
+    @php $no = 1; @endphp
     @foreach($nota->details as $d)
     <tr>
       <td style="text-align: left;">{{ $no++ }}</td>
@@ -146,7 +139,7 @@
       <td style="text-align: right;">
          {{!empty($d->diskon) ? implode('+', $d->diskon): 0}}
       </td>
-      <td style="text-align: center;">{{ number_format($d->total,0,',','.') }}</td>
+      <td style="text-align: right;">{{ number_format($d->total,0,',','.') }}</td>
     </tr>
     @endforeach
   </tbody>

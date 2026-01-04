@@ -17,6 +17,10 @@ class Detail extends Component
     public $editIndex = null;
     public $editData = [];
 
+    // Data untuk add new item
+    public $isAdding = false;
+    public $newItem = [];
+
     public function mount($id)
     {
         $this->suratjalan = SuratJalan::with('detailsj')->findOrFail($id);
@@ -24,7 +28,9 @@ class Detail extends Component
         $this->no_surat     = $this->suratjalan->no_surat;
         $this->nama_toko     = $this->suratjalan->nama_toko;
         $this->alamat     = $this->suratjalan->alamat;
-        $this->tanggal     = $this->suratjalan->tanggal;        
+        $this->tanggal     = $this->suratjalan->tanggal;
+
+        $this->resetNewItem();
     }
 
     public function updateSurat()
@@ -45,6 +51,66 @@ class Detail extends Component
 
         session()->flash('success', 'Data surat jalan berhasil diperbarui.');
     }
+
+    // tambah barang
+
+    public function startAdding()
+    {
+        $this->isAdding = true;
+        $this->editIndex = null;
+        $this->resetNewItem();
+    }
+
+    public function resetNewItem()
+    {
+        $this->newItem = [
+            'coly'        => 0,
+            'satuan_coly' => '',
+            'qty_isi'     => 0,
+            'nama_isi'    => '',
+            'nama_barang' => '',
+            'keterangan' => '',
+        ];
+    }
+
+    public function saveNewItem()
+    {
+        $this->validate([
+            'newItem.coly'        => 'required|numeric|min:0',
+            'newItem.satuan_coly' => 'required|string',
+            'newItem.qty_isi'     => 'required|numeric|min:0',
+            'newItem.nama_isi'    => 'required|string',
+            'newItem.nama_barang' => 'required|string',
+            'newItem.keterangan'  => 'nullable|string',
+        ]);
+
+        // Create new detail
+        DetailSuratJalan::create([
+            's_jalan_id'        => $this->suratjalan->id,
+            'coly'              => $this->newItem['coly'],
+            'satuan_coly'       => $this->newItem['satuan_coly'],
+            'qty_isi'           => $this->newItem['qty_isi'],
+            'nama_isi'          => $this->newItem['nama_isi'],
+            'nama_barang'       => $this->newItem['nama_barang'],
+            'keterangan'        => $this->newItem['keterangan'],
+        ]);
+
+        // Refresh data
+        $this->suratjalan = SuratJalan::with('detailsj')->find($this->suratjalan->id);
+
+        // Reset
+        $this->isAdding = false;
+        $this->resetNewItem();
+
+        session()->flash('message', 'Item berhasil ditambahkan!');
+    }
+
+    public function cancelAdding()
+    {
+        $this->isAdding = false;
+        $this->resetNewItem();
+    }
+
 
     public function startEdit($index, $detailId)
     {
@@ -103,13 +169,13 @@ class Detail extends Component
     public function pdf($id){
         $suratjalan = SuratJalan::with('detailsj')->findOrFail($id);
 
-        $chunks = $suratjalan->detailsj->chunk(10);
+        // $chunks = $suratjalan->detailsj->chunk(10);
 
         $data = array(
             'title' => 'Detail SuratJalan',
             'suratjalan' => $suratjalan,
-            'chunks' => $chunks,
-            'startNumber' => 0 
+            // 'chunks' => $chunks,
+            // 'startNumber' => 0 
         );
         $pdf = Pdf::loadView('pdf.surat', $data)->setPaper('a5', 'landscape');;
         return $pdf->stream('suratjalan.pdf');

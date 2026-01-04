@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <title>Surat PDF</title>
   <style>
+    @page {
+        margin-top: 9rem; 
+        margin-bottom: 20px;
+        margin-left: 1rem;
+        margin-right: 1rem;
+    }
+
     @font-face {
       font-family: 'MartianMono';
       src: url("{{ public_path('fonts/MartianMono-Regular.ttf') }}") format('truetype');
@@ -13,47 +20,51 @@
 
     body {
       font-family: 'MartianMono', monospace;
-      font-size: 10px;
-      margin: 5px;
+      font-size: 13px;
       text-transform: uppercase;
+      padding-bottom: 3rem;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
+      page-break-inside: auto;
+    }
+
+    thead {
+      display: table-header-group;
     }
 
     thead tr {
       border-top: 1px solid black;
       border-bottom: 1px solid black;
+      page-break-inside: avoid;
     }
 
-    thead th {
-      padding: 2px;  
-    }
-
-    tbody td {
-      padding: 2px;
-    }
-
-    td {
+    th, td {
+      padding: 3px;
       vertical-align: top;
-      padding-bottom: 5px;
-    }
+      word-wrap: break-word;
+    }    
 
     .footer {
       position: fixed;
-      bottom: 0;
+      bottom: 15px;
       width: 100%;
     }
 
-    .page-break {
-      page-break-after: always;
+    .faktur {
+      font-size: 15px;
+      font-weight: bold;
+      text-align: center;
     }
 
-    .faktur {
-    font-size: 15px;
-    font-weight: bold;
+    .page-header {
+        position: fixed;
+        top: -7rem;  /* Posisi di area margin atas */
+        left: 0;
+        right: 0;
+        width: 100%;
     }
 
     .kendaraan {
@@ -61,7 +72,7 @@
     }
 
     .coly {
-    font-size: 10px;
+    font-size: 1rem;
     }
 
     .header{
@@ -87,13 +98,9 @@
 </head>
 <body>
 
-@php
-    $globalIndex = 0;
-@endphp
-
-@foreach($chunks as $chunkIndex => $detailsj)
   <!-- Header Nota -->
-  <table style="margin-top:0px; margin-bottom: 0x;" class="header">
+<div class="page-header"> 
+  <table style="margin-top:0px; margin-bottom: 1rem;" class="header">
     <tr>
       <td width="30%">
         <b>MENTARI JAYA</b><br>
@@ -105,9 +112,8 @@
       <td width="30%"></td>
     </tr>
   </table>
-  <br>
 
-  <table>
+  <table style="margin-bottom: 0.5rem">
     <tr>
       <td width="15%">
         No Surat  <br>
@@ -124,34 +130,24 @@
       </td>
     </tr>
   </table>
-
-  <!-- <table style="width: 100%; margin-bottom: 2px; margin-top:2px;">
-    <tr class="kendaraan">
-      <td style="text-align: left;">
-        Kami kirimkan barang-barang tersebut dibawah ini dengan kendaraan 
-        <b>{{ $suratjalan->kendaraan }}</b>
-      </td>
-      <td style="text-align: right; white-space: nowrap;">
-        <b>No. {{ $suratjalan->no_kendaraan }}</b>
-      </td>
-    </tr>
-  </table> -->
+</div>
 
   <!-- Detail Barang -->
   <table>
     <thead>
       <tr>
         <th style="text-align: center;" width="2%">NO</th>
-        <th style="text-align: center;" width="12%">COLY</th>
-        <th style="text-align: center;" width="12%">ISI</th>
-        <th style="padding-left: 5px; text-align: left;" width="47%">NAMA BARANG</th>
-        <th style="padding-left: 5px; text-align: left;" width="27%">KETERANGAN</th>
+        <th style="text-align: center;" width="11%">COLY</th>
+        <th style="text-align: center;" width="11%">ISI</th>
+        <th style="padding-left: 5px; text-align: left;" width="48%">NAMA BARANG</th>
+        <th style="padding-left: 5px; text-align: left;" width="28%">KETERANGAN</th>
       </tr>
     </thead>
     <tbody>
-      @foreach($detailsj as $i => $d)
+      @php $no = 1; @endphp
+      @foreach($suratjalan->detailsj as $d)
       <tr>
-        <td style="text-align: center;">{{ ++$globalIndex }}</td>
+        <td style="text-align: center;">{{ $no++ }}</td>
         <td style="text-align: center;" >
             <div class="grup">
                 <span class="gp1">{{ $d->coly }}</span>
@@ -168,24 +164,19 @@
         <td style="padding-left: 5px; text-align: left;">{{ $d->keterangan }}</td>
       </tr>
       @endforeach
-
-      {{-- Tambah baris kosong supaya footer selalu turun --}}
-      @for($k = count($detailsj); $k < 10; $k++)
       <tr>
         <td colspan="8">&nbsp;</td>
-      </tr>
-      @endfor
+      </tr>     
     </tbody>
   </table>
 
   <!-- Footer -->
-  <div class="footer">
-    @if($loop->last)
+  <div class="footer">    
     <hr>
-    <table>
+    <table style="margin-top:0px; margin-bottom: 0.5rem;">
       <tr>
         <td class="coly" width="10%" valign="top" style="text-align: left;">
-          <b>Total Coly {{$suratjalan->total_coly}}</b>
+          <b>Total: {{$suratjalan->total_coly}} Coly </b>
         </td>  
       </tr>
       <br>
@@ -200,13 +191,7 @@
         </td>      
       </tr>
     </table>
-    @endif
   </div>
-
-  @if(!$loop->last)
-    <div class="page-break"></div>
-  @endif
-@endforeach
 
 </body>
 </html>
