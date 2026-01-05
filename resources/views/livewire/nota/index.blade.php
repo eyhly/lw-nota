@@ -110,9 +110,9 @@
                 <tr>
                   <th><input type="checkbox" wire:click="toggleSelectAll" {{ $selectAll ? 'checked' : '' }} id="selectAllCheckbox"></th>
                   <th>No</th>
-                  <th wire:click="sortBy('pembeli')" style="cursor:pointer">
-                        Pembeli
-                        @if ($sortField === 'pembeli')
+                  <th wire:click="sortBy('nama_toko')" style="cursor:pointer">
+                        Nama Toko
+                        @if ($sortField === 'nama_toko')
                             <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
                         @else
                             <i class="fas fa-sort text-muted"></i>
@@ -157,7 +157,7 @@
                         >
                     </td>
                     <td>{{ $loop->iteration }}</td>
-                    <td>{{ $item->pembeli }}</td>
+                    <td>{{ $item->nama_toko }}</td>
                     <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d F Y') }}</td>
                     <td>
                         @if($item->print === 1)

@@ -34,7 +34,7 @@ class Index extends Component
     private function baseQuery()
     {
         $query = Nota::where(function ($q) {
-            $q->where('pembeli', 'like', '%' . $this->search . '%')
+            $q->where('nama_toko', 'like', '%' . $this->search . '%')
             ->orWhere('status', 'like', '%' . $this->search . '%');
         });
 

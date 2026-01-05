@@ -211,8 +211,6 @@ class Create extends Component
         }
     }
 
-    // ========== END EDIT METHODS ==========
-
     private function recalcRow($i)
     {
         if (!isset($this->details[$i])) return;
@@ -263,23 +261,15 @@ class Create extends Component
             return;
         }
 
+        foreach ($this->details as $index => $d) {
+            $this->recalcRow($index);
+        }
+
         // Paksa hitung ulang
-        $this->subtotal     = $this->getSubtotalProperty();
-        $this->total_coly   = $this->getTotalColyProperty();
-        $this->total_harga  = $this->getTotalHargaProperty();
-        
-        // coba
-        // foreach ($this->details as $d) {
-        //         // $d['diskon'] = array_map(fn ($v)=> (int) $v, $d['diskon']);
-
-        //         $diskonArr = array_map('intval', (array) ($d['diskon'] ?? []));
-        //         $diskon    = array_sum($diskonArr);
-
-        //         dd([
-        //             'diskonArr' => $diskonArr,
-        //             'diskon_sum' => $diskon,
-        //         ]);
-        //     }
+        $this->recalcFooter();
+        // $this->subtotal     = $this->getSubtotalProperty();
+        // $this->total_coly   = $this->getTotalColyProperty();
+        // $this->total_harga  = $this->getTotalHargaProperty();
 
         DB::transaction(function () {
             $nota = Nota::create([
@@ -297,33 +287,20 @@ class Create extends Component
                 'status'         => 1,
             ]);
 
-            // foreach ($this->details as $d) {
-            //     $d['diskon'] = array_map(fn ($v)=> (int) $v, $d['diskon']);
-            //     $nota->details()->create($d);
-            // }
-
             foreach ($this->details as $d) {
 
-                $coly   = (int) ($d['coly'] ?? 0);
-                $qty    = (int) ($d['qty_isi'] ?? 0);
-                $harga  = (int) ($d['harga'] ?? 0);
-
-                $diskonArr = array_map('intval', (array) ($d['diskon'] ?? []));
-                $diskon    = array_sum($diskonArr);
-
-                $jumlah = $coly * $qty;
-                $total  = ($harga * $jumlah) * (1 - ($diskon / 100));
+                $diskonArr = array_map('intval', (array) ($d['diskon'] ?? []));                
 
                 $nota->details()->create([
                     'nama_barang' => $d['nama_barang'],
-                    'coly'        => $coly,
+                    'coly'        => $d['coly'],
                     'satuan_coly' => $d['satuan_coly'],
-                    'qty_isi'     => $qty,
+                    'qty_isi'     => $d['qty_isi'],
                     'nama_isi'    => $d['nama_isi'],
-                    'jumlah'      => $jumlah,
-                    'harga'       => $harga,
+                    'jumlah'      => $d['jumlah'],
+                    'harga'       => $d['harga'],
                     'diskon'      => $diskonArr,
-                    'total'       => round($total),
+                    'total'       => round($d['total']),
                 ]);
             }
 

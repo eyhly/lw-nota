@@ -7,7 +7,7 @@
   <style>
     @page {
         margin-top: 9rem; 
-        margin-bottom: 20px;
+        margin-bottom: 0.7rem;
         margin-left: 1rem;
         margin-right: 1rem;
     }
@@ -21,7 +21,7 @@
       font-family: 'MartianMono', monospace;
       font-size: 13px;
       text-transform: uppercase;
-      padding-bottom: 3rem;
+      padding-bottom: 6rem;
     }
 
     table {
@@ -150,11 +150,11 @@
   <hr>
   <table>
     <tr>
-      <td width="25%">
+      <td width="30%" style="text-align: center;">
         Hormat Kami,<br><br><br>
         ( __________ )
       </td>
-      <td width="35%" style="text-align: center;">
+      <td width="40%" style="text-align: center;">
         Bila sudah jatuh tempo<br>
         Mohon transfer ke:<br>
         <b>
@@ -164,12 +164,12 @@
         A/N : GO GIOK LIE<br>
         <b>TERIMA KASIH</b>
       </td>
-      <td width="20%" style="text-align: right;">
+      <td width="10%" style="text-align: right; line-height: 1.5;">
         Subtotal<br>
         Disc {{ $nota->diskon_persen }}%<br>
         <b>Total</b>
       </td>
-      <td width="20%" style="text-align: right;">
+      <td width="20%" style="text-align: left; padding-left: 1rem; line-height: 1.5; text-transform: none;">
         Rp {{ number_format($nota->subtotal,0,',','.') }}<br>
         Rp {{ number_format($nota->diskon_rupiah,0,',','.') }}<br>
         <b>Rp {{ number_format($nota->total_harga,0,',','.') }}</b>

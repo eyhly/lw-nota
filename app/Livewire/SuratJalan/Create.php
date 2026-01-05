@@ -32,7 +32,7 @@ class Create extends Component
         // otomatis generate nomor baru
         $this->no_surat = SuratJalan::generateNextNoSuratJalan();
         $this->tanggal = now()->toDateString();
-        $this->status = 'Belum';
+        $this->status = 1;
     }
 
     public function resetForm()

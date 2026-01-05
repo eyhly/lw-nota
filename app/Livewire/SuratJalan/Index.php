@@ -106,7 +106,7 @@ class Index extends Component
         $item = SuratJalan::find($id);
 
         if ($item) {
-            $item->status = $item->status == 'sudah' ? 'belum' : 'sudah';
+            $item->status = $item->status == 1 ? 0 : 1;
             $item->save();
         }
     }    
