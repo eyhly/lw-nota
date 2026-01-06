@@ -55,13 +55,15 @@ class Create extends Component
 
         $this->detailsj[] = $this->formDetail;
 
+        $this->reset('formDetail');
+
         $this->formDetail = [
-            'coly'        => 0,
+            'coly'        => 0.0,
             'satuan_coly' => '',
-            'qty_isi'         => 0,
+            'qty_isi'     => 0.0,
             'nama_isi'    => '',
             'nama_barang' => '',
-            'keterangan' => '',
+            'keterangan'  => '',
         ];
 
         $this->dispatch('focus-nama-barang');
@@ -95,8 +97,8 @@ class Create extends Component
 
     public function getFormTotalProperty()
     {
-        $coly = (int) ($this->formDetail['coly'] ?? 0);
-        $qty_isi  = (int) ($this->formDetail['qty_isi'] ?? 0);
+        $coly = (float) ($this->formDetail['coly'] ?? 0);
+        $qty_isi  = (float) ($this->formDetail['qty_isi'] ?? 0);
 
         return $coly * $qty_isi;
     }

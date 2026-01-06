@@ -132,7 +132,7 @@ class Detail extends Component
     {
         // Kalau coly berubah → langsung hitung ulang total coly
         if ($field === 'coly') {
-            $this->editData['coly'] = (int) $value;
+            $this->editData['coly'] = (float) $value;
         }
     }
 

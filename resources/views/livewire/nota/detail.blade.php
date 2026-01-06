@@ -187,7 +187,8 @@
                                 {{-- Nama Isi --}}
                                 <td>
                                     @if ($editIndex === $index)
-                                        <input type="text" class="form-control" wire:model="editData.nama_barang">
+                                        {{-- <input type="text" class="form-control" wire:model="editData.nama_barang"> --}}
+                                        <textarea id="nama-barang-{{$index}}" style="width: 100%; min-height: 34px; resize: none; overflow: hidden; " rows="1" wire:model="editData.nama_barang"></textarea>
                                     @else
                                         {{ $detail->nama_barang }}
                                     @endif
@@ -197,7 +198,7 @@
                                 <td>
                                     @if ($editIndex === $index)
                                     <div class="d-flex flex-column gap-1">
-                                        <input type="number" class="form-control mb-2" wire:model="editData.coly">
+                                        <input type="number" step="0.01" class="form-control mb-2" wire:model="editData.coly">
                                         <input type="text" class="form-control" wire:model="editData.satuan_coly">
                                     </div>
                                     @else
@@ -209,7 +210,7 @@
                                 <td>
                                     @if ($editIndex === $index)
                                     <div class="d-flex flex-column gap-1">
-                                        <input type="number" class="form-control mb-2" wire:model="editData.qty_isi">
+                                        <input type="number" step="0.01" class="form-control mb-2" wire:model="editData.qty_isi">
                                         <input type="text" class="form-control" wire:model="editData.nama_isi">
                                     </div>
                                         
@@ -299,6 +300,7 @@
                                             {{-- Edit --}}
                                             <button type="button"
                                                     wire:click="startEdit({{ $index }}, {{ $detail->id }})"
+                                                    onclick="resizeTextarea({{$index}})"
                                                     class="btn btn-primary btn-sm mr-2"
                                                     title="Edit">
                                                 <i class="fas fa-edit"></i>
@@ -308,6 +310,7 @@
                                             <button type="button"
                                                     wire:click="deleteDetail({{ $detail->id }})"
                                                     class="btn btn-danger btn-sm"
+                                                    onclick="return confirm('Yakin hapus data ini?')"
                                                     title="Hapus"
                                                     onclick="return confirm('Yakin hapus data ini?')">
                                                 <i class="fas fa-trash"></i>
@@ -346,7 +349,7 @@
                                 <!-- Coly -->
                                 <td>
                                     <div class="d-flex flex-column gap-1">
-                                        <input type="number" 
+                                        <input type="number" step="0.01"
                                                class="form-control form-control-sm mb-1" 
                                                wire:model="newItem.coly"
                                                placeholder="Coly">
@@ -363,7 +366,7 @@
                                 <!-- Qty Isi -->
                                 <td>
                                     <div class="d-flex flex-column gap-1">
-                                        <input type="number" 
+                                        <input type="number" step="0.01"
                                                class="form-control form-control-sm mb-1" 
                                                wire:model="newItem.qty_isi"
                                                placeholder="Qty">
@@ -498,5 +501,25 @@
     });
 </script>
 @endscript
+@push('scripts')
+    <script>
+        function resizeTextarea(id) {
+            setTimeout(() => {
+                const el = document.getElementById('nama-barang-' + id);
+
+                if (!el) return;
+
+                el.style.height = 'auto';
+                el.style.height = el.scrollHeight + 'px';
+
+                el.addEventListener('input', function(){
+                    this.style.height = 'auto';
+                    this.style.height = this.scrollHeight + 'px';
+                })
+            }, 500);
+        }
+    </script>
+    
+@endpush
 
 </div>

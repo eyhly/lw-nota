@@ -60,7 +60,7 @@
                                 id="nama-barang"
                                 autofocus
                                 class="form-control form-control-sm" 
-                                wire:model.defer="formDetail.nama_barang"
+                                wire:model.live="formDetail.nama_barang"
                                 placeholder="Nama barang">
                         </div>
                     </div>
@@ -70,7 +70,7 @@
                         <div class="col-md-6 mb-2">
                             <label class="medium">Coly</label>
                             <div class="input-group input-group-sm">
-                                <input type="number" 
+                                <input type="number" step="0.01" 
                                     class="form-control mr-2" 
                                     wire:model.live="formDetail.coly"
                                     placeholder="0"
@@ -86,7 +86,7 @@
                         <div class="col-md-6 mb-2">
                             <label class="medium">Isi</label>
                             <div class="input-group input-group-sm">
-                                <input type="number" 
+                                <input type="number" step="0.01"
                                     class="form-control mr-2" 
                                     wire:model.live="formDetail.qty_isi"
                                     placeholder="0"
@@ -164,7 +164,7 @@
                             <td>
                                 @if ($editIndex === $i)
                                 <div class="d-flex flex-column gap-1">
-                                    <input type="number" 
+                                    <input type="number" step="0.01"
                                     class="form-control mb-2" 
                                     wire:model="editData.coly"
                                     >
@@ -181,7 +181,7 @@
                             <td>
                                 @if ($editIndex === $i)
                                 <div class="d-flex flex-column gap-1">
-                                    <input type="number" 
+                                    <input type="number" step="0.01"
                                     class="form-control mb-2" 
                                     wire:model="editData.qty_isi"
                                     >

@@ -1,7 +1,8 @@
 <div>
     <div class="content-wrapper" style="padding-right: 3rem; padding-left: 3rem;">
         <div class="mb-2">
-            <a href="{{ route('nota.index') }}" class="page-back" style="font-size: 14px; color: #2563eb; text-decoration: none;">
+            <a href="{{ route('nota.index') }}" class="page-back"
+                style="font-size: 14px; color: #2563eb; text-decoration: none;">
                 ← Kembali ke List Nota
             </a>
         </div>
@@ -10,7 +11,7 @@
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <h1><strong>{{ $title }}</strong></h1>
-                </div>                
+                </div>
                 {{-- <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="#">
@@ -26,7 +27,7 @@
         </section>
 
         <!-- Form Header Nota -->
-         
+
         <div class="card p-4 mb-4">
             <div class="font-weight-bold h4">Informasi Nota</div>
             <div class="row">
@@ -41,15 +42,15 @@
                     </div>
                     <div class="mb-2">
                         <label>Jatuh Tempo</label>
-                        <input type="date" class="form-control" wire:model.live="jt_tempo">                        
+                        <input type="date" class="form-control" wire:model.live="jt_tempo">
                     </div>
                     <div class="flex gap-2 mt-2">
                         <button type="button" wire:click="setJatuhTempo(1)"
-                                class="flex-1 px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+                            class="flex-1 px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
                             + 1 Bulan
                         </button>
                         <button type="button" wire:click="setJatuhTempo(2)"
-                                class="flex-1 px-3 py-1.5 text-sm bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition-colors">
+                            class="flex-1 px-3 py-1.5 text-sm bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition-colors">
                             + 2 Bulan
                         </button>
                     </div>
@@ -72,7 +73,7 @@
         </div>
 
         <!-- Form Input Barang Baru (di Atas Tabel) -->
-        <form wire:submit.prevent="addDetail">          
+        <form wire:submit.prevent="addDetail">
             <div class="card mb-3">
                 <div class="card-body">
                     <div class="font-weight-bold h4">Tambah Barang</div>
@@ -80,8 +81,8 @@
                         <!-- Nama Barang -->
                         <div class="col-md-12 mb-2">
                             <label class="medium">Nama Barang <span class="text-danger">*</span></label>
-                            <input type="text" id="nama-barang" autofocus class="form-control form-control-sm" wire:model.defer="formDetail.nama_barang"
-                                placeholder="Nama barang">
+                            <input type="text" id="nama-barang" autofocus class="form-control form-control-sm"
+                                wire:model.defer="formDetail.nama_barang" placeholder="Nama barang">
                         </div>
                     </div>
                     <div class="row">
@@ -89,8 +90,8 @@
                         <div class="col-md-4 mb-2">
                             <label class="medium">Coly</label>
                             <div class="input-group input-group-sm">
-                                <input type="number" class="form-control mr-2" wire:model="formDetail.coly" placeholder="0"
-                                    style="max-width: 70px;">
+                                <input type="number" step="0.01" class="form-control mr-2"
+                                    wire:model="formDetail.coly" placeholder="0" style="max-width: 70px;">
                                 <input type="text" class="form-control" wire:model="formDetail.satuan_coly"
                                     placeholder="Satuan">
                             </div>
@@ -100,8 +101,8 @@
                         <div class="col-md-4 mb-2">
                             <label class="medium">Qty Isi</label>
                             <div class="input-group input-group-sm">
-                                <input type="number" class="form-control mr-2" wire:model="formDetail.qty_isi" placeholder="0"
-                                    style="max-width: 70px;">
+                                <input type="number" step="0.01" class="form-control mr-2"
+                                    wire:model="formDetail.qty_isi" placeholder="0" style="max-width: 70px;">
                                 <input type="text" class="form-control" wire:model="formDetail.nama_isi"
                                     placeholder="Satuan">
                             </div>
@@ -111,7 +112,8 @@
                         <div class="col-md-4 mb-2">
                             <label class="medium">Total</label>
                             <input type="text" class="form-control form-control-sm text-center bg-light"
-                                value="{{ $formDetail['coly'] * $formDetail['qty_isi'] }}" readonly>
+                                value="{{ number_format($formDetail['coly'] * $formDetail['qty_isi'], 2, ',', '.') }}"
+                                readonly>
                         </div>
                     </div>
                     <div class="row">
@@ -138,7 +140,8 @@
                                 </div>
                             @endforeach
 
-                            <button class="btn btn-sm btn-success btn-block" type="button" wire:click="addFormDiskon">
+                            <button class="btn btn-sm btn-success btn-block" type="button"
+                                wire:click="addFormDiskon">
                                 <i class="fas fa-plus"></i> Diskon
                             </button>
                         </div>
@@ -214,8 +217,8 @@
                             <td>
                                 @if ($editIndex === $i)
                                     <div class="d-flex flex-column gap-1">
-                                        <input type="number" class="form-control mb-2" wire:model="editData.coly"
-                                            style="max-width: 70px;">
+                                        <input type="number" step="0.01" class="form-control mb-2"
+                                            wire:model="editData.coly" style="max-width: 70px;">
                                         <input type="text" class="form-control" wire:model="editData.satuan_coly">
                                     </div>
                                 @else
@@ -227,8 +230,8 @@
                             <td>
                                 @if ($editIndex === $i)
                                     <div class="d-flex flex-column gap-1">
-                                        <input type="number" class="form-control mb-2" wire:model="editData.qty_isi"
-                                            style="max-width: 70px;">
+                                        <input type="number" step="0.01" class="form-control mb-2"
+                                            wire:model="editData.qty_isi" style="max-width: 70px;">
                                         <input type="text" class="form-control" wire:model="editData.nama_isi">
                                     </div>
                                 @else
@@ -239,22 +242,20 @@
                             <!-- Total Qty -->
                             <td class="text-center">
                                 {{ $editIndex === $i ? $editData['coly'] * $editData['qty_isi'] : $item['jumlah'] }}
-                            </td>                           
+                            </td>
 
                             <!-- Harga -->
                             <td>
-                                <input type="number"
-                                class="form-control form-control-sm text-end"
-                                wire:model.debounce.400ms="details.{{ $i }}.harga">
+                                <input type="number" class="form-control form-control-sm text-end"
+                                    wire:model.debounce.400ms="details.{{ $i }}.harga">
                             </td>
 
-                            <!-- Diskon -->                       
+                            <!-- Diskon -->
 
                             <td>
                                 @foreach ((array) ($item['diskon'] ?? []) as $d => $val)
                                     <div class="input-group input-group-sm mb-1">
-                                        <input type="number"
-                                            class="form-control text-end"
+                                        <input type="number" class="form-control text-end"
                                             wire:model.debounce.400ms="details.{{ $i }}.diskon.{{ $d }}"
                                             placeholder="%">
                                         <div class="input-group-append">
@@ -274,7 +275,7 @@
 
                             <!-- Total -->
                             <td class="text-end">
-                                {{ number_format($editIndex === $i ? $editData['total'] ?? 0 : $item['total'], 0, ',', '.') }}
+                                {{ number_format($editIndex === $i ? $editData['total'] ?? 0 : $item['total'], 2, ',', '.') }}
                             </td>
 
                             <!-- Aksi -->
@@ -351,7 +352,7 @@
 
         @script
             <script>
-                 initLivewireSwalHandlers({
+                initLivewireSwalHandlers({
                     redirectUrl: "{{ route('nota.index') }}"
                 });
 

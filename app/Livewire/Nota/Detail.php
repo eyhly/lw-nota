@@ -99,7 +99,7 @@ class Detail extends Component
         ]);
 
         // Calculate jumlah
-        $this->newItem['jumlah'] = (int) $this->newItem['coly'] * (int) $this->newItem['qty_isi'];
+        $this->newItem['jumlah'] = (float) $this->newItem['coly'] * (float) $this->newItem['qty_isi'];
 
         // Calculate total diskon
         $diskon = array_sum(
@@ -107,7 +107,7 @@ class Detail extends Component
         );
 
         // Calculate subtotal
-        $subtotal = $this->newItem['jumlah'] * (int) $this->newItem['harga'];
+        $subtotal = $this->newItem['jumlah'] * (float) $this->newItem['harga'];
 
         // Calculate total after discount
         $this->newItem['total'] = $subtotal * (1 - ($diskon / 100));
@@ -176,9 +176,9 @@ class Detail extends Component
     {
         if (empty($this->newItem)) return;
 
-        $coly  = (int) ($this->newItem['coly'] ?? 0);
-        $qty   = (int) ($this->newItem['qty_isi'] ?? 0);
-        $harga = (int) ($this->newItem['harga'] ?? 0);
+        $coly  = (float) ($this->newItem['coly'] ?? 0);
+        $qty   = (float) ($this->newItem['qty_isi'] ?? 0);
+        $harga = (float) ($this->newItem['harga'] ?? 0);
 
         $diskon = array_sum(
             array_map('floatval', (array) ($this->newItem['diskon'] ?? []))
@@ -224,7 +224,7 @@ class Detail extends Component
 
         // jumlah barang
         $this->editData['jumlah'] =
-            (int) $this->editData['coly'] * (int) $this->editData['qty_isi'];
+            (float) $this->editData['coly'] * (float) $this->editData['qty_isi'];
 
         // total diskon persen
         $diskon = array_sum(
@@ -233,7 +233,7 @@ class Detail extends Component
 
         $this->dispatch('$refresh');
         // subtotal
-        $subtotal = $this->editData['jumlah'] * (int) $this->editData['harga'];
+        $subtotal = $this->editData['jumlah'] * (float) $this->editData['harga'];
 
         // total setelah diskon
         $this->editData['total'] =
@@ -289,9 +289,9 @@ class Detail extends Component
     {
         if (empty($this->editData)) return;
 
-        $coly  = (int) ($this->editData['coly'] ?? 0);
-        $qty   = (int) ($this->editData['qty_isi'] ?? 0);
-        $harga = (int) ($this->editData['harga'] ?? 0);
+        $coly  = (float) ($this->editData['coly'] ?? 0);
+        $qty   = (float) ($this->editData['qty_isi'] ?? 0);
+        $harga = (float) ($this->editData['harga'] ?? 0);
 
         $diskon = array_sum(
             array_map('floatval', (array) ($this->editData['diskon'] ?? []))

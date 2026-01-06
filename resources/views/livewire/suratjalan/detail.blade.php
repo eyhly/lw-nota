@@ -175,7 +175,7 @@
                                 @if($editIndex === $index)
                                     <td>
                                         <div class="input-group input-group-sm">
-                                            <input type="number" 
+                                            <input type="number" step="0.01"
                                                    wire:model="editData.coly" 
                                                    class="form-control  mr-2"
                                                    style="max-width: 70px;">
@@ -187,7 +187,7 @@
                                     </td>
                                     <td>
                                         <div class="input-group input-group-sm">
-                                            <input type="number" 
+                                            <input type="number" step="0.01"
                                                    wire:model="editData.qty_isi" 
                                                    class="form-control mr-2"
                                                    style="max-width: 70px;">
@@ -261,7 +261,7 @@
                                 <!-- Coly -->
                                 <td>
                                     <div class="d-flex flex-column gap-1">
-                                        <input type="number" 
+                                        <input type="number" step="0.01"
                                                class="form-control form-control-sm mb-1" 
                                                wire:model="newItem.coly"
                                                placeholder="Coly">
@@ -278,7 +278,7 @@
                                 <!-- Qty Isi -->
                                 <td>
                                     <div class="d-flex flex-column gap-1">
-                                        <input type="number" 
+                                        <input type="number" step="0.01"
                                                class="form-control form-control-sm mb-1" 
                                                wire:model="newItem.qty_isi"
                                                placeholder="Qty">

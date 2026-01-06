@@ -9,7 +9,7 @@ use Carbon\Carbon;
 
 class Create extends Component
 {
-    public $no_nota,$pembeli,$nama_toko,$alamat,$tanggal,$subtotal=0,$diskon_persen=0,$diskon_rupiah=0,$total_harga=0,$total_coly=0,$jt_tempo;
+    public $no_nota, $pembeli, $nama_toko, $alamat, $tanggal, $subtotal = 0, $diskon_persen = 0, $diskon_rupiah = 0, $total_harga = 0, $total_coly = 0, $jt_tempo;
     public $surat_jalan_id = null;
     public $details = [];
     public $title = 'Buat Nota';
@@ -25,7 +25,7 @@ class Create extends Component
         'qty_isi' => 0,
         'nama_isi' => '',
         'harga' => 0,
-        'diskon' => [], 
+        'diskon' => [],
         'jumlah' => 0,
         'total' => 0,
     ];
@@ -84,7 +84,7 @@ class Create extends Component
             'tanggal',
             'nama_toko',
             'alamat',
-            'subtotal', 
+            'subtotal',
             'diskon_persen',
             'diskon_rupiah',
             'total_harga',
@@ -143,7 +143,7 @@ class Create extends Component
     }
 
     // ========== EDIT METHODS ==========
-    
+
     public function startEdit($index)
     {
         $this->editIndex = $index;
@@ -151,24 +151,24 @@ class Create extends Component
     }
 
     public function saveEdit()
-    {       
-            if ($this->editIndex === null) return;
+    {
+        if ($this->editIndex === null) return;
 
-            $i = $this->editIndex;
+        $i = $this->editIndex;
 
-            // HANYA field yang memang pakai edit mode
-            $this->details[$i]['nama_barang']  = $this->editData['nama_barang'];
-            $this->details[$i]['coly']         = $this->editData['coly'];
-            $this->details[$i]['satuan_coly']  = $this->editData['satuan_coly'];
-            $this->details[$i]['qty_isi']      = $this->editData['qty_isi'];
-            $this->details[$i]['nama_isi']     = $this->editData['nama_isi'];
+        // HANYA field yang memang pakai edit mode
+        $this->details[$i]['nama_barang']  = $this->editData['nama_barang'];
+        $this->details[$i]['coly']         = $this->editData['coly'];
+        $this->details[$i]['satuan_coly']  = $this->editData['satuan_coly'];
+        $this->details[$i]['qty_isi']      = $this->editData['qty_isi'];
+        $this->details[$i]['nama_isi']     = $this->editData['nama_isi'];
 
-            // Recalc
-            $this->recalcRow($this->editIndex);
-            $this->recalcFooter();
+        // Recalc
+        $this->recalcRow($this->editIndex);
+        $this->recalcFooter();
 
-            // Reset edit mode
-            $this->cancelEdit();        
+        // Reset edit mode
+        $this->cancelEdit();
     }
 
     public function cancelEdit()
@@ -195,12 +195,12 @@ class Create extends Component
     {
         // Recalc saat edit data berubah
         if ($this->editIndex !== null) {
-            $coly  = (int) ($this->editData['coly'] ?? 0);
-            $qty   = (int) ($this->editData['qty_isi'] ?? 0);
-            $harga = (int) ($this->editData['harga'] ?? 0);
+            $coly  = (float) ($this->editData['coly'] ?? 0);
+            $qty   = (float) ($this->editData['qty_isi'] ?? 0);
+            $harga = (float) ($this->editData['harga'] ?? 0);
 
             $diskon = array_sum(
-                array_map('intval', (array) ($this->editData['diskon'] ?? []))
+                array_map('floatval', (array) ($this->editData['diskon'] ?? []))
             );
 
             $jumlah = $coly * $qty;
@@ -217,19 +217,19 @@ class Create extends Component
 
         $item = $this->details[$i];
 
-        $coly  = (int) ($item['coly'] ?? 0);
-        $qty   = (int) ($item['qty_isi'] ?? 0);
-        $harga = (int) ($item['harga'] ?? 0);
+        $coly  = (float) ($item['coly'] ?? 0);
+        $qty   = (float) ($item['qty_isi'] ?? 0);
+        $harga = (float) ($item['harga'] ?? 0);
 
         $diskon = array_sum(
-            array_map('intval', (array) ($item['diskon'] ?? []))
+            array_map('floatval', (array) ($item['diskon'] ?? []))
         );
 
         $jumlah = $coly * $qty;
         $total  = ($harga * $jumlah) * (1 - ($diskon / 100));
 
         $this->details[$i]['jumlah'] = $jumlah;
-        $this->details[$i]['total']  = round($total);
+        $this->details[$i]['total']  = round($total, 2);
     }
 
     public function updatedDetails($value, $name)
@@ -267,9 +267,6 @@ class Create extends Component
 
         // Paksa hitung ulang
         $this->recalcFooter();
-        // $this->subtotal     = $this->getSubtotalProperty();
-        // $this->total_coly   = $this->getTotalColyProperty();
-        // $this->total_harga  = $this->getTotalHargaProperty();
 
         DB::transaction(function () {
             $nota = Nota::create([
@@ -289,7 +286,7 @@ class Create extends Component
 
             foreach ($this->details as $d) {
 
-                $diskonArr = array_map('intval', (array) ($d['diskon'] ?? []));                
+                $diskonArr = array_map('floatval', (array) ($d['diskon'] ?? []));
 
                 $nota->details()->create([
                     'nama_barang' => $d['nama_barang'],
@@ -300,7 +297,7 @@ class Create extends Component
                     'jumlah'      => $d['jumlah'],
                     'harga'       => $d['harga'],
                     'diskon'      => $diskonArr,
-                    'total'       => round($d['total']),
+                    'total'       => round($d['total'], 2),
                 ]);
             }
 
