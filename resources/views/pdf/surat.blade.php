@@ -151,17 +151,17 @@
         <hr>
         <table>
             <tr>
-                <td class="coly" width="10%" valign="top" style="text-align: left; padding-left: 1rem;">
-                    <b>Total: {{ $suratjalan->total_coly }} Coly </b>
+                <td width="30%" class="coly" width="10%" valign="top" style="text-align: left; padding-left: 1rem;">
+                    <p style="margin: 0; padding: 0; font-weight: 700;">Total: {{ $suratjalan->total_coly }} ({{ $total_coly_terbilang }}) Coly </p>
+                    <br>
+                    <p style="margin: 0; padding: 0;">Exp:</p>
                 </td>
-            </tr>
-            <tr>
                 <td width="30%" valign="top" style="text-align: center;">
-                    Tanda Terima,<br><br><br><br>
+                    Tanda Terima,<br><br><br><br><br>
                     (&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)
                 </td>
                 <td width="30%" valign="top" style="text-align: center;">
-                    Hormat Kami,<br><br><br><br>
+                    Hormat Kami,<br><br><br><br><br>
                     (&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)
                 </td>
             </tr>

@@ -219,9 +219,13 @@
                                     @endif
                                 </td>                            
 
-                                {{-- Jumlah --}}
+                                {{-- Total Qty --}}
                                 <td>
-                                    {{ $editIndex === $index ? ($editData['coly'] * $editData['nama_isi']) : $detail->jumlah . ' ' . $detail->nama_isi }}
+                                    @if ($editIndex === $index)
+                                        {{ $editData['jumlah'] }} {{ $editData['nama_isi'] }}
+                                    @else
+                                        {{ $detail->jumlah }} {{ $detail->nama_isi }}
+                                    @endif
                                 </td>
 
                                 {{-- Harga --}}
@@ -380,7 +384,7 @@
                                     @enderror
                                 </td>
 
-                                <!-- Jumlah -->
+                                <!-- Total Qty -->
                                 <td class="text-center">
                                     {{ $newItem['jumlah'] }} {{ $newItem['nama_isi'] ?? '' }}
                                 </td>
