@@ -20,6 +20,11 @@ class Index extends Component
     public string $bulkAction = '';
     public $sortField = null;
     public $sortDirection = null;
+    public $showFilter = false;
+    public $filterYear;
+    public $filterMonth;
+    public $tempYear;
+    public $tempMonth;
 
     public $no_nota,$pembeli,$tanggal,$subtotal,$diskon_persen,$diskon_rupiah,$total_harga,$total_coly,$jt_tempo,$nota_id;
    
@@ -31,12 +36,31 @@ class Index extends Component
         ]);
     }
 
+    public function mount()
+    {
+        $this->filterYear = now()->year; 
+        $this->filterMonth = null;
+
+
+        $this->tempYear = $this->filterYear;
+        $this->tempMonth = $this->filterMonth;
+    }
+
     private function baseQuery()
     {
         $query = Nota::where(function ($q) {
             $q->where('nama_toko', 'like', '%' . $this->search . '%')
             ->orWhere('status', 'like', '%' . $this->search . '%');
         });
+
+        //filter untujj tahun
+        if ($this->filterYear) {
+            $query->whereYear('tanggal', $this->filterYear);
+        }
+        
+        if ($this->filterMonth) {
+            $query->whereMonth('tanggal', $this->filterMonth);
+        }
 
         if ($this->sortField && in_array($this->sortDirection, ['asc', 'desc'])) {
             $query->orderBy($this->sortField, $this->sortDirection);
@@ -46,6 +70,19 @@ class Index extends Component
         }
 
         return $query;
+    }
+
+    public function toggleFilter()
+    {
+        $this->showFilter = ! $this->showFilter;        
+    }
+
+    public function applyFilter()
+    {
+        $this->filterYear = $this->tempYear;
+        $this->filterMonth = $this->tempMonth;
+
+        $this->resetPage();
     }
 
     public function updatingPaginate()

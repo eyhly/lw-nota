@@ -7,7 +7,7 @@ use App\Livewire\Nota\Create;
 use App\Models\Nota;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('dashboard');
 });
 
 //nota

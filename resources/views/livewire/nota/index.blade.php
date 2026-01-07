@@ -34,21 +34,7 @@
               <a wire:navigate href="{{ route('nota.create')}}" class="btn btn-sm btn-primary" data-toggle="modal">
               <i class="fas fa-plus mr-1"></i>  
               Tambah Data</a>
-            </div>
-            <!-- <div class="btn-group dropleft">
-              <button type="button" class="btn btn-sm btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-print mr-1"></i>
-                Print
-              </button>
-              <div class="dropdown-menu">
-                <a class="dropdown-item text-success" href="#">
-                <i class="fas fa-file-excel mr-1"></i>  
-                Excel</a>
-                <a class="dropdown-item text-danger" href="#">
-                <i class="fas fa-file-pdf mr-1"></i>  
-                PDF</a>
-              </div>
-            </div> -->
+            </div>            
           </div>
         </div>
         <div class="card-body">
@@ -71,22 +57,74 @@
                   <span class="text-muted ml-2">data</span>
               </div>
 
-              <div class="d-flex justify-content-between align-items-center" style="width: 550px;">
+              <div class="d-flex justify-content-between align-items-center" style="width: 650px;">
                     {{-- Search --}}
-              <div style="width: 400px;">
-                  <input
-                      wire:model.live="search"
-                      type="text"
-                      class="form-control form-control-sm"
-                      placeholder="Cari data..."
-                  >
-              </div>
+                <div style="width: 300px;">
+                    <input
+                        wire:model.live="search"
+                        type="text"
+                        class="form-control form-control-sm mr-2"
+                        placeholder="Cari data..."
+                    >
+                </div>
 
-                  {{-- Pagination atas --}}
-              <div class="d-flex align-items-center mt-2">
-                  {{ $nota->links('pagination::bootstrap-4') }}
+                  <div class="d-flex align-items-center" style="width: 200px;">
+                    {{-- TOMBOL FILTER --}}
+                    <button
+                        type="button"
+                        wire:click="toggleFilter"
+                        class="btn btn-sm btn-outline-secondary"
+                    >
+                        <i class="fas fa-filter mr-1"></i> Filter
+                    </button>
+
+                    @if ($showFilter)
+                        <button
+                            type="button"
+                            wire:click="applyFilter"
+                            class="btn btn-sm btn-primary ml-1"
+                        >
+                            <i class="fas fa-search mr-1"></i> Cari
+                        </button>
+                    @endif                                      
+                  </div>                  
+
+                    {{-- Pagination atas --}}
+                <div class="d-flex align-items-center mt-2">
+                    {{ $nota->links('pagination::bootstrap-4') }}
+                </div>
               </div>
-              </div>
+          </div>
+
+          <div class="d-flex justify-content-end align-items-center" style="width: 90%;">
+            @if ($showFilter)
+                      <div class="d-flex align-items-center gap-2 mb-3">
+
+                          {{-- Select Tahun --}}
+                          <select
+                              wire:model.defer="tempYear"
+                              class="form-control form-control-sm w-auto mr-2"
+                          >
+                              @foreach (range(now()->year, now()->year - 5) as $year)
+                                  <option value="{{ $year }}">{{ $year }}</option>
+                              @endforeach
+                          </select>
+
+                          {{-- Select Bulan --}}
+                          <select
+                              wire:model.defer="tempMonth"
+                              class="form-control form-control-sm w-auto"
+                          >
+                              <option value="">Semua Bulan</option>
+                              @foreach (range(1,12) as $m)
+                                  <option value="{{ $m }}">
+                                      {{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}
+                                  </option>
+                              @endforeach
+                          </select>
+
+                      </div>
+                  @endif
           </div>
 
           <div class="table-responsive">            
@@ -192,7 +230,7 @@
             </table>
             
             <div class="d-flex justify-content-between align-items-center mt-3">
-              {{-- Bulk action --}}
+              {{--  Bulk action --}}
               <div class="d-flex align-items-center">
                   <span class="text-muted mr-2">With selected:</span>
 

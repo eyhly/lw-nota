@@ -14,7 +14,7 @@
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a wire:navigate href="/" class="nav-link @yield('menuDashboard')">
               <i class="nav-icon fas fa-home"></i>
               <p>
                 Dashboard
