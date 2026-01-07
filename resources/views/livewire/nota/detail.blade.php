@@ -221,7 +221,7 @@
 
                                 {{-- Jumlah --}}
                                 <td>
-                                    {{ $editIndex === $index ? ($editData['coly'] * $editData['qty_isi']) : $detail->jumlah . ' ' . $detail->satuan_coly }}
+                                    {{ $editIndex === $index ? ($editData['coly'] * $editData['nama_isi']) : $detail->jumlah . ' ' . $detail->nama_isi }}
                                 </td>
 
                                 {{-- Harga --}}
@@ -382,7 +382,7 @@
 
                                 <!-- Jumlah -->
                                 <td class="text-center">
-                                    {{ $newItem['jumlah'] }} {{ $newItem['satuan_coly'] ?? '' }}
+                                    {{ $newItem['jumlah'] }} {{ $newItem['nama_isi'] ?? '' }}
                                 </td>
 
                                 <!-- Harga -->

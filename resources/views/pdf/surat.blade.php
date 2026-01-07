@@ -16,7 +16,7 @@
         @font-face {
             font-family: 'MartianMono';
             src: url("{{ public_path('fonts/NK57 Monospace Sc Sb.otf') }}") format('truetype');
-            /* font-weight: 400; */
+            font-weight: 400;
             font-style: normal;
         }
 
@@ -61,7 +61,7 @@
 
         .footer {
             position: fixed;
-            bottom: 15px;
+            bottom: 20px;
             width: 100%;
             height: 7.2rem;
         }
