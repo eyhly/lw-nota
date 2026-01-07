@@ -7,8 +7,8 @@
 
     <style>
         @page {
-            margin-top: 9.5rem;
-            margin-bottom: 1.5rem;
+            margin-top: 9rem;
+            margin-bottom: 2rem;
             margin-left: 1rem;
             margin-right: 1rem;
         }
@@ -55,7 +55,7 @@
 
         th,
         td {
-            /* padding: 2px; */
+            padding: 0;
             vertical-align: top;
             word-wrap: break-word;
         }
@@ -175,15 +175,13 @@
                     Hormat Kami,<br><br><br><br>
                     ( ________________ )
                 </td>
-                <td width="40%" style="text-align: center;">
-                    Bila sudah jatuh tempo<br>
-                    Mohon transfer ke:<br>
-                    <span style="font-weight: 700">
-                        BCA : 506 082 9499<br>
-                        BRI : 0587 0100 1434 535
-                    </span><br>
-                    A/N : GO GIOK LIE<br>
-                    <span style="font-weight: 700">TERIMA KASIH</span>
+                <td width="40%" style="text-align: center; padding: o;">
+                    <p style="margin: 0; padding: 0;">Bila sudah jatuh tempo</p>
+                    <p style="margin: 0; padding: 0;">Mohon transfer ke:</p>
+                    <p style="margin: 0; padding: 0; font-weight: 700">BCA : 506 082 9499</p>
+                    <p style="margin: 0; padding: 0; font-weight: 700">BRI : 0587 0100 1434 535</p>
+                    <p style="margin: 0; padding: 0;">A/N : GO GIOK LIE</p>
+                    <p style="margin: 0; padding: 0; font-weight: 700">TERIMA KASIH</p>
                 </td>
                 <td width="10%" style="text-align: right; line-height: 1.5;">
                     Subtotal<br>
@@ -194,7 +192,8 @@
                     style="text-align: left; padding-left: 1rem; line-height: 1.5; text-transform: none;">
                     Rp {{ number_format($nota->subtotal, 0, ',', '.') }}<br>
                     Rp {{ number_format($nota->diskon_rupiah, 0, ',', '.') }}<br>
-                    <span style="font-weight: 700; font-size: 14px;">Rp {{ number_format($nota->total_harga, 0, ',', '.') }}</span>
+                    <span style="font-weight: 700; font-size: 14px;">Rp
+                        {{ number_format($nota->total_harga, 0, ',', '.') }}</span>
                 </td>
             </tr>
         </table>

@@ -6,10 +6,10 @@
     <title>Surat PDF</title>
     <style>
         @page {
-            margin-top: 9.5rem;
+            margin-top: 8.5rem;
             margin-bottom: 1.5rem;
-            margin-left: 1rem;
-            margin-right: 1rem;
+            margin-left: 0.5rem;
+            margin-right: 0.5rem;
         }
 
         /* Regular */
@@ -54,7 +54,7 @@
 
         th,
         td {
-            /* padding: 3px; */
+            padding: 0;
             vertical-align: top;
             word-wrap: break-word;
         }
@@ -63,7 +63,7 @@
             position: fixed;
             bottom: 15px;
             width: 100%;
-            height: 8rem;
+            height: 7.2rem;
         }
 
         .faktur {
@@ -74,7 +74,7 @@
 
         .page-header {
             position: fixed;
-            top: -8rem;
+            top: -6.8rem;
             /* Posisi di area margin atas */
             left: 0;
             right: 0;
@@ -125,11 +125,11 @@
     <table>
         <thead>
             <tr>
-                <th style="text-align: center;" width="2%">NO</th>
+                <th style="text-align: center;" width="3%">NO</th>
                 <th style="text-align: center;" width="11%">COLY</th>
                 <th style="text-align: center;" width="11%">ISI</th>
-                <th style="padding-left: 5px; text-align: left;" width="48%">NAMA BARANG</th>
-                <th style="padding-left: 5px; text-align: left;" width="28%">KETERANGAN</th>
+                <th style="padding-left: 5px; text-align: left;" width="40%">NAMA BARANG</th>
+                <th style="padding-left: 5px; text-align: left;" width="35%">KETERANGAN</th>
             </tr>
         </thead>
         <tbody>
@@ -143,9 +143,6 @@
                     <td style="padding-left: 5px; text-align: left;">{{ $d->keterangan }}</td>
                 </tr>
             @endforeach
-            <tr>
-                <td colspan="8">&nbsp;</td>
-            </tr>
         </tbody>
     </table>
 
@@ -154,19 +151,18 @@
         <hr>
         <table>
             <tr>
-                <td class="coly" width="10%" valign="top" style="text-align: left;">
+                <td class="coly" width="10%" valign="top" style="text-align: left; padding-left: 1rem;">
                     <b>Total: {{ $suratjalan->total_coly }} Coly </b>
                 </td>
             </tr>
-            <br>
             <tr>
                 <td width="30%" valign="top" style="text-align: center;">
                     Tanda Terima,<br><br><br><br>
-                    (&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)
+                    (&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)
                 </td>
                 <td width="30%" valign="top" style="text-align: center;">
                     Hormat Kami,<br><br><br><br>
-                    (&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)
+                    (&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)
                 </td>
             </tr>
         </table>

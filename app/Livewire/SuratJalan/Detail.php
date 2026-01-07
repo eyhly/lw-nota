@@ -10,7 +10,7 @@ use PDF;
 class Detail extends Component
 {
     public $suratjalan;
-    public $title = 'Detail Surat Jalan';    
+    public $title = 'Detail Surat Jalan';
 
     public $no_surat, $nama_toko, $alamat, $tanggal;
 
@@ -46,7 +46,7 @@ class Detail extends Component
             'no_surat'     => $this->no_surat,
             'nama_toko'     => $this->nama_toko,
             'alamat'     => $this->alamat,
-            'tanggal'     => $this->tanggal,                                 
+            'tanggal'     => $this->tanggal,
         ]);
 
         session()->flash('success', 'Data surat jalan berhasil diperbarui.');
@@ -165,8 +165,9 @@ class Detail extends Component
         return $this->suratjalan->detailsj->sum('coly');
     }
 
-    
-    public function pdf($id){
+
+    public function pdf($id)
+    {
         $suratjalan = SuratJalan::with('detailsj')->findOrFail($id);
 
         // $chunks = $suratjalan->detailsj->chunk(10);
@@ -177,7 +178,9 @@ class Detail extends Component
             // 'chunks' => $chunks,
             // 'startNumber' => 0 
         );
-        $pdf = Pdf::loadView('pdf.surat', $data)->setPaper('a5', 'landscape');;
+        $customPaper = array(0, 0, 595, 395);
+        $pdf = Pdf::loadView('pdf.surat', $data)->setPaper($customPaper);
+        // $pdf = Pdf::loadView('pdf.surat', $data)->setPaper('a5', 'landscape');
         return $pdf->stream('suratjalan.pdf');
     }
 

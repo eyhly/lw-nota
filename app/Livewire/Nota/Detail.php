@@ -343,7 +343,8 @@ class Detail extends Component
             'nota' => $nota,
             // 'chunks' => $chunks
         );
-        $pdf = Pdf::loadView('pdf.index', $data)->setPaper('a5', 'landscape');;
+        $customPaper = array(0, 0, 595, 395);
+        $pdf = Pdf::loadView('pdf.index', $data)->setPaper($customPaper);
         return $pdf->stream('nota.pdf');
     }
 
