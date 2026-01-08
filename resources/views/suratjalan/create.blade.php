@@ -4,5 +4,5 @@
 @section('menuSuratJalanAdd', 'active')
 
 @section('content')
-    @livewire('suratjalan.create')
+    @livewire('suratJalan.create')
 @endsection

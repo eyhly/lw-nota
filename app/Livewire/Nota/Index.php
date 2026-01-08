@@ -21,10 +21,19 @@ class Index extends Component
     public $sortField = null;
     public $sortDirection = null;
     public $showFilter = false;
+    // dipakai query
     public $filterYear;
     public $filterMonth;
+    public $filterTotalMin;
+    public $filterTotalMax;
+    public $filterSearch;
+
+    // dipakai UI
     public $tempYear;
     public $tempMonth;
+    public $tempTotalMin;
+    public $tempTotalMax;
+    public $tempSearch;   
 
     public $no_nota,$pembeli,$tanggal,$subtotal,$diskon_persen,$diskon_rupiah,$total_harga,$total_coly,$jt_tempo,$nota_id;
    
@@ -38,34 +47,65 @@ class Index extends Component
 
     public function mount()
     {
-        $this->filterYear = now()->year; 
+        $this->filterYear = now()->year;
         $this->filterMonth = null;
 
+        $this->filterTotalMin = null;
+        $this->filterTotalMax = null;
+        $this->filterSearch = null;
 
         $this->tempYear = $this->filterYear;
         $this->tempMonth = $this->filterMonth;
+        $this->tempTotalMin = null;
+        $this->tempTotalMax = null;
+        $this->tempSearch = null;
     }
+
 
     private function baseQuery()
     {
-        $query = Nota::where(function ($q) {
-            $q->where('nama_toko', 'like', '%' . $this->search . '%')
-            ->orWhere('status', 'like', '%' . $this->search . '%');
-        });
+        $query = Nota::query();
 
-        //filter untujj tahun
+        // SEARCH (filter panel)
+        if ($this->filterSearch) {
+            $query->where(function ($q) {
+                $q->where('nama_toko', 'like', '%' . $this->filterSearch . '%')
+                    ->orWhere('status', 'like', '%' . $this->filterSearch . '%');
+            });
+        }
+
+        // FILTER TAHUN
         if ($this->filterYear) {
             $query->whereYear('tanggal', $this->filterYear);
         }
-        
+
+        // FILTER BULAN
         if ($this->filterMonth) {
             $query->whereMonth('tanggal', $this->filterMonth);
         }
 
+        // FILTER TOTAL MIN
+        if ($this->filterTotalMin && ! $this->filterTotalMax) {
+            $query->where('total_harga', '>=', $this->filterTotalMin);
+        }
+
+        // FILTER TOTAL MAX
+        if (! $this->filterTotalMin && $this->filterTotalMax) {
+            $query->where('total_harga', '<=', $this->filterTotalMax);
+        }
+
+        // FILTER TOTAL BETWEEN
+        if ($this->filterTotalMin && $this->filterTotalMax) {
+            $query->whereBetween('total_harga', [
+                $this->filterTotalMin,
+                $this->filterTotalMax
+            ]);
+        }
+
+        // SORT
         if ($this->sortField && in_array($this->sortDirection, ['asc', 'desc'])) {
             $query->orderBy($this->sortField, $this->sortDirection);
         } else {
-            // DEFAULT: ID terbaru
             $query->orderBy('id', 'desc');
         }
 
@@ -81,9 +121,32 @@ class Index extends Component
     {
         $this->filterYear = $this->tempYear;
         $this->filterMonth = $this->tempMonth;
+        $this->filterTotalMin = $this->tempTotalMin;
+        $this->filterTotalMax = $this->tempTotalMax;
+        $this->filterSearch = $this->tempSearch;
 
         $this->resetPage();
     }
+
+
+    public function resetFilter()
+    {
+        $this->filterYear = now()->year;
+        $this->filterMonth = null;
+
+        $this->filterTotalMin = null;
+        $this->filterTotalMax = null;
+        $this->filterSearch = null;
+
+        $this->tempYear = $this->filterYear;
+        $this->tempMonth = null;
+        $this->tempTotalMin = null;
+        $this->tempTotalMax = null;
+        $this->tempSearch = null;
+
+        $this->resetPage();
+    }
+
 
     public function updatingPaginate()
     {

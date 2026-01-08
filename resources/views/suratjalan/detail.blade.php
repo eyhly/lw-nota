@@ -4,5 +4,5 @@
 @section('menuSuratJalan', 'active')
 
 @section('content')
-    @livewire('suratjalan.detail', ['id' => $id])
+    @livewire('suratJalan.detail', ['id' => $id])
 @endsection
