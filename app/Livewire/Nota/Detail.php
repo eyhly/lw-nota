@@ -4,6 +4,7 @@ namespace App\Livewire\Nota;
 
 use App\Models\Nota;
 use App\Models\DetailNota;
+use Illuminate\Http\Request;
 use Livewire\Component;
 use PDF;
 
@@ -332,19 +333,30 @@ class Detail extends Component
         return $this->nota->details->sum('coly');
     }
 
-    public function pdf($id)
+    public function pdf(Request $request)
     {
-        $nota = Nota::with('details')->findOrFail($id);
+        $ids = explode(',', $request->ids);
 
-        // $chunks = $nota->details->chunk(10);
+        $nota = Nota::whereIn('id', $ids)->get();
 
-        $data = array(
+        if ($nota->count() !== count($ids)) {
+            abort(404, 'Ada nota yang tidak ditemukan');
+        }
+
+        Nota::whereIn('id', $ids)->update(['print' => 1]);
+
+        $notas = Nota::with('details') ->whereIn('id', $ids) ->orderBy('id') ->get();        
+
+        $data = [
             'title' => 'Detail Nota',
-            'nota' => $nota,
-            // 'chunks' => $chunks
-        );
-        $customPaper = array(0, 0, 595, 395);
-        $pdf = Pdf::loadView('pdf.index', $data)->setPaper($customPaper);
+            'notas' => $notas,
+        ];
+
+        $customPaper = [0, 0, 595, 395];
+
+        $pdf = Pdf::loadView('pdf.index', $data)
+            ->setPaper($customPaper);
+
         return $pdf->stream('nota.pdf');
     }
 
@@ -356,18 +368,7 @@ class Detail extends Component
 
         return view('livewire.nota.detail')->layout('layouts.app');
     }
-
-    public function updatePrintAndRedirect($id)
-    {
-        $nota = Nota::findOrFail($id);
-
-        // update print = 1
-        $nota->update(['print' => 1]);
-
-        // redirect ke halaman PDF
-        return redirect()->route('pdf.index', $id);
-    }
-
+ 
     public function toggleCek($id)
     {
         if ($this->nota && $this->nota->id == $id) {

@@ -11,7 +11,7 @@
             <div style="font-size: 26px; font-weight: 700;">Detail Nota</div>
 
             <div class="d-flex">
-                <a href="{{ route('nota.print.update', $nota->id) }}" 
+                <a href="{{ route('pdf.index', ['ids' => $nota->id]) }}" 
                 target="_blank" 
                 class="btn btn-sm btn-warning mr-4">
                     <i class="fas fa-print mr-1"></i> Print

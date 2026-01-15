@@ -257,6 +257,7 @@
                                     <select wire:model.live="bulkAction"
                                         class="form-control form-control-sm w-auto mr-2" id="bulkActionSelect">
                                         <option value="">Pilih aksi</option>
+                                        <option value="print">Cetak</option>
                                         <option value="sprint">Sudah Cetak</option>
                                         <option value="unprint">Belum Cetak</option>
                                         <option value="approve">Sudah Cek</option>

@@ -219,7 +219,7 @@ class Index extends Component
 
         // Buka halaman print
         return redirect()->route('pdf.index', $id);
-    }    
+    }  
 
     // Method yang dipanggil setelah konfirmasi
     #[On('run-bulk-action')]
@@ -270,16 +270,29 @@ class Index extends Component
                 $message = 'Status data batal diprint';
                 break;
 
+            // case 'print':
+            //     $ids = implode(',', $this->selectedIds);
+
+            //     // Update print status
+            //     Nota::whereIn('id', $this->selectedIds)
+            //         ->update(['print' => 1]);
+
+            //     $this->reset(['selectedIds', 'bulkAction', 'selectAll']);
+
+            //     return redirect()->route('nota.print.bulk', ['ids' => $ids]);
+
             case 'print':
-                $ids = implode(',', $this->selectedIds);
-                
-                // Update print status
-                Nota::whereIn('id', $this->selectedIds)
-                    ->update(['print' => 1]);
+                $ids = $this->selectedIds;                
+
+                // Nota::whereIn('id', $ids)->update([
+                //     'print' => 1
+                // ]);
 
                 $this->reset(['selectedIds', 'bulkAction', 'selectAll']);
 
-                return redirect()->route('nota.print.bulk', ['ids' => $ids]);
+                return redirect()->route('nota.print', [
+                    'ids' => $ids
+                ]);
 
             default:
                 $this->dispatch('alert', [
@@ -356,7 +369,7 @@ class Index extends Component
         $ids = explode(',', $request->ids);
         $notas = Nota::whereIn('id', $ids)->get();
 
-        return view('nota.print-bulk', compact('notas'));
+        return view('pdf.bulk-nota', compact('notas'));
     }
 
     public function confirmBulkAction()
