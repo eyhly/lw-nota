@@ -280,7 +280,7 @@ class Index extends Component
                 ]);
                 $message = "Data berhasil diprint";
                 break;
-                // return redirect()->route('pdf.index', ['ids' => $ids]);
+                return redirect()->route('pdf.index', ['ids' => $ids]);
 
             default:
                 $this->dispatch('alert', [

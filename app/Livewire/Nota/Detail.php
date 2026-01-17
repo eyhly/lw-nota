@@ -105,16 +105,14 @@ class Detail extends Component
         // Calculate jumlah
         $this->newItem['jumlah'] = (float) $this->newItem['coly'] * (float) $this->newItem['qty_isi'];
 
-        // Calculate total diskon
-        $diskon = array_sum(
-            array_map('floatval', (array) ($this->newItem['diskon'] ?? []))
-        );
-
-        // Calculate subtotal
         $subtotal = $this->newItem['jumlah'] * (float) $this->newItem['harga'];
+       
+        $this->newItem['total'] = $subtotal;
 
-        // Calculate total after discount
-        $this->newItem['total'] = $subtotal * (1 - ($diskon / 100));
+        foreach ((array) ($this->newItem['diskon'] ?? []) as $d) {
+            $this->newItem['total'] -=
+                $this->newItem['total'] * ((float) $d / 100);
+        }
 
         // Format diskon for DB
         $diskonString = array_map(fn($v) => (int) $v, $this->newItem['diskon']);
@@ -133,8 +131,19 @@ class Detail extends Component
             'total'       => $this->newItem['total'],
         ]);
 
+        $subtotalNota = DetailNota::where('nota_id', $this->nota->id)->sum('total');
+        $totalNota = $subtotalNota - ($this->diskon_rupiah ?? 0);
+        $totalNota = $totalNota - ($totalNota * (($this->diskon_persen ?? 0) / 100));
+
+        Nota::where('id', $this->nota->id)->update([
+            'subtotal' => $subtotalNota,
+            'total_harga' => $totalNota,
+        ]);    
+
         // Refresh data
         $this->nota = Nota::with('details')->find($this->nota->id);
+
+        $this->recalcTotalHarga();
 
         // Reset
         $this->isAdding = false;
@@ -231,20 +240,28 @@ class Detail extends Component
             (float) $this->editData['coly'] * (float) $this->editData['qty_isi'];
 
         // total diskon persen
-        $diskon = array_sum(
-            array_map('floatval', (array) ($this->editData['diskon'] ?? []))
-        );
+        // $diskon = array_sum(
+        //     array_map('floatval', (array) ($this->editData['diskon'] ?? []))
+        // );
 
         // subtotal
         $subtotal = $this->editData['jumlah'] * (float) $this->editData['harga'];
 
+        $this->editData["total"] = $subtotal;
+
+        foreach ($this->editData["diskon"] as $d)
+            $this->editData["total"] -= $this->editData["total"] * (float) $d / 100;
+
+        $detail->update($this->editData);
+
+        // dd($this->editData["total"]);
+
         // total setelah diskon
-        $this->editData['total'] =
-            $subtotal * (1 - ($diskon / 100));
+        // $this->editData['total'] =
+        //     $subtotal * (1 - ($diskon / 100));
 
         // simpan diskon ke DB
-        $this->editData['diskon'] = array_map(fn($v) => (int) $v, $this->editData['diskon']);
-        $detail->update($this->editData);
+        // $this->editData['diskon'] = array_map(fn($v) => (int) $v, $this->editData['diskon']);
 
         $subtotalNota = DetailNota::where('nota_id', $detail->nota_id)
             ->sum('total');
@@ -285,6 +302,58 @@ class Detail extends Component
     {
         unset($this->editData['diskon'][$index]);
         $this->editData['diskon'] = array_values($this->editData['diskon']);
+    }
+
+    public function updatedDiskonPersen($value)
+    {
+        $this->subtotal = $this->nota->details->sum('total');
+
+        if (is_numeric($value) && $this->subtotal > 0) {
+            $this->diskon_rupiah = round(($this->subtotal * ((float)$value)) / 100, 0);
+        } else {
+            $this->diskon_rupiah = 0;
+        }
+        
+        $this->total_harga = max(0, $this->subtotal - $this->diskon_rupiah);
+        
+        $this->nota->update([
+            'diskon_persen' => $this->diskon_persen,
+            'diskon_rupiah' => $this->diskon_rupiah,
+            'total_harga'   => $this->total_harga,
+        ]);
+    }
+
+
+    public function updatedDiskonRupiah($value)
+    {
+        $this->subtotal = $this->nota->details->sum('total');
+
+        if (is_numeric($value) && $this->subtotal > 0) {
+            $this->diskon_persen = round(((float)$value / $this->subtotal) * 100, 2);
+        } else {
+            $this->diskon_persen = 0;
+        }
+
+        
+        $this->total_harga = max(0, $this->subtotal - $this->diskon_rupiah);
+       
+        $this->nota->update([
+            'diskon_persen' => $this->diskon_persen,
+            'diskon_rupiah' => $this->diskon_rupiah,
+            'total_harga'   => $this->total_harga,
+        ]);
+    }
+
+
+    public function recalcTotalHarga()
+    {
+        $subtotal = $this->nota->details->sum('total');
+
+        $diskonPersen = $this->diskon_persen ?? 0;
+        $diskonRupiah = $this->diskon_rupiah ?? 0;
+
+        $this->subtotal = $subtotal;
+        $this->total_harga = max(0, $subtotal - $diskonRupiah - ($subtotal * ($diskonPersen / 100)));
     }
 
     public function updatedEditData($value, $name)

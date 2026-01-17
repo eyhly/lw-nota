@@ -197,14 +197,17 @@ class Create extends Component
         if ($this->editIndex !== null) {
             $coly  = (float) ($this->editData['coly'] ?? 0);
             $qty   = (float) ($this->editData['qty_isi'] ?? 0);
-            $harga = (float) ($this->editData['harga'] ?? 0);
-
-            $diskon = array_sum(
-                array_map('floatval', (array) ($this->editData['diskon'] ?? []))
-            );
+            $harga = (float) ($this->editData['harga'] ?? 0);            
 
             $jumlah = $coly * $qty;
-            $total  = ($harga * $jumlah) * (1 - ($diskon / 100));
+
+            $subtotal = $jumlah * $harga;
+
+            $total = $subtotal;
+
+            foreach ((array) ($this->editData['diskon'] ?? []) as $d) {
+                $total -= $total * ((float) $d / 100);
+            }
 
             $this->editData['jumlah'] = $jumlah;
             $this->editData['total']  = round($total);
@@ -219,14 +222,16 @@ class Create extends Component
 
         $coly  = (float) ($item['coly'] ?? 0);
         $qty   = (float) ($item['qty_isi'] ?? 0);
-        $harga = (float) ($item['harga'] ?? 0);
+        $harga = (float) ($item['harga'] ?? 0);        
 
-        $diskon = array_sum(
-            array_map('floatval', (array) ($item['diskon'] ?? []))
-        );
+        $jumlah = $coly * $qty;        
+        $subtotal = $jumlah * $harga;
 
-        $jumlah = $coly * $qty;
-        $total  = ($harga * $jumlah) * (1 - ($diskon / 100));
+        $total = $subtotal;
+        
+        foreach ((array) ($item['diskon'] ?? []) as $d) {
+            $total -= $total * ((float) $d / 100);
+        }
 
         $this->details[$i]['jumlah'] = $jumlah;
         $this->details[$i]['total']  = round($total, 2);
