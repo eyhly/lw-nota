@@ -31,11 +31,17 @@
                     <div class="d-flex justify-content-between mt-2 mb-2">
                         <strong class="d-block mb-2">Filter Data</strong>
                         {{-- Button Filter --}}
-                        <button type="button" wire:click="toggleFilter" class="btn btn-sm btn-outline-secondary mr-1">
-                            <i class="fas fa-filter mr-1"></i> Filter
+                        <button type="button" wire:click="toggleFilter"
+                            class="btn btn-sm btn-outline-secondary mr-1 d-inline-flex align-items-center">
+
+                            @if ($showFilter)
+                                Tutup Filter <i class="fas fa-sort-up fa-lg ml-1 mt-2"></i>
+                            @else
+                                Buka Filter <i class="fas fa-sort-down fa-lg ml-1 mb-2"></i>
+                            @endif
                         </button>
                     </div>
-                    @if ($showFilter)
+                    @if ($showFilter) 
                         <div class="d-flex align-items-center flex-wrap">
 
                             {{-- Tahun --}}
