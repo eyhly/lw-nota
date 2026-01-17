@@ -17,7 +17,6 @@
     <!-- Site wrapper -->
     <div class="wrapper">
 
-
         @include('layouts.navbar')
 
         @include('layouts.sidebar')
@@ -31,6 +30,8 @@
         @livewireScripts
 
         @stack('scripts')
+        
+    </div>
 </body>
 
 </html>

@@ -124,7 +124,7 @@
                                 <option value="50">50</option>
                             </select>
                             <span class="text-muted ml-2">data</span>
-                        </div> 
+                        </div>
 
                         {{-- Pagination --}}
                         <div>
@@ -257,12 +257,12 @@
                                     <select wire:model.live="bulkAction"
                                         class="form-control form-control-sm w-auto mr-2" id="bulkActionSelect">
                                         <option value="">Pilih aksi</option>
-                                        <option value="print">Cetak</option>
+                                        <option value="delete">Hapus</option>
                                         <option value="sprint">Sudah Cetak</option>
                                         <option value="unprint">Belum Cetak</option>
                                         <option value="approve">Sudah Cek</option>
                                         <option value="unapprove">Belum Cek</option>
-                                        <option value="delete">Hapus</option>
+                                        <option value="print">Cetak</option>
                                     </select>
                                 </div>
 
@@ -290,3 +290,13 @@
 
     </div>
 </div>
+
+@push('scripts')
+    <script>
+        document.addEventListener('livewire:load', function() {
+            Livewire.on('open-pdf', event => {
+                window.open(event.url, '_blank'); // buka PDF di tab baru
+            });
+        });
+    </script>
+@endpush

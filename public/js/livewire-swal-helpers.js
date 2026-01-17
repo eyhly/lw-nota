@@ -5,24 +5,25 @@
 
 function initLivewireSwalHandlers(options = {}) {
     const config = {
-        selectAllCheckboxId: 'selectAllCheckboxId',
-        individualCheckboxSelector: 'input[type="checkbox"][wire\\:model\\.live="selectedIds"]',
+        selectAllCheckboxId: "selectAllCheckboxId",
+        individualCheckboxSelector:
+            'input[type="checkbox"][wire\\:model\\.live="selectedIds"]',
         redirectUrl: null,
         deleteRedirectUrl: null,
-        ...options
+        ...options,
     };
 
     // =============================
     // DELETE MODAL
     // =============================
-    document.addEventListener('livewire:init', () => {
-        Livewire.on('closeDeleteModal', (event) => {
-            $('#deleteModal').modal('hide');
+    document.addEventListener("livewire:init", () => {
+        Livewire.on("closeDeleteModal", (event) => {
+            $("#deleteModal").modal("hide");
 
             Swal.fire({
-                title: 'Berhasil!',
-                text: 'Data berhasil dihapus',
-                icon: 'success'
+                title: "Berhasil!",
+                text: "Data berhasil dihapus",
+                icon: "success",
             }).then((result) => {
                 if (result.isConfirmed && config.deleteRedirectUrl) {
                     window.location.href = config.deleteRedirectUrl;
@@ -33,12 +34,14 @@ function initLivewireSwalHandlers(options = {}) {
         // =============================
         // ALERT (SUCCESS / ERROR)
         // =============================
-        Livewire.on('alert', (event) => {
+        Livewire.on("alert", (event) => {
             // Handle data dari Livewire v3
             const data = Array.isArray(event) ? event[0] : event;
 
             // Reset checkbox
-            const selectAll = document.getElementById(config.selectAllCheckboxId);
+            const selectAll = document.getElementById(
+                config.selectAllCheckboxId
+            );
             if (selectAll) {
                 selectAll.checked = false;
             }
@@ -46,7 +49,7 @@ function initLivewireSwalHandlers(options = {}) {
             // Uncheck individual checkboxes
             document
                 .querySelectorAll(config.individualCheckboxSelector)
-                .forEach(cb => {
+                .forEach((cb) => {
                     cb.checked = false;
                 });
 
@@ -55,11 +58,11 @@ function initLivewireSwalHandlers(options = {}) {
 
             // Tampilkan alert
             Swal.fire({
-                title: data.type === 'success' ? 'Berhasil!' : 'Gagal!',
+                title: data.type === "success" ? "Berhasil!" : "Gagal!",
                 html: data.message || data.text,
                 icon: data.type,
             }).then(() => {
-                if (data.type === 'success' && config.redirectUrl) {
+                if (data.type === "success" && config.redirectUrl) {
                     window.location.href = config.redirectUrl;
                 }
             });
@@ -68,17 +71,17 @@ function initLivewireSwalHandlers(options = {}) {
         // =============================
         // BULK ACTION CONFIRMATION
         // =============================
-        Livewire.on('confirm-bulk-action', (event) => {
+        Livewire.on("confirm-bulk-action", (event) => {
             const data = Array.isArray(event) ? event[0] : event;
-            const action = data.action || 'aksi ini';
+            const action = data.action || "aksi ini";
 
             Swal.fire({
-                title: 'Konfirmasi',
+                title: "Konfirmasi",
                 html: `Apakah ingin melakukan aksi <b>${action}</b>?`,
-                icon: 'warning',
+                icon: "warning",
                 showCancelButton: true,
-                confirmButtonText: 'Ya, lanjutkan',
-                cancelButtonText: 'Batal',
+                confirmButtonText: "Ya, lanjutkan",
+                cancelButtonText: "Batal",
                 allowOutsideClick: false,
             }).then((result) => {
                 if (!result.isConfirmed) {
@@ -86,9 +89,13 @@ function initLivewireSwalHandlers(options = {}) {
                     if (window.Livewire) {
                         // Cari component yang aktif
                         const components = window.Livewire.all();
-                        components.forEach(component => {
-                            if (component.get && typeof component.get('bulkAction') !== 'undefined') {
-                                component.set('bulkAction', '');
+                        components.forEach((component) => {
+                            if (
+                                component.get &&
+                                typeof component.get("bulkAction") !==
+                                    "undefined"
+                            ) {
+                                component.set("bulkAction", "");
                             }
                         });
                     }
@@ -97,65 +104,70 @@ function initLivewireSwalHandlers(options = {}) {
 
                 // Tampilkan loading
                 Swal.fire({
-                    title: 'Memproses...',
-                    text: 'Mohon tunggu',
+                    title: "Memproses...",
+                    text: "Mohon tunggu",
                     allowOutsideClick: false,
-                    didOpen: () => Swal.showLoading()
+                    didOpen: () => Swal.showLoading(),
                 });
 
-                Livewire.dispatch('run-bulk-action');
-
+                Livewire.dispatch("run-bulk-action");
             });
         });
 
         // =============================
         // SUCCESS ALERT (untuk create/update)
         // =============================
-        Livewire.on('showSuccessAlert', (event) => {
+        Livewire.on("showSuccessAlert", (event) => {
             const data = Array.isArray(event) ? event[0] : event;
             Swal.close();
             setTimeout(() => {
                 Swal.fire({
-                    title: data.title || 'Berhasil!',
-                    text: data.message || 'Data berhasil disimpan!',
-                    icon: 'success',
-                    confirmButtonText: 'OK'
+                    title: data.title || "Berhasil!",
+                    text: data.message || "Data berhasil disimpan!",
+                    icon: "success",
+                    confirmButtonText: "OK",
                 }).then((result) => {
                     if (result.isConfirmed && data.redirect) {
                         window.location.href = data.redirect;
                     }
                 });
-            },0);            
+            }, 0);
         });
 
         // =============================
         // NOTA UPDATED (untuk detail page)
         // =============================
-        Livewire.on('notaUpdated', (event) => {
+        Livewire.on("notaUpdated", (event) => {
             Swal.fire({
-                title: 'Berhasil!',
-                text: 'Nota berhasil diperbarui.',
-                icon: 'success',
-                confirmButtonText: 'OK'
+                title: "Berhasil!",
+                text: "Nota berhasil diperbarui.",
+                icon: "success",
+                confirmButtonText: "OK",
             }).then((result) => {
                 if (result.isConfirmed && config.redirectUrl) {
                     window.location.href = config.redirectUrl;
                 }
             });
         });
-        
-        Livewire.on('swal-loading', (event) => {
+
+        Livewire.on("swal-loading", (event) => {
             const data = Array.isArray(event) ? event[0] : event;
 
             Swal.fire({
-                title: data?.title || 'Memproses...',
-                text: data?.message || 'Mohon tunggu',
+                title: data?.title || "Memproses...",
+                text: data?.message || "Mohon tunggu",
                 allowOutsideClick: false,
                 showConfirmButton: false,
                 didOpen: () => {
                     Swal.showLoading();
-                }
+                },
             });
+        });
+
+        Livewire.on("open-pdf", (event) => {
+            console.log(event.url);
+            const url = event[0].url;
+            window.open(url, "_blank"); // buka PDF di tab baru
         });
     });
 }
@@ -164,42 +176,42 @@ function initLivewireSwalHandlers(options = {}) {
 const SwalHelper = {
     success: (title, text) => {
         return Swal.fire({
-            title: title || 'Berhasil!',
+            title: title || "Berhasil!",
             text: text,
-            icon: 'success'
+            icon: "success",
         });
     },
 
     error: (title, text) => {
         return Swal.fire({
-            title: title || 'Gagal!',
+            title: title || "Gagal!",
             text: text,
-            icon: 'error'
+            icon: "error",
         });
     },
 
-    confirm: (title, text, confirmText = 'Ya', cancelText = 'Batal') => {
+    confirm: (title, text, confirmText = "Ya", cancelText = "Batal") => {
         return Swal.fire({
             title: title,
             text: text,
-            icon: 'warning',
+            icon: "warning",
             showCancelButton: true,
             confirmButtonText: confirmText,
             cancelButtonText: cancelText,
         });
     },
 
-    loading: (title = 'Memproses...', text = 'Mohon tunggu') => {
+    loading: (title = "Memproses...", text = "Mohon tunggu") => {
         Swal.fire({
             title: title,
             text: text,
             allowOutsideClick: false,
             didOpen: () => {
                 Swal.showLoading();
-            }
+            },
         });
     },
     close: () => {
         Swal.close();
-    }    
+    },
 };

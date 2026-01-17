@@ -4,6 +4,7 @@ namespace App\Livewire\Nota;
 
 use App\Models\Nota;
 use App\Models\DetailNota;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\On;
@@ -219,7 +220,7 @@ class Index extends Component
 
         // Buka halaman print
         return redirect()->route('pdf.index', $id);
-    }  
+    }    
 
     // Method yang dipanggil setelah konfirmasi
     #[On('run-bulk-action')]
@@ -270,29 +271,16 @@ class Index extends Component
                 $message = 'Status data batal diprint';
                 break;
 
-            // case 'print':
-            //     $ids = implode(',', $this->selectedIds);
-
-            //     // Update print status
-            //     Nota::whereIn('id', $this->selectedIds)
-            //         ->update(['print' => 1]);
-
-            //     $this->reset(['selectedIds', 'bulkAction', 'selectAll']);
-
-            //     return redirect()->route('nota.print.bulk', ['ids' => $ids]);
-
             case 'print':
-                $ids = $this->selectedIds;                
-
-                // Nota::whereIn('id', $ids)->update([
-                //     'print' => 1
-                // ]);
+                $ids = implode(',', $this->selectedIds);
 
                 $this->reset(['selectedIds', 'bulkAction', 'selectAll']);
-
-                return redirect()->route('nota.print', [
-                    'ids' => $ids
+                $this->dispatch('open-pdf', [
+                    'url' => route('pdf.index', ['ids' => $ids])
                 ]);
+                $message = "Data berhasil diprint";
+                break;
+                // return redirect()->route('pdf.index', ['ids' => $ids]);
 
             default:
                 $this->dispatch('alert', [
@@ -362,14 +350,6 @@ class Index extends Component
         $this->dispatch('confirm-bulk-action', [
             'action' => $value
         ]);
-    }
-
-    public function printBulk(Request $request)
-    {
-        $ids = explode(',', $request->ids);
-        $notas = Nota::whereIn('id', $ids)->get();
-
-        return view('pdf.bulk-nota', compact('notas'));
     }
 
     public function confirmBulkAction()

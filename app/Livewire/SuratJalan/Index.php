@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Hash;
 class Index extends Component
 {
     use WithPagination;
-    
+
     protected $paginationTheme = 'bootstrap';
     public $paginate = '10';
     public $search = '';
@@ -22,7 +22,7 @@ class Index extends Component
     public string $bulkAction = '';
 
     public $no_surat, $tanggal, $nama_toko, $total_coly, $status, $suratjalan_id;
-   
+
     public function render()
     {
         return view('livewire.suratjalan.index', [
@@ -35,7 +35,7 @@ class Index extends Component
     {
         $query = SuratJalan::where(function ($q) {
             $q->where('nama_toko', 'like', '%' . $this->search . '%')
-            ->orWhere('status', 'like', '%' . $this->search . '%');
+                ->orWhere('status', 'like', '%' . $this->search . '%');
         });
 
         if ($this->sortField && in_array($this->sortDirection, ['asc', 'desc'])) {
@@ -68,8 +68,7 @@ class Index extends Component
                 $this->sortField = null;
                 $this->sortDirection = null;
             }
-
-        } 
+        }
         // Jika klik field baru
         else {
             $this->sortField = $field;
@@ -84,7 +83,7 @@ class Index extends Component
         $this->resetPage();
         $this->reset(['selectedIds', 'selectAll']);
     }
-    
+
     public function confirm($id)
     {
         $suratjalan = SuratJalan::findOrFail($id);
@@ -98,7 +97,7 @@ class Index extends Component
     {
         $suratjalan = SuratJalan::findOrFail($id);
         $suratjalan->delete();
-        $this->dispatch('closeDeleteModal'); 
+        $this->dispatch('closeDeleteModal');
     }
 
     public function toggleStatus($id)
@@ -109,7 +108,7 @@ class Index extends Component
             $item->status = $item->status == 1 ? 0 : 1;
             $item->save();
         }
-    }    
+    }
 
     // Method yang dipanggil setelah konfirmasi
     #[On('run-bulk-action')]
@@ -162,14 +161,15 @@ class Index extends Component
 
             case 'print':
                 $ids = implode(',', $this->selectedIds);
-                
-                // Update print status
-                SuratJalan::whereIn('id', $this->selectedIds)
-                    ->update(['print' => 1]);
 
                 $this->reset(['selectedIds', 'bulkAction', 'selectAll']);
 
-                return redirect()->route('nota.print.bulk', ['ids' => $ids]);
+                // return redirect()->route('pdf.surat', ['ids' => $ids]);
+                $this->dispatch('open-pdf', [
+                    'url' => route('pdf.surat', ['ids' => $ids])
+                ]);
+                $message = "Data berhasil diprint";
+                break;
 
             default:
                 $this->dispatch('alert', [

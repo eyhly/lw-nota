@@ -80,93 +80,108 @@
             right: 0;
             width: 100%;
         }
+
+        .suratjalan-page {
+            page-break-after: always;
+        }
+
+        .suratjalan-page:last-child {
+            page-break-after: auto;
+        }
     </style>
 </head>
 
 <body>
+    @foreach ($suratjalans as $suratjalan)
+        <div class="suratjalan-page">
+            <!-- Header -->
+            <div class="page-header">
+                <table>
+                    <tr>
+                        <td width="30%" style="font-size: 14px; font-weight: 700; padding-left: 1rem;">
+                            <b>MENTARI JAYA</b><br>
+                            <b>SURABAYA</b>
+                        </td>
+                        <td width="40%" class="faktur">
+                            <u>Surat Jalan</u>
+                        </td>
+                        <td width="30%"></td>
+                    </tr>
+                </table>
 
-    <!-- Header -->
-    <div class="page-header">
-        <table>
-            <tr>
-                <td width="30%" style="font-size: 14px; font-weight: 700; padding-left: 1rem;">
-                    <b>MENTARI JAYA</b><br>
-                    <b>SURABAYA</b>
-                </td>
-                <td width="40%" class="faktur">
-                    <u>Surat Jalan</u>
-                </td>
-                <td width="30%"></td>
-            </tr>
-        </table>
+                <table>
+                    <tr>
+                        <td width="15%" style="padding-left: 1rem">
+                            <br>
+                            No Surat <br>
+                            Tanggal
+                        </td>
+                        <td width="50%">
+                            <br>
+                            : {{ $suratjalan->no_surat }}<br>
+                            : {{ \Carbon\Carbon::parse($suratjalan->tanggal)->format('d/m/Y') }}<br>
+                        </td>
+                        <td width="35%">
+                            Kepada Yth, <br>
+                            {{ $suratjalan->nama_toko }} <br>
+                            {{ $suratjalan->alamat }}
+                        </td>
+                    </tr>
+                </table>
+            </div>
 
-        <table>
-            <tr>
-              <td width="15%" style="padding-left: 1rem">
-                  <br>
-                    No Surat <br>
-                    Tanggal
-                </td>
-                <td width="50%">
-                  <br>
-                    : {{ $suratjalan->no_surat }}<br>
-                    : {{ \Carbon\Carbon::parse($suratjalan->tanggal)->format('d/m/Y') }}<br>
-                </td>
-                <td width="35%">
-                    Kepada Yth, <br>
-                    {{ $suratjalan->nama_toko }} <br>
-                    {{ $suratjalan->alamat }}
-                </td>
-            </tr>
-        </table>
-    </div>
+            <!-- Detail Barang -->
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align: center;" width="3%">NO</th>
+                        <th style="text-align: center;" width="11%">COLY</th>
+                        <th style="text-align: center;" width="11%">ISI</th>
+                        <th style="padding-left: 5px; text-align: left;" width="40%">NAMA BARANG</th>
+                        <th style="padding-left: 5px; text-align: left;" width="35%">KETERANGAN</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php $no = 1; @endphp
+                    @foreach ($suratjalan->detailsj as $d)
+                        <tr>
+                            <td style="text-align: center;">{{ $no++ }}</td>
+                            <td style="text-align: center;">{{ $d->coly }} {{ $d->satuan_coly }}</td>
+                            <td style="text-align: center;">{{ $d->qty_isi }} {{ $d->nama_isi }}</td>
+                            <td style="padding-left: 5px; text-align: left;">{{ $d->nama_barang }}</td>
+                            <td style="padding-left: 5px; text-align: left;">{{ $d->keterangan }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
 
-    <!-- Detail Barang -->
-    <table>
-        <thead>
-            <tr>
-                <th style="text-align: center;" width="3%">NO</th>
-                <th style="text-align: center;" width="11%">COLY</th>
-                <th style="text-align: center;" width="11%">ISI</th>
-                <th style="padding-left: 5px; text-align: left;" width="40%">NAMA BARANG</th>
-                <th style="padding-left: 5px; text-align: left;" width="35%">KETERANGAN</th>
-            </tr>
-        </thead>
-        <tbody>
-            @php $no = 1; @endphp
-            @foreach ($suratjalan->detailsj as $d)
-                <tr>
-                    <td style="text-align: center;">{{ $no++ }}</td>
-                    <td style="text-align: center;">{{ $d->coly }} {{ $d->satuan_coly }}</td>
-                    <td style="text-align: center;">{{ $d->qty_isi }} {{ $d->nama_isi }}</td>
-                    <td style="padding-left: 5px; text-align: left;">{{ $d->nama_barang }}</td>
-                    <td style="padding-left: 5px; text-align: left;">{{ $d->keterangan }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
+            <!-- Footer -->
+            <div class="footer">
+                <hr>
+                <table>
+                    <tr>
+                        <td width="30%" class="coly" width="10%" valign="top"
+                            style="text-align: left; padding-left: 1rem;">
+                            <p style="margin: 0; padding: 0; font-weight: 700;">Total: {{ $suratjalan->total_coly }}
+                                ({{ $suratjalan->total_coly_terbilang }}) Coly </p>
+                            <br>
+                            <p style="margin: 0; padding: 0;">Exp:</p>
+                        </td>
+                        <td width="30%" valign="top" style="text-align: center;">
+                            Tanda Terima,<br><br><br><br><br>
+                            (&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)
+                        </td>
+                        <td width="30%" valign="top" style="text-align: center;">
+                            Hormat Kami,<br><br><br><br><br>
+                            (&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)
+                        </td>
+                    </tr>
+                </table>
+            </div>
 
-    <!-- Footer -->
-    <div class="footer">
-        <hr>
-        <table>
-            <tr>
-                <td width="30%" class="coly" width="10%" valign="top" style="text-align: left; padding-left: 1rem;">
-                    <p style="margin: 0; padding: 0; font-weight: 700;">Total: {{ $suratjalan->total_coly }} ({{ $total_coly_terbilang }}) Coly </p>
-                    <br>
-                    <p style="margin: 0; padding: 0;">Exp:</p>
-                </td>
-                <td width="30%" valign="top" style="text-align: center;">
-                    Tanda Terima,<br><br><br><br><br>
-                    (&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)
-                </td>
-                <td width="30%" valign="top" style="text-align: center;">
-                    Hormat Kami,<br><br><br><br><br>
-                    (&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)
-                </td>
-            </tr>
-        </table>
-    </div>
+        </div>
+    @endforeach
+
 
 </body>
 

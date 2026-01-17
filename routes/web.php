@@ -21,8 +21,8 @@ Route::get('/nota/create/from-surat/{id}', function ($id) {
 Route::get('/nota/{id}/detail', function ($id) {return view('nota.detail', ['id' => $id]);})->name('nota.detail');
 
 //pdf
-Route::get('/nota/print/', [Detail::class, 'pdf'])->name('pdf.index',);
-Route::get('/surat/print/{id}', [DetailSurat::class, 'pdf'])->name('pdf.surat');
+Route::get('/nota/print', [Detail::class, 'pdf'])->name('pdf.index',);
+Route::get('/surat/print', [DetailSurat::class, 'pdf'])->name('pdf.surat');
 
 // //surat jalan
 Route::view('surat-jalan/', 'suratjalan.index')->name('suratjalan.index');

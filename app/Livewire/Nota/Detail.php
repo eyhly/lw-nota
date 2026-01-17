@@ -4,7 +4,9 @@ namespace App\Livewire\Nota;
 
 use App\Models\Nota;
 use App\Models\DetailNota;
+use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Illuminate\Http\Request;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use PDF;
 
@@ -24,6 +26,7 @@ class Detail extends Component
     public $isAdding = false;
     public $newItem = [];
 
+    #[Layout('layouts.app')]
     public function mount($id)
     {
         $this->nota = Nota::with('details')->findOrFail($id);
@@ -232,7 +235,6 @@ class Detail extends Component
             array_map('floatval', (array) ($this->editData['diskon'] ?? []))
         );
 
-        $this->dispatch('$refresh');
         // subtotal
         $subtotal = $this->editData['jumlah'] * (float) $this->editData['harga'];
 
@@ -242,13 +244,24 @@ class Detail extends Component
 
         // simpan diskon ke DB
         $this->editData['diskon'] = array_map(fn($v) => (int) $v, $this->editData['diskon']);
-
         $detail->update($this->editData);
 
+        $subtotalNota = DetailNota::where('nota_id', $detail->nota_id)
+            ->sum('total');
+        $totalNota = $subtotalNota - $this->nota->diskon_rupiah;
+        $totalNota = $totalNota - ($totalNota*($this->nota->diskon_persen/100));
+        
+        // update nota
+        Nota::where('id', $detail->nota_id)
+            ->update([
+                'subtotal' => $subtotalNota,
+                'total_harga' => $totalNota,
+            ]);
 
         // refresh data
         $this->nota = Nota::with('details')->find($this->nota->id);
-
+        
+        $this->dispatch('$refresh');
         $this->editIndex = null;
         $this->editData = [];
     }
@@ -310,8 +323,6 @@ class Detail extends Component
         );
     }
 
-
-
     public function deleteDetail($id)
     {
         DetailNota::find($id)->delete();
@@ -337,26 +348,26 @@ class Detail extends Component
     {
         $ids = explode(',', $request->ids);
 
-        $nota = Nota::whereIn('id', $ids)->get();
+        $notas = Nota::whereIn('id', $ids)->get();
 
-        if ($nota->count() !== count($ids)) {
+        if ($notas->count() !== count($ids)) {
             abort(404, 'Ada nota yang tidak ditemukan');
         }
 
         Nota::whereIn('id', $ids)->update(['print' => 1]);
 
-        $notas = Nota::with('details') ->whereIn('id', $ids) ->orderBy('id') ->get();        
+        $nota = Nota::with('details')
+            ->whereIn('id', $ids)
+            ->orderBy('id')
+            ->get();
 
-        $data = [
+        $data = array(
             'title' => 'Detail Nota',
-            'notas' => $notas,
-        ];
-
-        $customPaper = [0, 0, 595, 395];
-
-        $pdf = Pdf::loadView('pdf.index', $data)
-            ->setPaper($customPaper);
-
+            'notas' => $nota,
+            // 'chunks' => $chunks
+        );
+        $customPaper = array(0, 0, 595, 395);
+        $pdf = FacadePdf::loadView('pdf.index', $data)->setPaper($customPaper);
         return $pdf->stream('nota.pdf');
     }
 
@@ -366,9 +377,20 @@ class Detail extends Component
         $this->total_coly  = $this->getTotalColyProperty();
         $this->total_harga = $this->getTotalHargaProperty();
 
-        return view('livewire.nota.detail')->layout('layouts.app');
+        return view('livewire.nota.detail');
     }
- 
+
+    public function updatePrintAndRedirect($id)
+    {
+        $nota = Nota::findOrFail($id);
+
+        // update print = 1
+        $nota->update(['print' => 1]);
+
+        // redirect ke halaman PDF
+        return redirect()->route('pdf.index', $id);
+    }
+
     public function toggleCek($id)
     {
         if ($this->nota && $this->nota->id == $id) {

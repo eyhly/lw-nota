@@ -1,230 +1,238 @@
 <div>
-  <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1><strong>{{ $title }}</strong></h1>
-          </div>
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">
-              <i class="fas fa-home mr-1"></i>  
-              Dashboard</a></li>
-              <li class="breadcrumb-item active">
-                <i class="fas fa-list mr-1"></i>
-              {{ $title }}</li>
-            </ol>
-          </div>
-        </div>
-      </div><!-- /.container-fluid -->
-    </section>
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1><strong>{{ $title }}</strong></h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="#">
+                                    <i class="fas fa-home mr-1"></i>
+                                    Dashboard</a></li>
+                            <li class="breadcrumb-item active">
+                                <i class="fas fa-list mr-1"></i>
+                                {{ $title }}
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
 
-    <!-- Main content -->
-    <section class="content">
-      <!-- Default box -->
-      <div class="card">
-        <div class="card-header">
-          <div class="d-flex justify-content-between">
-            <div>              
-              <a wire:navigate href="{{ route('suratjalan.create') }}" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#createModal">
-              <i class="fas fa-plus mr-1"></i>  
-              Tambah Data</a>
-            </div>
-            <!-- <div class="btn-group dropleft">
+        <!-- Main content -->
+        <section class="content">
+            <!-- Default box -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <a wire:navigate href="{{ route('suratjalan.create') }}" class="btn btn-sm btn-primary"
+                                data-toggle="modal" data-target="#createModal">
+                                <i class="fas fa-plus mr-1"></i>
+                                Tambah Data</a>
+                        </div>
+                        <!-- <div class="btn-group dropleft">
               <button type="button" class="btn btn-sm btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                 <i class="fas fa-print mr-1"></i>
                 Print
               </button>
               <div class="dropdown-menu">
                 <a class="dropdown-item text-success" href="#">
-                <i class="fas fa-file-excel mr-1"></i>  
+                <i class="fas fa-file-excel mr-1"></i>
                 Excel</a>
                 <a class="dropdown-item text-danger" href="#">
-                <i class="fas fa-file-pdf mr-1"></i>  
+                <i class="fas fa-file-pdf mr-1"></i>
                 PDF</a>
               </div>
             </div> -->
-          </div>
-        </div>
-        <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-              {{-- Info data --}}
-              <div class="text-muted medium">
-                  Menampilkan {{ $suratjalan->count() }} dari {{ $suratjalan->total() }} data
-              </div>
-          </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        {{-- Info data --}}
+                        <div class="text-muted medium">
+                            Menampilkan {{ $suratjalan->count() }} dari {{ $suratjalan->total() }} data
+                        </div>
+                    </div>
 
-          <div class="d-flex justify-content-between align-items-center mb-3">
-              {{-- Jumlah tampil --}}
-              <div class="d-flex align-items-center">
-                  <span class="text-muted mr-2">Tampilkan</span>
-                  <select wire:model.live="paginate" class="form-control form-control-sm w-auto">
-                      <option value="10">10</option>
-                      <option value="25">25</option>
-                      <option value="50">50</option>
-                  </select>
-                  <span class="text-muted ml-2">data</span>
-              </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        {{-- Jumlah tampil --}}
+                        <div class="d-flex align-items-center">
+                            <span class="text-muted mr-2">Tampilkan</span>
+                            <select wire:model.live="paginate" class="form-control form-control-sm w-auto">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                            </select>
+                            <span class="text-muted ml-2">data</span>
+                        </div>
 
-              <div class="d-flex justify-content-between align-items-center" style="width: 350px;">
-                    {{-- Search --}}
-              <div style="width: 200px;">
-                  <input
-                      wire:model.live="search"
-                      type="text"
-                      class="form-control form-control-sm"
-                      placeholder="Cari data..."
-                  >
-              </div>
+                        <div class="d-flex justify-content-between align-items-center" style="width: 350px;">
+                            {{-- Search --}}
+                            <div style="width: 200px;">
+                                <input wire:model.live="search" type="text" class="form-control form-control-sm"
+                                    placeholder="Cari data...">
+                            </div>
 
-                  {{-- Pagination atas --}}
-              <div class="d-flex align-items-center mt-2">
-                  {{ $suratjalan->links('pagination::bootstrap-4') }}
-              </div>
-              </div>
-          </div>
+                            {{-- Pagination atas --}}
+                            <div class="d-flex align-items-center mt-2">
+                                {{ $suratjalan->links('pagination::bootstrap-4') }}
+                            </div>
+                        </div>
+                    </div>
 
-          <div class="table-responsive">
-            <form wire:submit.prevent="runBulkAction" wire:key="bulk-form-{{ count($selectedIds) }}">
-              @csrf
+                    <div class="table-responsive">
+                        <form wire:submit.prevent="runBulkAction" wire:key="bulk-form-{{ count($selectedIds) }}">
+                            @csrf
 
-              <table class="table table-hover">
-                <thead>
-                  <tr>
-                      <th>
-                          <input
-                              type="checkbox"
-                              wire:click="toggleSelectAll"
-                              {{ $selectAll ? 'checked' : '' }}
-                              id="selectAllCheckbox">
-                      </th>
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" wire:click="toggleSelectAll"
+                                                {{ $selectAll ? 'checked' : '' }} id="selectAllCheckbox">
+                                        </th>
 
-                      <th>No</th>
+                                        <th>No</th>
 
-                      <th wire:click="sortBy('nama_toko')" style="cursor:pointer">
-                          Nama Toko
-                          @if ($sortField === 'nama_toko')
-                              <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
-                          @else
-                              <i class="fas fa-sort text-muted"></i>
-                          @endif
-                      </th>
+                                        <th wire:click="sortBy('nama_toko')" style="cursor:pointer">
+                                            Nama Toko
+                                            @if ($sortField === 'nama_toko')
+                                                <i
+                                                    class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                                            @else
+                                                <i class="fas fa-sort text-muted"></i>
+                                            @endif
+                                        </th>
 
-                      <th wire:click="sortBy('tanggal')" style="cursor:pointer">
-                          Tanggal
-                          @if ($sortField === 'tanggal')
-                              <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
-                          @else
-                              <i class="fas fa-sort text-muted"></i>
-                          @endif
-                      </th>
+                                        <th wire:click="sortBy('tanggal')" style="cursor:pointer">
+                                            Tanggal
+                                            @if ($sortField === 'tanggal')
+                                                <i
+                                                    class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                                            @else
+                                                <i class="fas fa-sort text-muted"></i>
+                                            @endif
+                                        </th>
 
-                      <th wire:click="sortBy('nota')" style="cursor:pointer">
-                          Nota
-                          @if ($sortField === 'nota')
-                              <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
-                          @else
-                              <i class="fas fa-sort text-muted"></i>
-                          @endif
-                      </th>
+                                        <th wire:click="sortBy('nota')" style="cursor:pointer">
+                                            Nota
+                                            @if ($sortField === 'nota')
+                                                <i
+                                                    class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                                            @else
+                                                <i class="fas fa-sort text-muted"></i>
+                                            @endif
+                                        </th>
 
-                      <th wire:click="sortBy('print')" style="cursor:pointer">
-                          Print
-                          @if ($sortField === 'print')
-                              <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
-                          @else
-                              <i class="fas fa-sort text-muted"></i>
-                          @endif
-                      </th>
+                                        <th wire:click="sortBy('print')" style="cursor:pointer">
+                                            Print
+                                            @if ($sortField === 'print')
+                                                <i
+                                                    class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                                            @else
+                                                <i class="fas fa-sort text-muted"></i>
+                                            @endif
+                                        </th>
 
-                      <th>Aksi </i></th>
-                  </tr>
-                </thead>
+                                        <th>Aksi </i></th>
+                                    </tr>
+                                </thead>
 
-                <tbody>
-                  @foreach ($suratjalan as $item)
-                    <tr>
-                      <td class="text-left">
-                          <input
-                              type="checkbox"
-                              value="{{ $item->id }}"
-                              wire:model.live="selectedIds"
-                              @checked(in_array($item->id, $selectedIds))>
-                      </td>
-                      <td>{{ $loop->iteration }}</td>
-                      <td>{{ $item->nama_toko }}</td>
-                      <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d F Y') }}</td>
-                      <td>
-                        @if($item->nota === 1)
-                        <span class="text-success"><i class="fas fa-check fs-5"></i></span>
-                        @else
-                        <span class="text-danger"><i class="fas fa-times fs-5"></i></span>
-                        @endif
-                      </td>  
-                      <td>
-                          @if($item->print === 1)
-                              <span class="text-success"><i class="fas fa-check fs-5"></i></span>
-                          @else
-                              <span class="text-danger"><i class="fas fa-times fs-5"></i></span>
-                          @endif
-                      </td>
-                      <td>
-                        <a wire:navigate href="{{ route('suratjalan.detail', $item->id) }}" class="btn btn-sm btn-info" data-toggle="modal" data-target="#editModal">
-                          <i class="fas fa-eye mr-1"></i>Detail
-                        </a>                   
+                                <tbody>
+                                    @foreach ($suratjalan as $item)
+                                        <tr style="cursor: pointer;"
+                                            onclick="window.location='{{ route('suratjalan.detail', $item->id) }}'">
+                                            <td class="text-left" onclick="event.stopPropagation()">
+                                                <input type="checkbox" value="{{ $item->id }}"
+                                                    wire:model.live="selectedIds" @checked(in_array($item->id, $selectedIds))>
+                                            </td>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $item->nama_toko }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d F Y') }}</td>
+                                            <td>
+                                                @if ($item->nota === 1)
+                                                    <span class="text-success"><i class="fas fa-check fs-5"></i></span>
+                                                @else
+                                                    <span class="text-danger"><i class="fas fa-times fs-5"></i></span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($item->print === 1)
+                                                    <span class="text-success"><i class="fas fa-check fs-5"></i></span>
+                                                @else
+                                                    <span class="text-danger"><i class="fas fa-times fs-5"></i></span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <a wire:navigate href="{{ route('suratjalan.detail', $item->id) }}"
+                                                    class="btn btn-sm btn-info" data-toggle="modal"
+                                                    data-target="#editModal">
+                                                    <i class="fas fa-eye mr-1"></i>Detail
+                                                </a>
 
-                        <!-- delete -->
-                        <button type="button" wire:click="confirm({{$item->id}})" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteModal">
-                          <i class="fas fa-trash"></i>
-                        </button>
-                      </td>
-                    </tr>
-                  @endforeach
-                </tbody>
-              </table>
-              
-              <div class="d-flex justify-content-between align-items-center mt-3">
-              {{-- Bulk action --}}
-              <div class="d-flex align-items-center">
-                  <span class="text-muted mr-2">With selected:</span>
+                                                <!-- delete -->
+                                                <button type="button" wire:click="confirm({{ $item->id }})"
+                                                    class="btn btn-sm btn-danger" data-toggle="modal"
+                                                    data-target="#deleteModal">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
 
-                  <select
-                     wire:model.live="bulkAction"                      
-                      class="form-control form-control-sm w-auto mr-2"                      
-                      id="bulkActionSelect"
-                  >
-                      <option value="">Pilih aksi</option>
-                      <option value="print">Cetak</option>
-                      <option value="sprint">Sudah Cetak</option>
-                      <option value="unprint">Belum Cetak</option>
-                      <option value="approve">Sudah Cek</option>
-                      <option value="unapprove">Belum Cek</option>
-                      <option value="delete">Hapus</option>
-                  </select>
-              </div>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                {{-- Bulk action --}}
+                                <div class="d-flex align-items-center">
+                                    <span class="text-muted mr-2">With selected:</span>
 
-              {{-- Pagination bawah --}}
-              <div>
-                  {{ $suratjalan->links('pagination::bootstrap-4') }}
-              </div>
-          </div>
-            </form>
-          </div>
-        </div>
-        <!-- /.card-body -->        
-      </div>
-    </section>
+                                    <select wire:model.live="bulkAction"
+                                        class="form-control form-control-sm w-auto mr-2" id="bulkActionSelect">
+                                        <option value="">Pilih aksi</option>
+                                        <option value="delete">Hapus</option>
+                                        <option value="sprint">Sudah Cetak</option>
+                                        <option value="unprint">Belum Cetak</option>
+                                        <option value="approve">Sudah Cek</option>
+                                        <option value="unapprove">Belum Cek</option>
+                                        <option value="print">Cetak</option>
+                                    </select>
+                                </div>
 
-    @include('livewire.suratjalan.delete')
+                                {{-- Pagination bawah --}}
+                                <div>
+                                    {{ $suratjalan->links('pagination::bootstrap-4') }}
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </section>
 
-    <!-- close delete modal -->
-    @script
-    <script>
-        initLivewireSwalHandlers();
-    </script>
-    @endscript
-  </div>
+        @include('livewire.suratjalan.delete')
+
+        <!-- close delete modal -->
+        @script
+            <script>
+                initLivewireSwalHandlers();
+            </script>
+        @endscript
+    </div>
 </div>
+
+@push('scripts')
+    <script>
+        document.addEventListener('livewire:load', function() {
+            Livewire.on('open-pdf', event => {
+                window.open(event.url, '_blank'); // buka PDF di tab baru
+            });
+        });
+    </script>
+@endpush

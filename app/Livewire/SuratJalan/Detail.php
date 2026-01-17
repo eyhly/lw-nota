@@ -4,6 +4,9 @@ namespace App\Livewire\SuratJalan;
 
 use App\Models\SuratJalan;
 use App\Models\DetailSuratJalan;
+use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
+use Illuminate\Http\Request;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use PDF;
 
@@ -20,6 +23,8 @@ class Detail extends Component
     // Data untuk add new item
     public $isAdding = false;
     public $newItem = [];
+
+    #[Layout('layouts.app')]
 
     public function mount($id)
     {
@@ -212,25 +217,40 @@ class Detail extends Component
         return null;
     }
 
-    public function pdf($id)
+    public function pdf(Request $request)
     {
-        $suratjalan = SuratJalan::with('detailsj')->findOrFail($id);
-        $jumlah_terbilang = $this->ejaan_angka($suratjalan['total_coly']);
+        $ids = explode(',', $request->ids);
+
+        $suratjalans = SuratJalan::whereIn('id', $ids)->get();
+
+        if ($suratjalans->count() !== count($ids)) {
+            abort(404, 'Ada nota yang tidak ditemukan');
+        }
+
+        SuratJalan::whereIn('id', $ids)->update(['print' => 1]);
+
+        $suratjalan = SuratJalan::with('detailsj')
+            ->whereIn('id', $ids)
+            ->orderBy('id')
+            ->get();;
+
+        $suratjalan->each(function ($sj) {
+            $sj->total_coly_terbilang = $this->ejaan_angka($sj->total_coly);
+        });
 
         $data = array(
-            'title' => 'Detail SuratJalan',
-            'suratjalan' => $suratjalan,
-            'total_coly_terbilang' => $jumlah_terbilang,
+            'title' => 'SuratJalan',
+            'suratjalans' => $suratjalan,
         );
         $customPaper = array(0, 0, 595, 395);
-        $pdf = Pdf::loadView('pdf.surat', $data)->setPaper($customPaper);
+        $pdf = FacadePdf::loadView('pdf.surat', $data)->setPaper($customPaper);
         // $pdf = Pdf::loadView('pdf.surat', $data)->setPaper('a5', 'landscape');
         return $pdf->stream('suratjalan.pdf');
     }
 
     public function render()
     {
-        return view('livewire.suratjalan.detail')->layout('layouts.app');
+        return view('livewire.suratjalan.detail');
     }
 
     public function updatePrintAndRedirectSJ($id)
